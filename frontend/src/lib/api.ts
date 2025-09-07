@@ -8,6 +8,8 @@ import {
   Signal,
   Release,
   Source,
+} from '@schema/types';
+import {
   zCompany,
   zCompanySummary,
   zProduct,

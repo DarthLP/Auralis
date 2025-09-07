@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function SignalsPage() {
   return (
     <div className="container">

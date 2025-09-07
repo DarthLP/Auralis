@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ProductStage, SignalType } from './enums';
 import { SpecValue } from './specs';
 
 // SpecValue schema
@@ -91,7 +90,7 @@ export const zSignal = z.object({
   company_ids: z.array(z.string()),
   product_ids: z.array(z.string()),
   capability_ids: z.array(z.string()),
-  impact: z.enum([-2, -1, 0, 1, 2]),
+  impact: z.enum(['-2', '-1', '0', '1', '2']),
   source_id: z.string().optional(),
 });
 

@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function CompaniesIndex() {
   return (
     <div className="container">
