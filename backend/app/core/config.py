@@ -29,9 +29,10 @@ class Settings(BaseSettings):
         """Convert comma-separated ALLOWED_ORIGINS to list"""
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
     
-    # AI Configuration (Future)
+    # AI Configuration
     THETA_EDGECLOUD_API_KEY: str = ""
     THETA_EDGECLOUD_URL: str = ""
+    API_KEY_SCHEMA: str = ""  # Deep Seek API for Analysis
     
     # Scraping Configuration (Future)
     SCRAPING_DELAY: float = 1.0  # Delay between requests in seconds
