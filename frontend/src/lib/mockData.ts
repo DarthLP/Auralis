@@ -111,6 +111,58 @@ export async function source(id: string): Promise<Source> {
   return found;
 }
 
+// Mock spec profile data
+const mockSpecProfiles = {
+  'robotics/mobile_manipulator@1': {
+    id: 'robotics/mobile_manipulator@1',
+    name: 'Mobile Manipulator',
+    version: '1.0',
+    schema: {
+      payload: { type: 'number', unit: 'kg', label: 'Payload Capacity' },
+      dof: { type: 'number', label: 'Degrees of Freedom' },
+      max_speed: { type: 'number', unit: 'm/s', label: 'Maximum Speed' },
+      sensors: { type: 'array', label: 'Sensors' },
+      runtime: { type: 'range', unit: 'hrs', label: 'Runtime' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Performance',
+          fields: ['payload', 'max_speed', 'runtime']
+        },
+        {
+          name: 'Configuration',
+          fields: ['dof', 'sensors']
+        }
+      ]
+    }
+  },
+  'robotics/amr@1': {
+    id: 'robotics/amr@1',
+    name: 'Autonomous Mobile Robot',
+    version: '1.0',
+    schema: {
+      sensors: { type: 'array', label: 'Sensors' },
+      runtime: { type: 'range', unit: 'hrs', label: 'Runtime' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Specifications',
+          fields: ['sensors', 'runtime']
+        }
+      ]
+    }
+  }
+};
+
+export async function specProfile(id: string): Promise<any> {
+  await delay(200);
+  const found = mockSpecProfiles[id as keyof typeof mockSpecProfiles];
+  if (!found) throw new Error(`Spec profile with id ${id} not found`);
+  return found;
+}
+
 // Specialized functions for Overview page
 export async function getThisWeekSignals(): Promise<Signal[]> {
   const thisWeekSignals = getSignalsFromLastDays(7);

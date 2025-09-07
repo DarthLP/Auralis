@@ -4,9 +4,11 @@ import {
   product, 
   productCapabilities as fetchProductCapabilities, 
   capabilities,
-  company 
+  company,
+  specProfile
 } from '../lib/mockData';
 import { Product, ProductCapability, Capability, Company } from '@schema/types';
+import SpecsGroup from '../components/SpecsGroup';
 
 // Extended maturity type to handle seed data
 type ExtendedMaturity = 'basic' | 'intermediate' | 'advanced' | 'expert' | 'ga' | 'alpha' | 'beta';
@@ -16,6 +18,7 @@ interface ProductData {
   company: Company;
   productCapabilities: ProductCapability[];
   capabilities: Capability[];
+  specProfile?: any;
 }
 
 const maturityColors: Record<ExtendedMaturity, string> = {
@@ -71,13 +74,24 @@ export default function ProductPage() {
         }
 
         // Fetch all related data in parallel
-        let companyData, productCaps, allCapabilities;
+        let companyData: Company, productCaps: ProductCapability[], allCapabilities: Capability[], specProfileData: any;
         try {
-          [companyData, productCaps, allCapabilities] = await Promise.all([
+          const fetchPromises = [
             company(companyId),
             fetchProductCapabilities(productId),
             capabilities()
-          ]);
+          ];
+
+          // Add spec profile fetch if product has spec_profile
+          if (productData.spec_profile) {
+            fetchPromises.push(specProfile(productData.spec_profile));
+          }
+
+          const results = await Promise.all(fetchPromises);
+          companyData = results[0] as Company;
+          productCaps = results[1] as ProductCapability[];
+          allCapabilities = results[2] as Capability[];
+          specProfileData = results[3];
         } catch (err) {
           console.error('Error fetching related data:', err);
           throw new Error(`Failed to fetch related data: ${err instanceof Error ? err.message : String(err)}`);
@@ -87,7 +101,8 @@ export default function ProductPage() {
           product: productData,
           company: companyData,
           productCapabilities: productCaps,
-          capabilities: allCapabilities
+          capabilities: allCapabilities,
+          specProfile: specProfileData
         });
       } catch (err) {
         console.error('Failed to fetch product data:', err);
@@ -192,7 +207,7 @@ export default function ProductPage() {
     );
   }
 
-  const { product: productData, company: companyData, productCapabilities } = data;
+  const { product: productData, company: companyData, productCapabilities, specProfile: specProfileData } = data;
 
   return (
     <div className="container">
@@ -210,14 +225,19 @@ export default function ProductPage() {
               </p>
             )}
 
-            {/* Company Chip */}
-            <div className="mb-4">
+            {/* Company Chip and Spec Profile Badge */}
+            <div className="mb-4 flex flex-wrap gap-2">
               <Link
                 to={`/companies/${companyId}`}
                 className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full hover:bg-blue-200 transition-colors"
               >
                 {companyData.name}
               </Link>
+              {productData.spec_profile && (
+                <span className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
+                  Spec profile: {productData.spec_profile}
+                </span>
+              )}
             </div>
 
             {/* Category, Markets, Tags */}
@@ -323,6 +343,14 @@ export default function ProductPage() {
           </div>
         )}
       </div>
+
+      {/* Specifications Section */}
+      {productData.specs && Object.keys(productData.specs).length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
+          <SpecsGroup product={productData} profile={specProfileData} />
+        </div>
+      )}
     </div>
   );
 }
