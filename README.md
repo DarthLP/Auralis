@@ -171,7 +171,7 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - `/companies` - Companies listing with search and filtering
 - `/companies/:companyId` - Individual company details with products and recent activity
 - `/companies/:companyId/products/:productId` - Product details with capabilities
-- `/signals` - Industry signals and news
+- `/signals` - Advanced signals filtering and analysis
 - `/releases` - Product releases tracking
 
 ### Overview Dashboard
@@ -218,6 +218,46 @@ The companies section provides comprehensive company management and analysis:
 - **Loading States**: Skeleton loading animations for hero and capabilities sections
 - **Error Handling**: Product not found, company mismatch, and data loading errors
 - **Navigation**: Breadcrumb-style navigation back to company page
+
+### Signals Page (`/signals`)
+
+The signals page provides advanced filtering and analysis capabilities for industry signals and news:
+
+#### **Advanced Filtering System**
+- **Signal Type Filter**: Multi-select checkboxes for news, job postings, research papers, funding announcements, releases, and social media
+- **Company Filter**: Multi-select dropdown with all companies in the dataset
+- **Product Filter**: Multi-select dropdown with "Only with results" toggle to show only products that have associated signals
+- **Impact Filter**: Multiple selection buttons for all 5 impact levels (Very Low, Low, Neutral, Medium, High) with "All" reset option
+- **Date Filter**: Preset buttons (7d, 30d, YTD, All) with visual feedback showing selected date range
+
+#### **Responsive Table Layout**
+- **Optimized Column Widths**: Headline column is prominently sized (320px) while other columns are compact
+- **Column Order**: Date, Headline, Impact, Type, Companies, Products
+- **Product Names**: Displays actual product names (TIAGo, ARI, StockBot) instead of IDs
+- **Interactive Elements**: 
+  - Clickable headlines open source drawer or direct URLs
+  - Company/product tags are clickable filters
+  - Impact badges with color coding
+- **Pagination**: 25 signals per page with navigation controls
+
+#### **Filter Management**
+- **URL Persistence**: All filter selections are saved in URL parameters for bookmarking and sharing
+- **Real-time Updates**: Results update immediately as filters are applied
+- **Clear All Filters**: One-click reset to default state
+- **Debounced Updates**: Smooth performance with 250ms debounce on filter changes
+
+#### **Data Integration**
+- **20 Diverse Signals**: Comprehensive seed data covering all signal types and impact levels
+- **Source Integration**: Source drawer for detailed source information and credibility
+- **Date Range**: Signals span 4+ months (May 2025 - September 2025) for testing date filtering
+- **Entity Relationships**: Full integration with companies, products, and capabilities
+
+#### **User Experience**
+- **Compact Sidebar**: 256px width with optimized spacing for efficient filtering
+- **Responsive Design**: Filters stack vertically on mobile, horizontal layout on desktop
+- **Loading States**: Skeleton loading animations during data fetching
+- **Empty States**: Helpful messages when no signals match filters
+- **Error Handling**: Graceful error states with retry options
 
 ### Development
 
@@ -494,6 +534,7 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Companies index page with search and filtering
 - [x] Company detail pages with products and recent activity
 - [x] Product detail pages with capabilities and maturity tracking
+- [x] Advanced signals page with comprehensive filtering and analysis
 - [ ] Change visualization
 
 ### Phase 6: AI Integration

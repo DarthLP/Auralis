@@ -3,11 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { 
   signals, 
   companies as fetchCompanies, 
-  capabilities as fetchCapabilities, 
   productsByCompany,
   source 
 } from '../lib/mockData';
-import { Signal, Company, Capability, Product, Source as SourceType } from '@schema/types';
+import { Signal, Company, Product, Source as SourceType } from '@schema/types';
 import { SignalType } from '@schema/enums';
 import SourceDrawer from '../components/SourceDrawer';
 
@@ -17,6 +16,7 @@ interface Facets {
   products: string[];
   capabilities: string[];
   impactRange: [number, number];
+  impactLevels: number[];
   since: string;
   page: number;
 }
@@ -27,6 +27,7 @@ const DEFAULT_FACETS: Facets = {
   products: [],
   capabilities: [],
   impactRange: [-2, 2],
+  impactLevels: [],
   since: '',
   page: 1
 };
@@ -91,6 +92,10 @@ function buildQueryFromFacets(facets: Facets): string {
     params.set('impact_max', facets.impactRange[1].toString());
   }
   
+  if (facets.impactLevels.length > 0) {
+    params.set('impact_levels', facets.impactLevels.join(','));
+  }
+  
   if (facets.since) {
     params.set('since', facets.since);
   }
@@ -113,6 +118,7 @@ function parseFacetsFromURL(searchParams: URLSearchParams): Facets {
       parseInt(searchParams.get('impact_min') || '-2'),
       parseInt(searchParams.get('impact_max') || '2')
     ] as [number, number],
+    impactLevels: searchParams.get('impact_levels')?.split(',').map(Number) || [],
     since: searchParams.get('since') || '',
     page: parseInt(searchParams.get('page') || '1')
   };
@@ -144,8 +150,8 @@ export default function SignalsPage() {
   const [facets, setFacets] = useState<Facets>(() => parseFacetsFromURL(searchParams));
   const [signalsData, setSignalsData] = useState<Signal[]>([]);
   const [companiesData, setCompaniesData] = useState<Company[]>([]);
-  const [capabilitiesData, setCapabilitiesData] = useState<Capability[]>([]);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [sourceDrawer, setSourceDrawer] = useState<{ isOpen: boolean; source?: SourceType; signalUrl?: string }>({
@@ -167,12 +173,14 @@ export default function SignalsPage() {
     const loadInitialData = async () => {
       try {
         setLoading(true);
-        const [companies, capabilities] = await Promise.all([
-          fetchCompanies(),
-          fetchCapabilities()
-        ]);
+        const companies = await fetchCompanies();
         setCompaniesData(companies);
-        setCapabilitiesData(capabilities);
+        
+        // Load all products for display names
+        const allProductsData = await Promise.all(
+          companies.map(c => productsByCompany(c.id))
+        ).then(arrays => arrays.flat());
+        setAllProducts(allProductsData);
       } catch (err) {
         console.error('Failed to load initial data:', err);
         setError('Failed to load data');
@@ -207,13 +215,68 @@ export default function SignalsPage() {
     loadProducts();
   }, [facets.companies]);
 
-  // Load signals when facets change
+  // Load and filter signals when facets change
   useEffect(() => {
-    const loadSignals = async () => {
+    const loadAndFilterSignals = async () => {
       try {
         setLoading(true);
-        const signalsResult = await signals();
-        setSignalsData(signalsResult);
+        const allSignals = await signals();
+        
+        // Apply filters
+        let filteredSignals = allSignals;
+        
+        // Filter by type
+        if (facets.types.length > 0) {
+          filteredSignals = filteredSignals.filter(signal => 
+            facets.types.includes(signal.type)
+          );
+        }
+        
+        // Filter by companies
+        if (facets.companies.length > 0) {
+          filteredSignals = filteredSignals.filter(signal => 
+            signal.company_ids.some(companyId => facets.companies.includes(companyId))
+          );
+        }
+        
+        // Filter by products
+        if (facets.products.length > 0) {
+          filteredSignals = filteredSignals.filter(signal => 
+            signal.product_ids.some(productId => facets.products.includes(productId))
+          );
+        }
+        
+        // Filter by capabilities
+        if (facets.capabilities.length > 0) {
+          filteredSignals = filteredSignals.filter(signal => 
+            signal.capability_ids.some(capabilityId => facets.capabilities.includes(capabilityId))
+          );
+        }
+        
+        // Filter by impact levels
+        if (facets.impactLevels.length > 0) {
+          filteredSignals = filteredSignals.filter(signal => {
+            const impact = parseInt(signal.impact);
+            return facets.impactLevels.includes(impact);
+          });
+        } else {
+          // Fallback to impact range if no specific levels selected
+          filteredSignals = filteredSignals.filter(signal => {
+            const impact = parseInt(signal.impact);
+            return impact >= facets.impactRange[0] && impact <= facets.impactRange[1];
+          });
+        }
+        
+        // Filter by date
+        if (facets.since) {
+          const sinceDate = new Date(facets.since);
+          filteredSignals = filteredSignals.filter(signal => {
+            const signalDate = new Date(signal.published_at);
+            return signalDate >= sinceDate;
+          });
+        }
+        
+        setSignalsData(filteredSignals);
       } catch (err) {
         console.error('Failed to load signals:', err);
         setError('Failed to load signals');
@@ -222,7 +285,7 @@ export default function SignalsPage() {
       }
     };
 
-    loadSignals();
+    loadAndFilterSignals();
   }, [facets]);
 
   // Update facet
@@ -289,17 +352,17 @@ export default function SignalsPage() {
   }, [availableProducts, signalsData, onlyProductsWithResults]);
 
   return (
-    <div className="container">
-      <div className="flex gap-6">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Facet Panel */}
-        <div className="w-80 flex-shrink-0">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Filters</h2>
+        <div className="w-full lg:w-64 flex-shrink-0">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Type Multiselect */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Type
                 </label>
                 <div className="space-y-2">
@@ -325,7 +388,7 @@ export default function SignalsPage() {
 
               {/* Company Multiselect */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Company
                 </label>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -352,7 +415,7 @@ export default function SignalsPage() {
               {/* Product Multiselect */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Product
                   </label>
                   <label className="flex items-center text-xs text-gray-500">
@@ -386,91 +449,154 @@ export default function SignalsPage() {
                 </div>
               </div>
 
-              {/* Capability Multiselect */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Capability
-                </label>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {capabilitiesData.map(capability => (
-                    <label key={capability.id} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={facets.capabilities.includes(capability.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            updateFacet('capabilities', [...facets.capabilities, capability.id]);
-                          } else {
-                            updateFacet('capabilities', facets.capabilities.filter(c => c !== capability.id));
-                          }
-                        }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{capability.name}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
 
-              {/* Impact Range Slider */}
+              {/* Impact Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Impact: {facets.impactRange[0]} to {facets.impactRange[1]}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Impact
                 </label>
-                <div className="px-2">
-                  <input
-                    type="range"
-                    min="-2"
-                    max="2"
-                    step="1"
-                    value={facets.impactRange[0]}
-                    onChange={(e) => updateFacet('impactRange', [parseInt(e.target.value), facets.impactRange[1]])}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <input
-                    type="range"
-                    min="-2"
-                    max="2"
-                    step="1"
-                    value={facets.impactRange[1]}
-                    onChange={(e) => updateFacet('impactRange', [facets.impactRange[0], parseInt(e.target.value)])}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2"
-                  />
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => updateFacet('impactLevels', [])}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.length === 0
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (facets.impactLevels.includes(2)) {
+                        updateFacet('impactLevels', facets.impactLevels.filter(level => level !== 2));
+                      } else {
+                        updateFacet('impactLevels', [...facets.impactLevels, 2]);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.includes(2)
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    High
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (facets.impactLevels.includes(1)) {
+                        updateFacet('impactLevels', facets.impactLevels.filter(level => level !== 1));
+                      } else {
+                        updateFacet('impactLevels', [...facets.impactLevels, 1]);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.includes(1)
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    Medium
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (facets.impactLevels.includes(0)) {
+                        updateFacet('impactLevels', facets.impactLevels.filter(level => level !== 0));
+                      } else {
+                        updateFacet('impactLevels', [...facets.impactLevels, 0]);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.includes(0)
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    Neutral
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (facets.impactLevels.includes(-1)) {
+                        updateFacet('impactLevels', facets.impactLevels.filter(level => level !== -1));
+                      } else {
+                        updateFacet('impactLevels', [...facets.impactLevels, -1]);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.includes(-1)
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    Low
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (facets.impactLevels.includes(-2)) {
+                        updateFacet('impactLevels', facets.impactLevels.filter(level => level !== -2));
+                      } else {
+                        updateFacet('impactLevels', [...facets.impactLevels, -2]);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${
+                      facets.impactLevels.includes(-2)
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    Very Low
+                  </button>
                 </div>
               </div>
 
               {/* Date Range */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Since
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Since: {facets.since ? new Date(facets.since).toLocaleDateString() : 'All time'}
                 </label>
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleDatePreset('7d')}
-                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                      className={`px-3 py-1 text-xs rounded ${
+                        facets.since === getDatePreset('7d') 
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
                     >
                       7d
                     </button>
                     <button
                       onClick={() => handleDatePreset('30d')}
-                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                      className={`px-3 py-1 text-xs rounded ${
+                        facets.since === getDatePreset('30d') 
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
                     >
                       30d
                     </button>
                     <button
                       onClick={() => handleDatePreset('ytd')}
-                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                      className={`px-3 py-1 text-xs rounded ${
+                        facets.since === getDatePreset('ytd') 
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
                     >
                       YTD
                     </button>
+                    <button
+                      onClick={() => updateFacet('since', '')}
+                      className={`px-3 py-1 text-xs rounded ${
+                        !facets.since 
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
+                    >
+                      All
+                    </button>
                   </div>
-                  <input
-                    type="date"
-                    value={facets.since}
-                    onChange={(e) => updateFacet('since', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                  />
                 </div>
               </div>
 
@@ -486,8 +612,8 @@ export default function SignalsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
             <h1 className="text-3xl font-bold text-gray-900">Signals</h1>
             <div className="text-sm text-gray-500">
               {signalsData.length} signals found
@@ -521,36 +647,33 @@ export default function SignalsPage() {
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full min-w-[900px]">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-80">
                           Headline
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Impact
+                        </th>
+                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Type
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                           Companies
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                           Products
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Capabilities
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Impact
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {currentPageData.map((signal) => (
                         <tr key={signal.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                             {new Date(signal.published_at).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-sm">
@@ -561,14 +684,19 @@ export default function SignalsPage() {
                               {signal.headline}
                             </button>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${IMPACT_COLORS[signal.impact]}`}>
+                              {IMPACT_LABELS[signal.impact]}
+                            </span>
+                          </td>
+                          <td className="px-3 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
                               {signal.type}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-3 py-4 text-sm">
                             <div className="flex flex-wrap gap-1">
-                              {signal.company_ids.slice(0, 3).map(companyId => {
+                              {signal.company_ids.slice(0, 2).map(companyId => {
                                 const company = companiesData.find(c => c.id === companyId);
                                 return (
                                   <button
@@ -580,17 +708,17 @@ export default function SignalsPage() {
                                   </button>
                                 );
                               })}
-                              {signal.company_ids.length > 3 && (
+                              {signal.company_ids.length > 2 && (
                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                  +{signal.company_ids.length - 3}
+                                  +{signal.company_ids.length - 2}
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-3 py-4 text-sm">
                             <div className="flex flex-wrap gap-1">
-                              {signal.product_ids.slice(0, 3).map(productId => {
-                                const product = availableProducts.find(p => p.id === productId);
+                              {signal.product_ids.slice(0, 2).map(productId => {
+                                const product = allProducts.find(p => p.id === productId);
                                 return (
                                   <button
                                     key={productId}
@@ -601,38 +729,12 @@ export default function SignalsPage() {
                                   </button>
                                 );
                               })}
-                              {signal.product_ids.length > 3 && (
+                              {signal.product_ids.length > 2 && (
                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                  +{signal.product_ids.length - 3}
+                                  +{signal.product_ids.length - 2}
                                 </span>
                               )}
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div className="flex flex-wrap gap-1">
-                              {signal.capability_ids.slice(0, 3).map(capabilityId => {
-                                const capability = capabilitiesData.find(c => c.id === capabilityId);
-                                return (
-                                  <button
-                                    key={capabilityId}
-                                    onClick={() => updateFacet('capabilities', [capabilityId])}
-                                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200"
-                                  >
-                                    {capability?.name || capabilityId}
-                                  </button>
-                                );
-                              })}
-                              {signal.capability_ids.length > 3 && (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                  +{signal.capability_ids.length - 3}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${IMPACT_COLORS[signal.impact]}`}>
-                              {IMPACT_LABELS[signal.impact]}
-                            </span>
                           </td>
                         </tr>
                       ))}
