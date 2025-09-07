@@ -116,6 +116,29 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 
 **Note:** Discovery returns candidate pages only; no database writes occur. This is the first stage before normalization and storage.
 
+#### Download Threshold Configuration
+
+The discovery API identifies pages worth downloading for detailed analysis based on their relevance scores:
+
+**Default Download Threshold: ≥ 0.5**
+- **Rationale**: Captures all high-value content while filtering out noise
+- **Typical Coverage**: ~70% of discovered pages (all products, docs, pricing)
+- **Filtered Out**: Low-value pages (about, contact, legal, careers)
+
+**Configuration:**
+```env
+SCRAPER_DOWNLOAD_THRESHOLD=0.5    # Minimum score for download consideration
+SCRAPER_DOWNLOAD_MAX_PAGES=100    # Maximum pages to download per session
+```
+
+**Score Ranges:**
+- **1.0**: Primary products/homepage
+- **0.9**: Direct product pages, solutions
+- **0.8**: Secondary products (depth 1)
+- **0.7**: Tertiary products (depth 2)
+- **0.6**: Deep products (depth 3)
+- **< 0.5**: Filtered out (about, contact, legal pages)
+
 #### Anti-Scraping Protection
 
 The crawler includes several measures to avoid bot detection and respect website policies:

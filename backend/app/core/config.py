@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     SCRAPER_LOG_LEVEL: str = "INFO"
     SCRAPER_LOG_FILE: str = "logs/scraper.log"
     
+    # Download Configuration
+    SCRAPER_DOWNLOAD_THRESHOLD: float = 0.5
+    SCRAPER_DOWNLOAD_MAX_PAGES: int = 100
+    
     class Config:
         env_file = ".env"
         case_sensitive = False

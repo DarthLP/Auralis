@@ -198,6 +198,7 @@ The backend provides a RESTful API built with FastAPI for competitor analysis:
 - **Hybrid Performance Mode**: Smart JavaScript usage for important pages, fast requests for simple pages
 - **Anti-Bot Protection**: Realistic browser headers, user agent rotation, smart delays
 - **Intelligent Classification**: Automatic categorization (product, docs, pricing, news, etc.)
+- **Smart Download Filtering**: Pages with score ≥ 0.5 identified for detailed analysis (filters out noise)
 - **Duplicate Detection**: URL canonicalization and content hash deduplication
 - **Comprehensive Logging**: Detailed session logs and complete JSON data persistence
 
