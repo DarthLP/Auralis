@@ -12,17 +12,17 @@ help:
 # Start all services
 up:
 	@echo "Starting services..."
-	# TODO: Add service startup commands
+	docker compose -f infra/docker-compose.yml up --build -d
 
 # Stop all services
 down:
 	@echo "Stopping services..."
-	# TODO: Add service shutdown commands
+	docker compose -f infra/docker-compose.yml down
 
 # Show service logs
 logs:
 	@echo "Showing service logs..."
-	# TODO: Add log viewing commands
+	docker compose -f infra/docker-compose.yml logs -f
 
 # Format code
 fmt:
