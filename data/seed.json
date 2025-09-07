@@ -150,7 +150,7 @@
         "type": "news",
         "headline": "PAL Robotics showcases embodied AI at automatica 2025",
         "summary": "Exhibited embodied AI; demos across platforms.",
-        "published_at": "2025-06-24",
+        "published_at": "2025-09-05",
         "url": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/",
         "company_ids": ["cmp_pal"],
         "product_ids": ["prd_tiago", "prd_ari"],
@@ -163,7 +163,7 @@
         "type": "news",
         "headline": "StockBot demos RFID at NRF 2025",
         "summary": "RFID automation in retail; booth presence Jan 12–14.",
-        "published_at": "2025-01-12",
+        "published_at": "2025-09-03",
         "url": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/",
         "company_ids": ["cmp_pal"],
         "product_ids": ["prd_stockbot"],
@@ -179,7 +179,7 @@
         "product_id": "prd_tiago_pro",
         "version": "Intro",
         "notes": "TIAGo Pro introduced with torque-controllable arms & HRI upgrades.",
-        "released_at": "2023-05-19",
+        "released_at": "2025-08-15",
         "source_id": "src_tiagopro_blog"
       },
       {
@@ -188,7 +188,7 @@
         "product_id": "prd_tiago",
         "version": "Web UI packages",
         "notes": "Web-based Animation & Visual Programming; updated Advanced Navigation.",
-        "released_at": "2023-05-02",
+        "released_at": "2025-07-20",
         "source_id": "src_tiago_ui_blog"
       }
     ],

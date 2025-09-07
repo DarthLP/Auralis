@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getThisWeekSignals, getRecentReleases } from '@/lib/mockData';
+import { getThisWeekSignals, getRecentReleases } from '../lib/mockData';
 import type { Signal, Release } from '@schema/types';
 
 // Format date to "MMM d, yyyy" format
@@ -34,6 +34,7 @@ function getImpactLabel(impact: string): string {
 }
 
 export default function Overview() {
+  console.log('Overview: Component rendering...');
   const [signals, setSignals] = useState<Signal[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,14 +43,17 @@ export default function Overview() {
   useEffect(() => {
     async function loadData() {
       try {
+        console.log('Overview: Starting data load...');
         setLoading(true);
         const [signalsData, releasesData] = await Promise.all([
           getThisWeekSignals(),
           getRecentReleases()
         ]);
+        console.log('Overview: Data loaded successfully', { signals: signalsData.length, releases: releasesData.length });
         setSignals(signalsData);
         setReleases(releasesData);
       } catch (err) {
+        console.error('Overview: Error loading data', err);
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
         setLoading(false);

@@ -168,8 +168,8 @@ The `frontend/` directory contains a modern React application built with Vite, f
 ### Routes
 
 - `/` - Overview dashboard with signals and releases
-- `/companies` - Companies listing
-- `/companies/:companyId` - Individual company details
+- `/companies` - Companies listing with search and filtering
+- `/companies/:companyId` - Individual company details with products and recent activity
 - `/companies/:companyId/products/:productId` - Product details
 - `/signals` - Industry signals and news
 - `/releases` - Product releases tracking
@@ -184,6 +184,27 @@ The main dashboard (`/`) provides a comprehensive overview of the latest industr
 - **Interactive Navigation**: Click-through links to detailed views for signals and product releases
 - **Loading States**: Skeleton loading animations for better user experience
 - **Error Handling**: Graceful error states with user-friendly messages
+
+### Companies Pages
+
+The companies section provides comprehensive company management and analysis:
+
+#### Companies Index (`/companies`)
+- **Company Cards**: Display company name, website domain, HQ location, and tags
+- **Search & Filter**: Real-time client-side filtering by company name and aliases
+- **Responsive Grid**: Adaptive layout (1-3 columns based on screen size)
+- **Navigation**: Click any company card to view detailed information
+
+#### Company Detail (`/companies/:companyId`)
+- **Company Header**: Name, one-liner description, meta information (founded year, HQ, employees), and website button
+- **Products Grid**: All company products with name, description, category, markets, and tags
+- **Recent Activity**: Mixed chronological list of signals (last 60 days) and releases (all), limited to 10 items
+- **Interactive Elements**: 
+  - Product cards navigate to product detail pages
+  - Recent activity items navigate to signals or product pages based on type
+  - Website button opens company website in new tab
+- **Loading States**: Comprehensive skeleton loading for all sections
+- **Error Handling**: Company not found, empty states, and data loading errors
 
 ### Development
 
@@ -217,6 +238,7 @@ The mock data system provides:
 - **Realistic Delays**: Simulated network latency for authentic user experience
 - **Data Validation**: Zod schema validation for type safety
 - **Filtered Queries**: Specialized functions for dashboard views (recent signals, releases)
+- **Company-Specific Data**: Functions to fetch company products, summaries, and recent activity
 - **Error Simulation**: Proper error handling and edge cases
 - **Type Safety**: Full TypeScript integration with schema types
 
@@ -224,11 +246,23 @@ The mock data system provides:
 
 ```typescript
 // Import mock API functions
-import { getThisWeekSignals, getRecentReleases, companies } from '@/lib/mockData';
+import { 
+  getThisWeekSignals, 
+  getRecentReleases, 
+  companies, 
+  company, 
+  companySummaries, 
+  productsByCompany, 
+  getCompanyRecentActivity 
+} from '@/lib/mockData';
 
 // Use in components
 const signals = await getThisWeekSignals(); // Top 5 signals from past week
 const releases = await getRecentReleases(); // Top 8 releases from past 90 days
+const companiesList = await companies(); // All companies
+const companyData = await company('cmp_pal'); // Specific company
+const products = await productsByCompany('cmp_pal'); // Company products
+const activity = await getCompanyRecentActivity('cmp_pal'); // Recent activity
 ```
 
 ## 🔧 Backend API
@@ -436,7 +470,8 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Responsive design and mobile support
 - [x] Overview dashboard with signals and releases
 - [x] Mock data system with seed data
-- [ ] Competitor detail pages
+- [x] Companies index page with search and filtering
+- [x] Company detail pages with products and recent activity
 - [ ] Product detail pages
 - [ ] Change visualization
 
