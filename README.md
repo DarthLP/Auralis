@@ -80,10 +80,16 @@ Auralis/
 │   ├── Dockerfile.backend  # Backend container config
 │   ├── requirements.txt    # Python dependencies
 │   └── .env          # Environment variables
-├── frontend/          # Next.js frontend application
+├── frontend/          # React + Vite frontend application
 │   ├── src/          # Source code
-│   ├── pages/        # Dashboard and detail pages
-│   └── components/   # Reusable UI components
+│   │   ├── layouts/  # Layout components (AppLayout)
+│   │   ├── pages/    # Page components with routing
+│   │   ├── components/ # Reusable UI components
+│   │   ├── lib/      # API client and utilities
+│   │   └── hooks/    # Custom React hooks
+│   ├── package.json  # Dependencies and scripts
+│   ├── tailwind.config.js # Tailwind CSS configuration
+│   └── vite.config.ts # Vite build configuration
 ├── schema/           # Shared data models and validation
 │   ├── enums.ts      # Core enumeration types
 │   ├── specs.ts      # Flexible specification value types
@@ -133,6 +139,46 @@ const company = zCompany.parse(rawData);
 ```
 
 For detailed schema documentation, see [`schema/README.md`](schema/README.md).
+
+## 🎨 Frontend Application
+
+The `frontend/` directory contains a modern React application built with Vite, featuring a professional design system and comprehensive routing.
+
+### Key Features
+
+- **React + Vite**: Fast development server with hot reload
+- **Tailwind CSS**: Utility-first CSS framework for rapid styling
+- **React Router**: Client-side routing with nested layouts
+- **TanStack Query**: Powerful data fetching and caching
+- **TypeScript**: Full type safety throughout the application
+- **Responsive Design**: Mobile-first approach with responsive navigation
+
+### Architecture
+
+- **AppLayout**: Main layout component with header and navigation
+- **Nested Routing**: Clean URL structure with parameter support
+- **Lazy Loading**: Code splitting for optimal performance
+- **Suspense Boundaries**: Graceful loading states
+- **API Integration**: Type-safe API client with schema validation
+
+### Routes
+
+- `/` - Overview dashboard
+- `/companies` - Companies listing
+- `/companies/:companyId` - Individual company details
+- `/companies/:companyId/products/:productId` - Product details
+- `/signals` - Industry signals and news
+- `/releases` - Product releases tracking
+
+### Development
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Access the application at http://localhost:3000
 
 ## 🔧 Backend API
 
@@ -329,8 +375,14 @@ Re-crawl → Detect Changes → Show What's New
 - [ ] Crawling trigger endpoints
 - [ ] Change detection endpoints
 
-### Phase 5: Frontend Dashboard
-- [ ] Next.js application setup
+### Phase 5: Frontend Dashboard ✅
+- [x] React + Vite application setup
+- [x] Tailwind CSS styling system
+- [x] React Router with nested routes
+- [x] AppLayout with navigation and header
+- [x] TanStack Query for data fetching
+- [x] Lazy loading and Suspense boundaries
+- [x] Responsive design and mobile support
 - [ ] Competitor overview dashboard
 - [ ] Competitor detail pages
 - [ ] Product detail pages
