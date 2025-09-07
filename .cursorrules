@@ -146,3 +146,25 @@ When in doubt about any of these rules:
 4. Document decisions and trade-offs made
 
 Remember: These rules are designed to maintain code quality, ensure proper documentation, and create a maintainable codebase for the Auralis project.
+
+---
+
+# Auralis – Cursor Rules (General + Ownership)
+
+- Always update README.md when adding functionality, commands, or env vars.
+- Keep diffs small and focused. Only modify the files required for the request.
+- Preserve existing interfaces; do not rename/restructure without explicit instruction.
+- Update /backend/.env.example or /frontend/.env.example when adding env vars; never hardcode secrets.
+- Document new endpoints/commands in README.
+- Add brief comments explaining assumptions/extension points.
+- Handle errors gracefully; return safe empty arrays/objects where suitable.
+- Prefer clarity over cleverness.
+
+# Ownership (ask before touching)
+- Treat /backend/** as owned by @DarthLP (Backend Owner).
+- Treat /frontend/** as owned by @MelvinTwoZero (Frontend Owner).
+- Treat /infra/**, README.md, and .cursorrules as co-owned by both.
+
+Behavior:
+- If a change request touches files in another owner's area, first propose the diff (file list + summary) and ASK FOR CONFIRMATION before applying.
+- Do not make cross-area refactors unless explicitly requested.

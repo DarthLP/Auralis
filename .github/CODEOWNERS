@@ -1,0 +1,11 @@
+# Backend code requires review from Backend Owner
+/backend/**        @DarthLP
+
+# Frontend code requires review from Frontend Owner
+/frontend/**       @MelvinTwoZero
+
+# Infra, README, and repo-wide files require review from both
+/infra/**          @DarthLP @MelvinTwoZero
+/README.md         @DarthLP @MelvinTwoZero
+/.cursorrules      @DarthLP @MelvinTwoZero
+/.github/**        @DarthLP @MelvinTwoZero
