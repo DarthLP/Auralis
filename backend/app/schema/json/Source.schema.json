@@ -1,0 +1,42 @@
+{
+  "$ref": "#/definitions/Source",
+  "definitions": {
+    "Source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credibility": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "origin"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auralis.com/schemas/Source.schema.json",
+  "title": "Source Schema",
+  "description": "JSON Schema for Source validation in Auralis backend",
+  "generated": "2025-09-07T14:50:54.731Z",
+  "version": "1.0.0"
+}

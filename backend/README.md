@@ -18,6 +18,13 @@ The Auralis backend is a FastAPI-based REST API service that provides the core f
 ```
 backend/
 ├── app/                    # Application source code
+│   ├── core/              # Core configuration and database
+│   │   ├── config.py      # Application settings
+│   │   └── db.py          # Database configuration
+│   ├── services/          # Business logic services
+│   │   └── validate.py    # Schema validation service
+│   ├── schema/            # Generated JSON schemas
+│   │   └── json/          # JSON Schema files (auto-generated)
 │   └── main.py            # FastAPI application entry point
 ├── Dockerfile.backend     # Docker container configuration
 ├── requirements.txt       # Python dependencies
@@ -41,6 +48,62 @@ FastAPI automatically generates interactive API documentation:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 - **OpenAPI Schema**: http://localhost:8000/openapi.json
+
+## 🔍 Schema Validation Service
+
+The backend includes a comprehensive schema validation service that ensures data consistency using JSON Schema files generated from the TypeScript/Zod schemas.
+
+### Features
+
+- **JSON Schema Validation**: Uses `jsonschema` library for robust validation
+- **Error Handling**: Detailed validation error messages with field-level information
+- **Schema Caching**: LRU cache for improved performance
+- **Health Checks**: Monitor schema system status
+- **Convenience Functions**: Pre-configured validators for common entities
+
+### Usage
+
+```python
+from app.services.validate import (
+    validate_company,
+    validate_product,
+    validate_payload,
+    schema_system_health
+)
+
+# Validate specific entities
+validate_company(company_data)
+validate_product(product_data)
+
+# Generic validation
+validate_payload("Signal", signal_data)
+
+# Check system health
+health = schema_system_health()
+print(f"Status: {health['status']}")
+print(f"Available schemas: {health['available_schemas']}")
+```
+
+### Schema Generation
+
+Schemas are generated from the TypeScript/Zod definitions in `/schema`:
+
+```bash
+# From the schema directory
+cd ../schema
+npm install
+npm run build  # Generates JSON schemas in backend/app/schema/json/
+```
+
+### Available Schemas
+
+- `Company` - Company information and metadata
+- `Product` - Product details and specifications
+- `Capability` - Technical capabilities
+- `Signal` - Market signals and events
+- `Source` - Data source tracking
+- `Release` - Product releases
+- And more...
 
 ## 🛠️ Development Setup
 
@@ -103,6 +166,11 @@ FastAPI automatically generates interactive API documentation:
 
 - **requests**: HTTP client library for external API calls
 - **beautifulsoup4**: HTML parsing library for web scraping
+- **sqlalchemy**: SQL toolkit and ORM
+- **psycopg[binary]**: PostgreSQL database adapter
+- **alembic**: Database migration tool
+- **pydantic-settings**: Settings management using Pydantic
+- **jsonschema>=4.17.0**: JSON Schema validation library
 
 ### Development Dependencies
 

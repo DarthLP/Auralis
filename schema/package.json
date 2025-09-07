@@ -1,0 +1,24 @@
+{
+  "name": "@auralis/schema",
+  "version": "1.0.0",
+  "description": "Shared schema definitions for Auralis frontend and backend",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsx build-json-schema.ts",
+    "build:watch": "tsx watch build-json-schema.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "zod-to-json-schema": "^3.22.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

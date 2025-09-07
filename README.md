@@ -67,6 +67,14 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 | `make logs` | View service logs in real-time |
 | `make help` | Show all available commands |
 
+#### Schema Development
+
+| Command | Description |
+|---------|-------------|
+| `cd schema && npm install` | Install schema build dependencies |
+| `cd schema && npm run build` | Build JSON schemas for backend validation |
+| `cd schema && npm run build:watch` | Watch for schema changes and rebuild automatically |
+
 ## 📁 Project Structure
 
 ```
@@ -74,7 +82,9 @@ Auralis/
 ├── backend/           # FastAPI backend service
 │   ├── app/          # Application code
 │   │   ├── models/   # Database models (Competitor, Product, etc.)
-│   │   ├── services/ # Business logic (scraping, AI, etc.)
+│   │   ├── services/ # Business logic (scraping, AI, validation)
+│   │   ├── schema/   # Generated JSON schemas for validation
+│   │   │   └── json/ # JSON Schema files (auto-generated)
 │   │   ├── api/      # API endpoints
 │   │   └── main.py   # FastAPI application
 │   ├── Dockerfile.backend  # Backend container config
@@ -90,6 +100,9 @@ Auralis/
 │   ├── types.ts      # TypeScript interface definitions
 │   ├── zod.ts        # Runtime validation schemas
 │   ├── index.ts      # Re-exports all types and schemas
+│   ├── build-json-schema.ts  # JSON Schema build script
+│   ├── package.json  # NPM package configuration
+│   ├── tsconfig.json # TypeScript configuration
 │   └── README.md     # Schema documentation
 ├── infra/            # Infrastructure configuration
 │   └── docker-compose.yml  # Service orchestration
@@ -121,8 +134,18 @@ The `schema/` directory contains shared TypeScript data models and validation sc
 - **Signal**: News/events with impact scoring and entity associations
 - **Source**: Data provenance and credibility tracking
 
-### Usage
+### Schema Validation System
 
+The project includes a comprehensive schema validation system that ensures type safety between frontend and backend:
+
+- **TypeScript/Zod Schemas**: Single source of truth in `/schema/zod.ts`
+- **JSON Schema Generation**: Automatic conversion to JSON Schema for backend validation
+- **Python Validation Service**: Backend validation using `jsonschema` library
+- **Build Pipeline**: `npm run build` generates JSON schemas for backend
+
+#### Usage
+
+**Frontend (TypeScript):**
 ```typescript
 // Import types
 import { Company, Product, Signal } from './schema';
@@ -130,6 +153,23 @@ import { Company, Product, Signal } from './schema';
 // Runtime validation
 import { zCompany, zProduct, zSignal } from './schema';
 const company = zCompany.parse(rawData);
+```
+
+**Backend (Python):**
+```python
+from app.services.validate import validate_company, validate_product
+
+# Validate data against schema
+validate_company(company_data)
+validate_product(product_data)
+```
+
+#### Building Schemas
+
+```bash
+cd schema
+npm install
+npm run build  # Generates JSON schemas in /backend/app/schema/json/
 ```
 
 For detailed schema documentation, see [`schema/README.md`](schema/README.md).

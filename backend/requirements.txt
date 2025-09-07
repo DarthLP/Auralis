@@ -8,3 +8,4 @@ sqlalchemy
 psycopg[binary]
 alembic
 pydantic-settings
+jsonschema>=4.17.0
