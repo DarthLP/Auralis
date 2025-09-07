@@ -34,9 +34,18 @@ class Settings(BaseSettings):
     THETA_EDGECLOUD_URL: str = ""
     API_KEY_SCHEMA: str = ""  # Deep Seek API for Analysis
     
-    # Scraping Configuration (Future)
-    SCRAPING_DELAY: float = 1.0  # Delay between requests in seconds
-    MAX_RETRIES: int = 3
+    # Scraper Configuration
+    SCRAPER_MAX_PAGES: int = 100
+    SCRAPER_MAX_DEPTH: int = 4
+    SCRAPER_TIMEOUT: int = 10
+    SCRAPER_RATE_SLEEP: float = 0.3
+    SCRAPER_USER_AGENT: str = "AuralisBot/0.1 (+contact)"
+    SCRAPER_MAX_RETRIES: int = 3
+    SCRAPER_USE_REALISTIC_HEADERS: bool = True
+    SCRAPER_ENABLE_JAVASCRIPT: bool = True
+    SCRAPER_JS_WAIT_TIME: int = 1
+    SCRAPER_LOG_LEVEL: str = "INFO"
+    SCRAPER_LOG_FILE: str = "logs/scraper.log"
     
     class Config:
         env_file = ".env"

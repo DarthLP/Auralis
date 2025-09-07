@@ -42,6 +42,105 @@ backend/
 | `GET` | `/health` | Health check endpoint | `{"status": "ok"}` |
 | `GET` | `/docs` | Interactive API documentation | Swagger UI HTML |
 
+### Discovery API
+
+The Discovery API enables crawling and analysis of competitor websites to identify interesting pages for competitive analysis.
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `POST` | `/api/crawl/discover` | Discover and classify pages from a website | JSON with categorized pages |
+
+#### POST /api/crawl/discover
+
+Crawls a competitor website starting from the provided URL and discovers pages that might be interesting for competitive analysis. Pages are classified into categories and scored by relevance.
+
+**Request Body:**
+```json
+{
+  "url": "https://competitor.example.com"
+}
+```
+
+**Response (truncated example):**
+```json
+{
+  "input_url": "https://competitor.example.com",
+  "base_domain": "https://competitor.example.com",
+  "limits": {
+    "max_pages": 30,
+    "max_depth": 3,
+    "timeout": 10,
+    "rate_sleep": 0.5,
+    "user_agent": "AuralisBot/0.1 (+contact)"
+  },
+  "pages": [
+    {
+      "url": "https://competitor.example.com/products/widget-x",
+      "status": 200,
+      "primary_category": "product",
+      "secondary_categories": [],
+      "score": 0.95,
+      "signals": ["product_url", "product_title"],
+      "content_hash": "abc123...",
+      "size_bytes": 15420,
+      "depth": 1
+    }
+  ],
+  "top_by_category": {
+    "product": ["https://competitor.example.com/products/widget-x"],
+    "docs": ["https://competitor.example.com/docs/api"],
+    "pricing": ["https://competitor.example.com/pricing"],
+    "releases": [],
+    "datasheet": [],
+    "news": []
+  },
+  "warnings": []
+}
+```
+
+**Categories:**
+- `product`: Product pages, solutions, hardware specifications
+- `datasheet`: Documentation, datasheets, PDFs, technical guides  
+- `docs`: General documentation and developer resources
+- `releases`: Release notes, updates, changelogs, firmware
+- `pricing`: Pricing pages and subscription plans
+- `news`: News, blog posts, press releases
+- `other`: Other interesting pages
+
+**Note:** Discovery returns candidate pages only; no database writes occur. This is the first stage before normalization and storage.
+
+#### Anti-Scraping Protection
+
+The crawler includes several measures to avoid bot detection and respect website policies:
+
+**🛡️ Bot Detection Evasion:**
+- **Realistic Browser Headers**: Mimics real browser requests with proper Accept, Accept-Language, DNT, and Sec-Fetch headers
+- **User Agent Rotation**: Randomly selects from pool of real browser user agents (Chrome, Firefox, Safari)
+- **Session Management**: Uses persistent sessions for better connection handling
+
+**⏱️ Rate Limiting & Delays:**
+- **Smart Delays**: Random delays between 0.3x-1.5x base rate (default 0.8s)
+- **Exponential Backoff**: Automatic retry with increasing delays on failures
+- **429 Handling**: Special handling for rate limit responses with longer delays
+
+**🔄 Retry Logic:**
+- **Automatic Retries**: Up to 3 attempts for failed requests
+- **Error Recovery**: Handles timeouts, connection errors, and server errors
+- **Graceful Degradation**: Returns partial results with warnings on failures
+
+**🤖 Respectful Crawling:**
+- **Robots.txt Compliance**: Checks and respects robots.txt disallow rules
+- **Same Domain Only**: Restricts crawling to same registrable domain + subdomains
+- **Configurable Limits**: Respects page count, depth, and timeout limits
+
+**Configuration:**
+```bash
+SCRAPER_TIMEOUT=15              # Request timeout (increased from 10s)
+SCRAPER_RATE_SLEEP=0.8          # Base delay between requests (increased from 0.5s)
+SCRAPER_MAX_RETRIES=3           # Maximum retry attempts
+SCRAPER_USE_REALISTIC_HEADERS=true  # Enable realistic browser headers
+```
+
 ### API Documentation
 
 FastAPI automatically generates interactive API documentation:

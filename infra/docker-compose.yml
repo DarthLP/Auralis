@@ -12,6 +12,8 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    volumes:
+      - ../logs:/app/logs
 
   db:
     image: postgres:15
