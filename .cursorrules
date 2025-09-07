@@ -1,0 +1,148 @@
+# Auralis Project Rules
+
+## 📋 Documentation & Maintenance
+
+### README Updates
+- **Always update the README.md** whenever new functionality, commands, or environment variables are introduced
+- Document new endpoints or commands in the README under the correct section
+- Keep documentation current with code changes
+- Update both main README and component-specific READMEs as needed
+
+### Environment Variables
+- **Update /backend/.env.example or /frontend/.env.example** whenever new environment variables are added
+- **Never hardcode secrets** in code or configuration files
+- Use environment variables for all configuration that might vary between environments
+- Document all environment variables in README files
+
+## 🔧 Code Quality & Structure
+
+### Code Changes
+- **Keep diffs small and focused** - only modify the files required for the request
+- **Preserve existing code and interfaces** - do not rename or restructure unless explicitly asked
+- **Prefer clarity over cleverness** - write readable, maintainable code
+- **Respect repo layout** - maintain /backend, /frontend, /infra structure. Don't move or rename folders unless explicitly instructed
+
+### Code Documentation
+- **Add comments in new code** that explain extension points or assumptions
+- Document complex logic and business rules
+- Include type hints and docstrings for functions and classes
+- Explain why certain decisions were made, not just what the code does
+
+## 🛡️ Error Handling & Robustness
+
+### Error Handling
+- **Fail gracefully** - handle errors without crashing the server
+- **Log useful messages** - provide meaningful error information for debugging
+- **Don't crash the server** - implement proper exception handling
+- Use appropriate HTTP status codes for API responses
+
+### Empty States
+- **In UI or API, always return a safe empty object/array** instead of errors
+- Handle null/undefined values gracefully
+- Provide meaningful default values
+- Ensure the application remains functional even with missing data
+
+## 🏗️ Architecture & Design
+
+### Backend (/backend)
+- Use FastAPI best practices
+- Implement proper request/response models with Pydantic
+- Add CORS configuration for frontend integration
+- Use dependency injection for services
+- Implement proper logging and monitoring
+
+### Frontend (/frontend)
+- Follow React/Next.js best practices
+- Implement responsive design
+- Use TypeScript for type safety
+- Follow accessibility guidelines (WCAG 2.1 AA)
+- Implement proper error boundaries
+
+### Infrastructure (/infra)
+- Use Docker Compose for service orchestration
+- Implement proper health checks
+- Configure appropriate restart policies
+- Use environment variables for configuration
+- Document all infrastructure changes
+
+## 🧪 Testing & Quality Assurance
+
+### Testing Requirements
+- Write tests for new functionality
+- Maintain test coverage for critical paths
+- Test error conditions and edge cases
+- Ensure tests are deterministic and reliable
+
+### Code Review
+- Review all changes for adherence to these rules
+- Check for proper error handling
+- Verify documentation updates
+- Ensure no hardcoded secrets or configuration
+
+## 📦 Dependencies & Security
+
+### Dependency Management
+- Keep dependencies up to date
+- Use specific version numbers in requirements files
+- Document why specific dependencies are needed
+- Regularly audit dependencies for security vulnerabilities
+
+### Security
+- Never commit secrets or sensitive data
+- Use environment variables for all configuration
+- Implement proper input validation
+- Follow security best practices for authentication and authorization
+
+## 🚀 Deployment & Operations
+
+### Deployment
+- Ensure all services can be deployed with Docker Compose
+- Test deployment in development environment
+- Document deployment procedures
+- Implement proper health checks and monitoring
+
+### Monitoring
+- Add appropriate logging for debugging
+- Implement metrics collection where useful
+- Use structured logging for better searchability
+- Monitor application performance and errors
+
+## 📝 Git & Version Control
+
+### Commit Messages
+- Use clear, descriptive commit messages
+- Reference issues or features in commits
+- Keep commits focused on single changes
+- Use conventional commit format when possible
+
+### Branching
+- Use feature branches for new development
+- Keep main branch stable and deployable
+- Use pull requests for code review
+- Document breaking changes clearly
+
+## 🔄 Continuous Improvement
+
+### Code Maintenance
+- Regularly refactor code for better maintainability
+- Remove unused code and dependencies
+- Update documentation as code evolves
+- Seek feedback on code quality and architecture
+
+### Performance
+- Monitor application performance
+- Optimize slow queries and operations
+- Implement caching where appropriate
+- Profile and measure before optimizing
+
+---
+
+## 📞 Questions & Clarifications
+
+When in doubt about any of these rules:
+1. Ask for clarification before making changes
+2. Prioritize code safety and maintainability
+3. Consider the impact on existing functionality
+4. Document decisions and trade-offs made
+
+Remember: These rules are designed to maintain code quality, ensure proper documentation, and create a maintainable codebase for the Auralis project.
