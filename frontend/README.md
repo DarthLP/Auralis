@@ -69,7 +69,7 @@ frontend/
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- Modern web browser with Web Audio API support
+- Modern web browser with JavaScript support
 
 ### Installation (Planned)
 
@@ -128,22 +128,22 @@ The frontend will communicate with the backend API:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/audio/upload` | Upload audio file |
-| `GET` | `/api/audio/{id}` | Get audio file info |
-| `POST` | `/api/audio/{id}/process` | Process audio file |
-| `GET` | `/api/audio/{id}/results` | Get processing results |
-| `GET` | `/api/audio/{id}/download` | Download processed audio |
+| `POST` | `/api/competitors` | Add new competitor |
+| `GET` | `/api/competitors` | List all competitors |
+| `GET` | `/api/competitors/{id}` | Get competitor details |
+| `POST` | `/api/competitors/{id}/crawl` | Trigger website crawl |
+| `GET` | `/api/competitors/{id}/products` | Get competitor products |
 
 ## 🎨 Planned UI Components
 
 ### Core Components
 
-- **AudioUploader**: Drag-and-drop file upload
-- **AudioPlayer**: Custom audio player with controls
-- **WaveformVisualizer**: Real-time audio waveform
-- **ProcessingControls**: Audio processing options
-- **ResultsPanel**: Analysis results display
-- **ProgressIndicator**: Processing progress
+- **CompetitorCard**: Competitor overview card with key metrics
+- **CompetitorList**: List view of all competitors
+- **ProductCard**: Product information display
+- **ChangeIndicator**: Visual indicator for recent changes
+- **DashboardChart**: Data visualization components
+- **ProgressIndicator**: Crawling and processing progress
 
 ### Layout Components
 
@@ -162,10 +162,10 @@ The frontend will communicate with the backend API:
 
 ### Mobile Features
 
-- Touch-friendly audio controls
+- Touch-friendly competitor navigation
 - Swipe gestures for navigation
-- Optimized file upload interface
-- Responsive audio visualization
+- Optimized dashboard interface
+- Responsive data visualization
 
 ## 🧪 Planned Testing Strategy
 
@@ -180,7 +180,7 @@ The frontend will communicate with the backend API:
 
 - **API Integration**: Backend communication tests
 - **User Flows**: End-to-end user journey tests
-- **Audio Processing**: Audio handling tests
+- **Data Visualization**: Chart and graph rendering tests
 
 ### E2E Testing
 
@@ -197,16 +197,16 @@ The frontend will communicate with the backend API:
 - [ ] Basic routing structure
 
 ### Phase 2: Core UI (Planned)
-- [ ] Audio upload component
-- [ ] Basic audio player
+- [ ] Competitor dashboard layout
+- [ ] Competitor list and cards
 - [ ] Layout components
 - [ ] Responsive design
 
-### Phase 3: Audio Features (Planned)
-- [ ] Web Audio API integration
-- [ ] Real-time visualization
-- [ ] Audio processing interface
-- [ ] File format support
+### Phase 3: Data Features (Planned)
+- [ ] Data visualization integration
+- [ ] Real-time updates
+- [ ] Competitor detail views
+- [ ] Change tracking interface
 
 ### Phase 4: Advanced Features (Planned)
 - [ ] State management
@@ -231,7 +231,7 @@ The frontend will communicate with the backend API:
 
 ### Runtime Performance
 
-- **Audio Processing**: Real-time without lag
+- **Data Processing**: Real-time updates without lag
 - **UI Responsiveness**: 60fps animations
 - **Memory Usage**: < 100MB for typical usage
 - **Battery Efficiency**: Optimized for mobile devices
@@ -247,10 +247,10 @@ The frontend will communicate with the backend API:
 
 ### Data Protection
 
-- **File Upload**: Secure file handling
 - **API Communication**: Encrypted requests
 - **Local Storage**: Secure data storage
 - **Privacy**: No unnecessary data collection
+- **Data Validation**: Client-side input validation
 
 ## 📚 Planned Resources
 
@@ -265,7 +265,7 @@ The frontend will communicate with the backend API:
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev/)
-- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+- [Chart.js Documentation](https://www.chartjs.org/docs/)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 
 ## 🤝 Contributing (Future)
@@ -288,4 +288,4 @@ For frontend-specific issues:
 
 ---
 
-**Note**: This frontend is currently in the planning phase. Development will begin after the backend API is more fully developed and the core audio processing features are implemented.
+**Note**: This frontend is currently in the planning phase. Development will begin after the backend API is more fully developed and the core competitor analysis features are implemented.

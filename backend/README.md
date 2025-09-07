@@ -204,15 +204,17 @@ Planned testing setup:
 - [x] Docker containerization
 - [x] Environment management
 
-### Phase 2: Audio Processing (Planned)
-- [ ] Audio file upload endpoint
-- [ ] Audio analysis algorithms
-- [ ] Real-time audio streaming
-- [ ] Audio format conversion
-
-### Phase 3: Database Integration (Planned)
+### Phase 2: Database & Models (In Progress)
 - [ ] PostgreSQL integration
-- [ ] Audio metadata storage
+- [ ] Database models (Competitor, Product, Feature, Release, Document)
+- [ ] Database migrations and seeding
+- [ ] Change tracking system
+
+### Phase 3: Scraping Engine
+- [ ] Website crawling with Requests + BeautifulSoup
+- [ ] Data extraction for products, features, releases
+- [ ] Clean scraping interface for future Playwright integration
+- [ ] Error handling and retry logic
 - [ ] User session management
 - [ ] Data persistence layer
 
