@@ -29,12 +29,25 @@ Auralis is a full-stack audio processing and analysis application built as a mon
    cd Auralis
    ```
 
-2. **Start all services**
+2. **Set up the development environment**
+   ```bash
+   make setup
+   ```
+   This will:
+   - Create a Python virtual environment
+   - Install all dependencies
+   - Create necessary configuration files
+
+3. **Start the backend (development mode)**
+   ```bash
+   make dev
+   ```
+   Or start all services with Docker:
    ```bash
    make up
    ```
 
-3. **Access the application**
+4. **Access the application**
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
    - Health Check: http://localhost:8000/health
@@ -43,6 +56,8 @@ Auralis is a full-stack audio processing and analysis application built as a mon
 
 | Command | Description |
 |---------|-------------|
+| `make setup` | Set up virtual environment and install dependencies |
+| `make dev` | Start backend in development mode (requires venv) |
 | `make up` | Start all services with Docker Compose |
 | `make down` | Stop all services |
 | `make logs` | View service logs in real-time |
@@ -60,6 +75,10 @@ Auralis/
 ├── frontend/          # React/Next.js frontend (planned)
 ├── infra/            # Infrastructure configuration
 │   └── docker-compose.yml  # Service orchestration
+├── venv/             # Python virtual environment (auto-created)
+├── .python-version   # Python version specification
+├── .envrc            # Automatic environment activation (direnv)
+├── setup.sh          # Automated setup script
 ├── Makefile          # Development automation
 └── README.md         # This file
 ```
@@ -92,16 +111,43 @@ The backend provides a RESTful API built with FastAPI:
 
 ## 🛠️ Development
 
-### Local Development
+### Automatic Virtual Environment
 
-1. **Backend Only**
+The project includes automatic virtual environment setup for all collaborators:
+
+#### **Option 1: Automatic Setup (Recommended)**
+```bash
+make setup  # One-time setup
+make dev    # Start development server
+```
+
+#### **Option 2: Manual Activation**
+```bash
+source venv/bin/activate
+cd backend
+python -m uvicorn app.main:app --reload
+```
+
+#### **Option 3: Automatic Activation with direnv**
+Install [direnv](https://direnv.net/docs/installation.html) for automatic virtual environment activation:
+```bash
+# Install direnv (macOS)
+brew install direnv
+
+# Allow direnv in this directory
+direnv allow
+
+# Virtual environment activates automatically when you cd into the project
+```
+
+### Development Modes
+
+1. **Local Development (Virtual Environment)**
    ```bash
-   cd backend
-   pip3 install -r requirements.txt
-   python3 -m uvicorn app.main:app --reload
+   make dev  # Uses virtual environment
    ```
 
-2. **Full Stack (Docker)**
+2. **Docker Development**
    ```bash
    make up
    make logs  # View logs

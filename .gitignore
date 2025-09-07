@@ -30,6 +30,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Project-specific virtual environment
+venv/
+
 # Node.js
 node_modules/
 npm-debug.log*
