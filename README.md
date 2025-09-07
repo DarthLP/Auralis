@@ -170,7 +170,7 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - `/` - Overview dashboard with signals and releases
 - `/companies` - Companies listing with search and filtering
 - `/companies/:companyId` - Individual company details with products and recent activity
-- `/companies/:companyId/products/:productId` - Product details
+- `/companies/:companyId/products/:productId` - Product details with capabilities
 - `/signals` - Industry signals and news
 - `/releases` - Product releases tracking
 
@@ -206,6 +206,19 @@ The companies section provides comprehensive company management and analysis:
 - **Loading States**: Comprehensive skeleton loading for all sections
 - **Error Handling**: Company not found, empty states, and data loading errors
 
+#### Product Detail (`/companies/:companyId/products/:productId`)
+- **Hero Section**: Product name, description, company chip (linking back to company), category, markets, and tags
+- **Action Buttons**: Links to product page and documentation (when available)
+- **Capabilities Section**: List of product capabilities with:
+  - Capability name (looked up by capability ID)
+  - Maturity pills with color coding (Basic, Intermediate, Advanced, Expert, GA, Alpha, Beta)
+  - One-line details description
+  - Source icons (ready for future Source Drawer implementation)
+- **Data Validation**: Ensures product belongs to specified company (404 if mismatch)
+- **Loading States**: Skeleton loading animations for hero and capabilities sections
+- **Error Handling**: Product not found, company mismatch, and data loading errors
+- **Navigation**: Breadcrumb-style navigation back to company page
+
 ### Development
 
 ```bash
@@ -239,6 +252,8 @@ The mock data system provides:
 - **Data Validation**: Zod schema validation for type safety
 - **Filtered Queries**: Specialized functions for dashboard views (recent signals, releases)
 - **Company-Specific Data**: Functions to fetch company products, summaries, and recent activity
+- **Product-Specific Data**: Functions to fetch individual products and their capabilities
+- **Capability Lookup**: Functions to fetch all capabilities for name resolution
 - **Error Simulation**: Proper error handling and edge cases
 - **Type Safety**: Full TypeScript integration with schema types
 
@@ -253,7 +268,10 @@ import {
   company, 
   companySummaries, 
   productsByCompany, 
-  getCompanyRecentActivity 
+  getCompanyRecentActivity,
+  product,
+  productCapabilities,
+  capabilities
 } from '@/lib/mockData';
 
 // Use in components
@@ -263,6 +281,9 @@ const companiesList = await companies(); // All companies
 const companyData = await company('cmp_pal'); // Specific company
 const products = await productsByCompany('cmp_pal'); // Company products
 const activity = await getCompanyRecentActivity('cmp_pal'); // Recent activity
+const productData = await product('prd_tiago'); // Specific product
+const productCaps = await productCapabilities('prd_tiago'); // Product capabilities
+const allCapabilities = await capabilities(); // All capabilities for lookup
 ```
 
 ## 🔧 Backend API
@@ -472,7 +493,7 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Mock data system with seed data
 - [x] Companies index page with search and filtering
 - [x] Company detail pages with products and recent activity
-- [ ] Product detail pages
+- [x] Product detail pages with capabilities and maturity tracking
 - [ ] Change visualization
 
 ### Phase 6: AI Integration
