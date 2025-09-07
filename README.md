@@ -9,7 +9,7 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 - **Backend**: FastAPI-based REST API with Python 3.11+
 - **Frontend**: Next.js application with dashboard and drill-down views
 - **Database**: PostgreSQL with structured data models
-- **Scraping**: Requests + BeautifulSoup (extensible to Playwright)
+- **Scraping**: Hybrid JavaScript-enabled crawler (Playwright + Requests) with anti-bot protection
 - **AI Layer**: Theta EdgeCloud integration with local fallback
 - **Infrastructure**: Docker Compose for local development and deployment
 - **Authentication**: Single-tenant prototype (no auth required)
@@ -81,12 +81,17 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 Auralis/
 ├── backend/           # FastAPI backend service
 │   ├── app/          # Application code
-│   │   ├── models/   # Database models (Competitor, Product, etc.)
-│   │   ├── services/ # Business logic (scraping, AI, validation)
+│   │   ├── models/   # Database models (Competitor, Product, CrawlSession, etc.)
+│   │   ├── services/ # Business logic (hybrid scraping, AI, validation)
+│   │   │   ├── fetch.py    # JavaScript-enabled fetching with Playwright
+│   │   │   ├── scrape.py   # Intelligent page discovery and classification
+│   │   │   └── validate.py # Schema validation service
 │   │   ├── schema/   # Generated JSON schemas for validation
 │   │   │   └── json/ # JSON Schema files (auto-generated)
 │   │   ├── api/      # API endpoints
+│   │   │   └── crawl.py    # Website discovery and crawling API
 │   │   └── main.py   # FastAPI application
+│   ├── logs/         # Crawl session logs and JSON data files
 │   ├── Dockerfile.backend  # Backend container config
 │   ├── requirements.txt    # Python dependencies
 │   └── .env          # Environment variables
@@ -105,7 +110,7 @@ Auralis/
 │   ├── tsconfig.json # TypeScript configuration
 │   └── README.md     # Schema documentation
 ├── infra/            # Infrastructure configuration
-│   └── docker-compose.yml  # Service orchestration
+│   └── docker-compose.yml  # Service orchestration with volume mounting
 ├── venv/             # Python virtual environment (auto-created)
 ├── .python-version   # Python version specification
 ├── .envrc            # Automatic environment activation (direnv)
@@ -184,14 +189,59 @@ The backend provides a RESTful API built with FastAPI for competitor analysis:
 - `GET /health` - Health check endpoint
 - `GET /docs` - Interactive API documentation (Swagger UI)
 
-### Competitor Management
+### 🚀 Website Discovery API
+
+**`POST /api/crawl/discover`** - Advanced website crawling and page discovery
+
+**Features:**
+- **JavaScript-Enabled Crawling**: Full browser automation with Playwright for modern websites
+- **Hybrid Performance Mode**: Smart JavaScript usage for important pages, fast requests for simple pages
+- **Anti-Bot Protection**: Realistic browser headers, user agent rotation, smart delays
+- **Intelligent Classification**: Automatic categorization (product, docs, pricing, news, etc.)
+- **Duplicate Detection**: URL canonicalization and content hash deduplication
+- **Comprehensive Logging**: Detailed session logs and complete JSON data persistence
+
+**Request:**
+```json
+{
+  "url": "https://competitor.example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "input_url": "https://competitor.example.com",
+  "base_domain": "https://competitor.example.com",
+  "pages": [
+    {
+      "url": "https://competitor.example.com/products/widget",
+      "primary_category": "product",
+      "score": 0.95,
+      "signals": ["product_url", "product_title"],
+      "status": 200,
+      "content_hash": "abc123...",
+      "size_bytes": 15420
+    }
+  ],
+  "top_by_category": {
+    "product": ["https://competitor.example.com/products/widget"],
+    "docs": ["https://competitor.example.com/docs/api"],
+    "pricing": ["https://competitor.example.com/pricing"]
+  },
+  "log_file": "logs/crawl_20250907_161900.log",
+  "json_file": "logs/crawl_20250907_161900_data.json"
+}
+```
+
+### Competitor Management (Planned)
 
 - `POST /api/competitors` - Add a new competitor
 - `GET /api/competitors` - List all competitors
 - `GET /api/competitors/{id}` - Get competitor details
 - `POST /api/competitors/{id}/crawl` - Trigger website crawl
 
-### Data Access
+### Data Access (Planned)
 
 - `GET /api/competitors/{id}/products` - Get competitor's products
 - `GET /api/products/{id}` - Get product details
@@ -357,16 +407,22 @@ Re-crawl → Detect Changes → Show What's New
 - [ ] Database migrations and seeding
 - [ ] Change tracking system
 
-### Phase 3: Scraping Engine
-- [ ] Website crawling with Requests + BeautifulSoup
-- [ ] Data extraction for products, features, releases
-- [ ] Clean scraping interface for future Playwright integration
-- [ ] Error handling and retry logic
+### Phase 3: Advanced Scraping Engine ✅
+- [x] **JavaScript-enabled crawling** with Playwright browser automation
+- [x] **Hybrid performance mode** (JS for important pages, requests for simple pages)
+- [x] **Anti-bot protection** with realistic headers and smart delays
+- [x] **Intelligent page classification** with scoring (product, docs, pricing, news, etc.)
+- [x] **Advanced duplicate detection** with URL canonicalization
+- [x] **Comprehensive logging** with JSON data persistence
+- [x] **Error handling and retry logic** with exponential backoff
+- [x] **Volume-mounted logs** accessible on host filesystem
 
 ### Phase 4: API Development
+- [x] **Website Discovery API** (`POST /api/crawl/discover`) with full feature set
+- [x] **Comprehensive response format** with pages, categories, and metadata
+- [x] **Data persistence** (JSON files with complete crawl data)
 - [ ] Competitor CRUD endpoints
 - [ ] Product and feature endpoints
-- [ ] Crawling trigger endpoints
 - [ ] Change detection endpoints
 
 ### Phase 5: Frontend Dashboard

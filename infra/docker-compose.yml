@@ -13,7 +13,7 @@ services:
       - db
     restart: unless-stopped
     volumes:
-      - ../logs:/app/logs
+      - ../backend/logs:/app/logs
 
   db:
     image: postgres:15

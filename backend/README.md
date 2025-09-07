@@ -22,13 +22,20 @@ backend/
 │   │   ├── config.py      # Application settings
 │   │   └── db.py          # Database configuration
 │   ├── services/          # Business logic services
+│   │   ├── fetch.py       # JavaScript-enabled fetching with Playwright
+│   │   ├── scrape.py      # Intelligent page discovery and classification
 │   │   └── validate.py    # Schema validation service
 │   ├── schema/            # Generated JSON schemas
 │   │   └── json/          # JSON Schema files (auto-generated)
+│   ├── api/               # API endpoints
+│   │   └── crawl.py       # Website discovery and crawling API
+│   ├── models/            # Database models
+│   │   └── crawl.py       # CrawlSession and CrawledPage models
 │   └── main.py            # FastAPI application entry point
+├── logs/                  # Crawl session logs and JSON data files
 ├── Dockerfile.backend     # Docker container configuration
 ├── requirements.txt       # Python dependencies
-├── .env                  # Environment variables
+├── .env.example          # Environment variables template
 └── README.md             # This file
 ```
 

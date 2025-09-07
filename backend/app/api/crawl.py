@@ -138,6 +138,17 @@ async def discover_pages(request: CrawlRequest) -> CrawlResponse:
         # Add log file path to response
         result['log_file'] = log_file
         
+        # Save complete crawl data to JSON file
+        import json
+        json_file = log_file.replace('.log', '_data.json')
+        try:
+            with open(json_file, 'w') as f:
+                json.dump(result, f, indent=2, default=str)
+            crawl_logger.info(f"Crawl data saved to: {json_file}")
+            result['json_file'] = json_file
+        except Exception as e:
+            crawl_logger.error(f"Failed to save JSON data: {e}")
+        
         # Check for homepage fetch failure
         if "error" in result and result["error"] == "HOMEPAGE_FETCH_FAILED":
             logger.error(f"Homepage fetch failed for {request.url}")
