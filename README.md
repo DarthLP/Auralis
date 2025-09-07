@@ -156,6 +156,19 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - **Responsive Design**: Mobile-first approach with responsive navigation
 - **Mock Data System**: Comprehensive seed data with PAL Robotics example
 - **Overview Dashboard**: Real-time signals and releases tracking
+- **Loading States**: Comprehensive loading indicators and skeleton screens
+- **Empty States**: Friendly empty state components for better UX
+- **Error Handling**: 404 pages and graceful error handling
+
+### UI Components
+
+The frontend includes several reusable components for consistent user experience:
+
+- **LoadingSpinner**: Configurable loading spinner with different sizes
+- **LoadingSkeleton**: Skeleton screens for table, grid, list, and card layouts
+- **EmptyState**: Friendly empty state component with icons and actions
+- **NotFound**: 404 page component for unknown routes
+- **SourceDrawer**: Modal drawer for displaying source information
 
 ### Architecture
 

@@ -9,6 +9,8 @@ import {
 import { Signal, Company, Product, Source as SourceType } from '@schema/types';
 import { SignalType } from '@schema/enums';
 import SourceDrawer from '../components/SourceDrawer';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
 
 interface Facets {
   types: SignalType[];
@@ -624,25 +626,24 @@ export default function SignalsPage() {
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             {loading ? (
               <div className="p-8">
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex space-x-4">
-                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                      <div className="h-4 bg-gray-200 rounded flex-1 animate-pulse"></div>
-                      <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                    </div>
-                  ))}
-                </div>
+                <LoadingSkeleton type="table" count={5} />
               </div>
             ) : signalsData.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-gray-500 text-lg mb-4">No signals found</p>
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Clear filters
-                </button>
+              <div className="p-8">
+                <EmptyState
+                  icon={
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  }
+                  title="No signals found"
+                  description="Try adjusting your filters or search criteria to find more signals."
+                  action={{
+                    label: "Clear filters",
+                    onClick: clearFilters,
+                    variant: "primary"
+                  }}
+                />
               </div>
             ) : (
               <>

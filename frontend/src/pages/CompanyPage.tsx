@@ -7,6 +7,8 @@ import {
   getCompanyRecentActivity 
 } from '../lib/mockData';
 import { Company, CompanySummary, Product } from '@schema/types';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
 
 interface CompanyData {
   company: Company;
@@ -98,35 +100,13 @@ export default function CompanyPage() {
         {/* Products Grid Skeleton */}
         <div className="mb-8">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="h-5 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-full mb-2 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3 mb-4 animate-pulse"></div>
-                <div className="flex gap-2">
-                  <div className="h-6 bg-gray-200 rounded-full w-16 animate-pulse"></div>
-                  <div className="h-6 bg-gray-200 rounded-full w-20 animate-pulse"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <LoadingSkeleton type="grid" count={4} />
         </div>
 
         {/* Recent Activity Skeleton */}
         <div>
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-start space-x-3 p-4 bg-white rounded-lg border border-gray-200">
-                <div className="h-5 bg-gray-200 rounded w-16 animate-pulse"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/4 animate-pulse"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <LoadingSkeleton type="list" count={4} />
         </div>
       </div>
     );
@@ -225,9 +205,16 @@ export default function CompanyPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Products</h2>
         
         {products.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <p className="text-gray-500 text-lg">No products yet.</p>
-          </div>
+          <EmptyState
+            icon={
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            }
+            title="No products yet"
+            description="This company doesn't have any products documented yet."
+            className="bg-gray-50 rounded-lg"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
@@ -301,9 +288,16 @@ export default function CompanyPage() {
         </div>
 
         {recentActivity.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <p className="text-gray-500 text-lg">No recent activity in the last 60 days.</p>
-          </div>
+          <EmptyState
+            icon={
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+            title="No recent activity"
+            description="No signals or releases in the last 60 days for this company."
+            className="bg-gray-50 rounded-lg"
+          />
         ) : (
           <div className="space-y-3">
             {recentActivity.map((item) => (

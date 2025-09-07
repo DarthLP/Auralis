@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AppLayout from './layouts/AppLayout'
+import LoadingSpinner from './components/LoadingSpinner'
 
 // Lazy load pages for better performance
 const Overview = React.lazy(() => import('./pages/Overview'))
@@ -9,13 +10,13 @@ const CompanyPage = React.lazy(() => import('./pages/CompanyPage'))
 const ProductPage = React.lazy(() => import('./pages/ProductPage'))
 const SignalsPage = React.lazy(() => import('./pages/SignalsPage'))
 const ReleasesPage = React.lazy(() => import('./pages/ReleasesPage'))
+const NotFound = React.lazy(() => import('./pages/NotFound'))
 
 // Loading component
 function LoadingFallback() {
   return (
-    <div className="flex items-center justify-center min-h-64">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span className="ml-2 text-gray-600">Loading...</span>
+    <div className="min-h-64">
+      <LoadingSpinner size="lg" text="Loading page..." className="py-16" />
     </div>
   )
 }
@@ -70,6 +71,15 @@ function App() {
             element={
               <Suspense fallback={<LoadingFallback />}>
                 <ReleasesPage />
+              </Suspense>
+            }
+          />
+          {/* Catch-all route for 404 */}
+          <Route
+            path="*"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <NotFound />
               </Suspense>
             }
           />

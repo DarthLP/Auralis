@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { releases, companies as fetchCompanies, productsByCompany, source } from '../lib/mockData';
 import { Release, Company, Product, Source as SourceType } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
 
 interface Facets {
   companies: string[];
@@ -295,25 +297,24 @@ export default function ReleasesPage() {
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             {loading ? (
               <div className="p-8">
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex space-x-4">
-                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                      <div className="h-4 bg-gray-200 rounded flex-1 animate-pulse"></div>
-                      <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                    </div>
-                  ))}
-                </div>
+                <LoadingSkeleton type="table" count={5} />
               </div>
             ) : filteredReleases.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-gray-500 text-lg mb-4">No releases found</p>
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Clear filters
-                </button>
+              <div className="p-8">
+                <EmptyState
+                  icon={
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M9 10h6m-6 4h6" />
+                    </svg>
+                  }
+                  title="No releases found"
+                  description="Try adjusting your filters or date range to find more releases."
+                  action={{
+                    label: "Clear filters",
+                    onClick: clearFilters,
+                    variant: "primary"
+                  }}
+                />
               </div>
             ) : (
               <>

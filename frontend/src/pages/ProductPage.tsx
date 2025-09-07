@@ -9,6 +9,9 @@ import {
 } from '../lib/mockData';
 import { Product, ProductCapability, Capability, Company } from '@schema/types';
 import SpecsGroup from '../components/SpecsGroup';
+import NotFound from './NotFound';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
 
 // Extended maturity type to handle seed data
 type ExtendedMaturity = 'basic' | 'intermediate' | 'advanced' | 'expert' | 'ga' | 'alpha' | 'beta';
@@ -142,16 +145,7 @@ export default function ProductPage() {
         {/* Capabilities Skeleton */}
         <div>
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-gray-200">
-                <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-                <div className="h-6 bg-gray-200 rounded-full w-20 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-4 animate-pulse"></div>
-              </div>
-            ))}
-          </div>
+          <LoadingSkeleton type="card" count={4} />
         </div>
       </div>
     );
@@ -173,38 +167,8 @@ export default function ProductPage() {
     );
   }
 
-  if (notFound) {
-    return (
-      <div className="container">
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found for this company</h1>
-          <p className="text-gray-600 mb-6">The product you're looking for doesn't exist for this company.</p>
-          <Link 
-            to={`/companies/${companyId}`} 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            ← Back to Company
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="container">
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h1>
-          <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
-          <Link 
-            to={`/companies/${companyId}`} 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            ← Back to Company
-          </Link>
-        </div>
-      </div>
-    );
+  if (notFound || !data) {
+    return <NotFound />;
   }
 
   const { product: productData, company: companyData, productCapabilities, specProfile: specProfileData } = data;
@@ -297,9 +261,16 @@ export default function ProductPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Capabilities</h2>
         
         {productCapabilities.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <p className="text-gray-500 text-lg">No capabilities documented yet.</p>
-          </div>
+          <EmptyState
+            icon={
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+            title="No capabilities documented yet"
+            description="This product doesn't have any capabilities documented yet."
+            className="bg-gray-50 rounded-lg"
+          />
         ) : (
           <div className="space-y-3">
             {productCapabilities.map((productCap) => (

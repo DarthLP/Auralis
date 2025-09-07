@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { companies } from '../lib/mockData';
 import { Company, CompanySummary } from '@schema/types';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
 
 interface CompanyWithSummary extends Company {
   summary?: CompanySummary;
@@ -68,10 +70,11 @@ export default function CompaniesIndex() {
   if (loading) {
     return (
       <div className="container">
-        <div className="flex items-center justify-center min-h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-gray-600">Loading companies...</span>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Companies</h1>
+          <p className="text-gray-600 mb-6">Browse and manage tracked companies</p>
         </div>
+        <LoadingSkeleton type="grid" count={6} />
       </div>
     );
   }
@@ -146,11 +149,15 @@ export default function CompaniesIndex() {
       </div>
 
       {filteredCompanies.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">
-            {searchTerm ? 'No companies found matching your search.' : 'No companies available.'}
-          </p>
-        </div>
+        <EmptyState
+          icon={
+            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          }
+          title={searchTerm ? 'No companies found' : 'No companies available'}
+          description={searchTerm ? 'Try adjusting your search terms to find companies.' : 'No companies have been added to the system yet.'}
+        />
       )}
     </div>
   );
