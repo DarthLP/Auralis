@@ -1,0 +1,6 @@
+fastapi[all]
+uvicorn
+pydantic>=2
+python-dotenv
+requests
+beautifulsoup4
