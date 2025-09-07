@@ -384,19 +384,211 @@ Planned testing setup:
 - [ ] Database migrations and seeding
 - [ ] Change tracking system
 
-### Phase 3: Scraping Engine
-- [ ] Website crawling with Requests + BeautifulSoup
-- [ ] Data extraction for products, features, releases
-- [ ] Clean scraping interface for future Playwright integration
-- [ ] Error handling and retry logic
-- [ ] User session management
-- [ ] Data persistence layer
+### Phase 3: Advanced Scraping Engine ✅
+- [x] JavaScript-enabled website crawling (Playwright + Requests)
+- [x] Hybrid crawling strategy for optimal performance
+- [x] Intelligent page classification and scoring
+- [x] Anti-bot protection and respectful crawling
+- [x] Data extraction for products, features, releases
+- [x] Error handling and retry logic
+- [x] Session-specific logging and data persistence
 
-### Phase 4: Advanced Features (Planned)
+### Phase 4: API Development ✅
+- [x] Website discovery API endpoint
+- [x] JSON response format with categorized pages
+- [x] Comprehensive logging and data export
+- [x] Docker integration with volume mounting
+
+### Phase 5: Progressive Discovery (Future Enhancement)
+- [ ] Multi-stage crawling with resume tokens
+- [ ] Strategy presets (quick/balanced/deep)
+- [ ] Category-specific filtering and quotas
+- [ ] Time-bounded crawling with partial results
+- [ ] Advanced user experience optimizations
+
+### Phase 6: Advanced Features (Planned)
 - [ ] Authentication system
 - [ ] Rate limiting
 - [ ] Caching layer
 - [ ] Background task processing
+
+## 🚀 Future Improvements: Progressive Discovery
+
+### Overview
+The current discovery system crawls websites comprehensively in a single operation. For better user experience and performance, we're planning a **progressive discovery system** that allows users to get quick results first, then optionally dive deeper.
+
+### 🎯 Progressive Discovery Architecture
+
+#### **Multi-Stage Strategy**
+Instead of one long crawl, break discovery into progressive stages:
+
+```javascript
+// Stage 1: Quick Overview (8 seconds)
+POST /api/crawl/discover {
+  "url": "https://competitor.com",
+  "strategy": "quick"  // 8 pages, depth 1, 8s timeout
+}
+
+// Stage 2: Balanced Discovery (15 seconds)  
+POST /api/crawl/discover {
+  "url": "https://competitor.com", 
+  "strategy": "balanced",        // 20 pages, depth 2, 15s timeout
+  "resume_token": {...}          // Continue from Stage 1
+}
+
+// Stage 3: Targeted Deep Dive
+POST /api/crawl/discover {
+  "url": "https://competitor.com",
+  "filters": {"categories": ["product"]},  // Only find more products
+  "resume_token": {...}                    // Continue from Stage 2
+}
+```
+
+#### **Strategy Presets**
+Pre-configured crawling strategies for different use cases:
+
+| Strategy | Pages | Depth | Time | Use Case |
+|----------|-------|-------|------|----------|
+| `quick` | 8 | 1 | 8s | Instant competitor overview |
+| `balanced` | 20 | 2 | 15s | Comprehensive first look |
+| `deep` | 80 | 3 | 40s | Thorough competitive analysis |
+
+#### **Resume Token System**
+Stateless continuation mechanism that remembers:
+- **Frontier**: Pages queued for next crawl
+- **Visited**: Already-crawled URLs (avoid duplicates)
+- **Stats**: Progress tracking and category counts
+
+```json
+{
+  "resume_token": {
+    "frontier": [
+      {"url": "https://site.com/products", "score": 0.9, "depth": 1}
+    ],
+    "visited": ["https://site.com/", "https://site.com/about"],
+    "stats": {"products_found": 3, "docs_found": 1}
+  }
+}
+```
+
+#### **Category Quotas & Filtering**
+Smart resource allocation and targeted discovery:
+
+```json
+{
+  "limits": {
+    "max_per_category": {
+      "product": 10,    // Find up to 10 product pages
+      "docs": 8,        // Up to 8 documentation pages  
+      "releases": 6,    // Up to 6 release pages
+      "pricing": 3,     // Up to 3 pricing pages
+      "news": 5         // Up to 5 news/blog pages
+    }
+  },
+  "filters": {
+    "categories": ["product", "docs"],           // Only these types
+    "path_prefixes": ["/products/", "/api/"],   // Only these URL paths
+    "sitemap_only": true                        // Skip BFS, use sitemap only
+  }
+}
+```
+
+#### **Coverage Confidence**
+Real-time feedback on discovery completeness:
+
+```json
+{
+  "coverage": {
+    "total_seen": 25,
+    "total_emitted": 12,
+    "queued_remaining": 8,
+    "confidence": 0.7,  // 0-1 scale, higher = more complete
+    "category_counts": {"product": 4, "docs": 2, "other": 6}
+  }
+}
+```
+
+### 🔄 Implementation Options
+
+#### **Option 1: Manual Progression (Recommended)**
+User controls each stage through separate API calls:
+- **Pros**: User control, predictable costs, immediate feedback
+- **Cons**: Requires frontend integration for optimal UX
+- **Best for**: Interactive competitor analysis tools
+
+#### **Option 2: Auto-Progression**
+Backend automatically continues based on confidence thresholds:
+- **Pros**: Hands-off operation, simpler API usage
+- **Cons**: Less user control, potentially higher resource usage
+- **Best for**: Batch processing, background analysis
+
+#### **Option 3: Hybrid Approach**
+Support both manual and automatic progression:
+```json
+{
+  "strategy": "quick",
+  "auto_continue": true,      // Auto-progress if confidence < 0.5
+  "max_total_time": 30       // Stop after 30 seconds total
+}
+```
+
+### 🎨 User Experience Flow
+
+```
+User Input: "Analyze competitor.com"
+     ↓
+Stage 1: Quick (8s) → "Found 3 products, 2 solutions. More available?"
+     ↓ (user clicks "Find More")
+Stage 2: Balanced (15s) → "Found 8 products, 4 solutions. Want specific categories?"
+     ↓ (user clicks "More Products")  
+Stage 3: Product Focus (10s) → "Found 12 total products. Analysis complete."
+```
+
+### 🛠️ Technical Implementation
+
+#### **Core Changes Required**
+1. **Refactor `discover_interesting_pages()`** to support resume tokens
+2. **Add strategy presets** to API endpoint with time limits
+3. **Implement max-heap priority queue** for intelligent page ordering
+4. **Add category quotas and filtering** logic
+5. **Create resume token serialization** for stateless continuation
+
+#### **API Enhancements**
+```python
+class CrawlRequest(BaseModel):
+    url: str
+    strategy: Optional[str] = "quick"           # quick/balanced/deep
+    limits: Optional[dict] = None               # Override strategy defaults
+    filters: Optional[dict] = None              # Category/path filtering
+    resume_token: Optional[dict] = None         # Continue previous crawl
+    auto_continue: Optional[bool] = False       # Auto-progression mode
+```
+
+#### **Configuration Updates**
+```env
+# Progressive Discovery Defaults
+SCRAPER_MAX_PAGES=20
+SCRAPER_MAX_DEPTH=2  
+SCRAPER_MAX_TIME=15
+SCRAPER_MAX_PER_CATEGORY={"product":10,"docs":8,"releases":6,"pricing":3,"news":5}
+```
+
+### 📊 Expected Benefits
+
+- **⚡ 3x Faster Initial Response**: Quick results in 8 seconds vs 60+ seconds
+- **💰 Cost Efficiency**: Users pay only for the depth they need
+- **🎯 Better Targeting**: Category filters find specific content faster
+- **♻️ Zero Waste**: Resume tokens eliminate duplicate crawling
+- **📈 Improved UX**: Progressive disclosure keeps users engaged
+
+### 🚀 Implementation Priority
+
+1. **Phase 1**: Core progressive logic with manual progression
+2. **Phase 2**: Strategy presets and category quotas  
+3. **Phase 3**: Advanced filtering and auto-progression
+4. **Phase 4**: Frontend integration and UX optimization
+
+This progressive discovery system would transform the current "all-or-nothing" crawling into a flexible, user-controlled exploration tool that provides immediate value while supporting deep competitive analysis when needed.
 
 ## 🐛 Troubleshooting
 
