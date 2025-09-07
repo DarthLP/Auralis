@@ -2,7 +2,7 @@
 
 ## 🏗️ Overview
 
-The infrastructure directory contains Docker Compose configuration and deployment files for the Auralis application. This setup enables containerized development and deployment of all services.
+The infrastructure directory contains Docker Compose configuration and deployment files for the Auralis competitor analysis application. This setup enables containerized development and deployment of all services.
 
 ## 📁 Directory Structure
 

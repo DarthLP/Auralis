@@ -2,7 +2,7 @@
 
 ## 🎨 Overview
 
-The Auralis frontend is a modern web application that provides the user interface for audio processing and analysis. This directory will contain the React/Next.js application (planned for future development).
+The Auralis frontend is a modern web application that provides the user interface for competitor analysis and dashboard visualization. This directory will contain the React/Next.js application (planned for future development).
 
 ## 📋 Status: Planned
 
@@ -15,7 +15,7 @@ This frontend application is currently in the planning phase. The following sect
 - **Styling**: Tailwind CSS
 - **State Management**: Zustand or Redux Toolkit
 - **HTTP Client**: Axios or Fetch API
-- **Audio Processing**: Web Audio API
+- **Data Visualization**: Charts and graphs for competitor analysis
 - **Real-time**: WebSocket or Server-Sent Events
 
 ## 📁 Planned Directory Structure
@@ -44,11 +44,11 @@ frontend/
 
 ### Core Features
 
-- **Audio Upload**: Drag-and-drop audio file upload
-- **Audio Visualization**: Real-time audio waveform display
-- **Audio Controls**: Play, pause, stop, seek controls
-- **Processing Interface**: Audio analysis and processing tools
-- **Results Display**: Audio analysis results and insights
+- **Competitor Dashboard**: Overview of all tracked competitors
+- **Competitor Detail Views**: Drill-down into specific competitor information
+- **Product Analysis**: View competitor products, features, and releases
+- **Change Tracking**: Visualize changes and updates over time
+- **Data Visualization**: Charts and graphs for competitor insights
 
 ### User Interface
 
@@ -57,12 +57,12 @@ frontend/
 - **Accessibility**: WCAG 2.1 AA compliance
 - **Progressive Web App**: PWA capabilities for offline use
 
-### Audio Processing
+### Competitor Analysis
 
-- **Format Support**: MP3, WAV, FLAC, OGG support
-- **Real-time Processing**: Live audio analysis
-- **Batch Processing**: Multiple file processing
-- **Export Options**: Processed audio download
+- **Website Monitoring**: Track competitor website changes
+- **Product Tracking**: Monitor product updates and releases
+- **Feature Comparison**: Compare competitor features and capabilities
+- **Change Alerts**: Get notified of important competitor changes
 
 ## 🔧 Planned Development Setup
 
