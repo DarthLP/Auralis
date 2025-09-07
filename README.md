@@ -172,7 +172,7 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - `/companies/:companyId` - Individual company details with products and recent activity
 - `/companies/:companyId/products/:productId` - Product details with capabilities
 - `/signals` - Advanced signals filtering and analysis
-- `/releases` - Product releases tracking
+- `/releases` - Product releases tracking with company and date filtering
 
 ### Overview Dashboard
 
@@ -258,6 +258,42 @@ The signals page provides advanced filtering and analysis capabilities for indus
 - **Loading States**: Skeleton loading animations during data fetching
 - **Empty States**: Helpful messages when no signals match filters
 - **Error Handling**: Graceful error states with retry options
+
+### Releases Page (`/releases`)
+
+The releases page provides comprehensive tracking and filtering of product releases across the industry:
+
+#### **Simplified Filtering System**
+- **Company Filter**: Multi-select checkboxes for all companies in the dataset
+- **Date Filter**: Preset buttons (7d, 30d, YTD, All) with visual feedback showing selected date range
+- **Clear Filters**: One-click reset to default state
+
+#### **Releases Table Layout**
+- **Chronological Ordering**: Releases sorted by date (newest first)
+- **Column Structure**: Date, Product & Version, Company, Notes, Source
+- **Product Links**: Clickable product names that navigate to nested product detail pages
+- **Company Tags**: Clickable company names that filter by that company
+- **Source Integration**: Source icons that open the Source Drawer for detailed source information
+- **Pagination**: 25 releases per page with navigation controls
+
+#### **Data Integration**
+- **Release Tracking**: Comprehensive product release history with version information
+- **Company Association**: Each release linked to its company and product
+- **Source Attribution**: Source tracking for release announcements
+- **Notes Field**: Short descriptions of release contents and changes
+
+#### **User Experience**
+- **Consistent Layout**: Matches SignalsPage design with sidebar filters and main content area
+- **Responsive Design**: Sidebar collapses on mobile, full-width on desktop
+- **Loading States**: Skeleton loading animations during data fetching
+- **Empty States**: Helpful messages when no releases match filters
+- **Navigation**: Seamless integration with product detail pages
+
+#### **Key Features**
+- **Product Navigation**: Direct links from release entries to product detail pages
+- **Source Verification**: Source drawer integration for release credibility
+- **Time-based Filtering**: Quick access to recent releases with preset date ranges
+- **Company Focus**: Easy filtering to track releases from specific companies
 
 ### Development
 
