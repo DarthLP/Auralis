@@ -84,6 +84,13 @@ Auralis/
 │   ├── src/          # Source code
 │   ├── pages/        # Dashboard and detail pages
 │   └── components/   # Reusable UI components
+├── schema/           # Shared data models and validation
+│   ├── enums.ts      # Core enumeration types
+│   ├── specs.ts      # Flexible specification value types
+│   ├── types.ts      # TypeScript interface definitions
+│   ├── zod.ts        # Runtime validation schemas
+│   ├── index.ts      # Re-exports all types and schemas
+│   └── README.md     # Schema documentation
 ├── infra/            # Infrastructure configuration
 │   └── docker-compose.yml  # Service orchestration
 ├── venv/             # Python virtual environment (auto-created)
@@ -93,6 +100,39 @@ Auralis/
 ├── Makefile          # Development automation
 └── README.md         # This file
 ```
+
+## 📊 Data Schema
+
+The `schema/` directory contains shared TypeScript data models and validation schemas for the Auralis platform. These schemas define the structure for tech industry intelligence data including companies, products, capabilities, signals, and more.
+
+### Key Features
+
+- **Type Safety**: Full TypeScript interfaces with proper optional fields
+- **Runtime Validation**: Zod schemas for data validation
+- **Flexible Specifications**: Support for various product specification types
+- **Source Tracking**: Data provenance and credibility tracking
+- **Impact Scoring**: Signal impact analysis with -2 to +2 scale
+
+### Core Entities
+
+- **Company**: Technology companies with status tracking
+- **Product**: Product lifecycle management with specifications
+- **Capability**: Technical capabilities with maturity assessment
+- **Signal**: News/events with impact scoring and entity associations
+- **Source**: Data provenance and credibility tracking
+
+### Usage
+
+```typescript
+// Import types
+import { Company, Product, Signal } from './schema';
+
+// Runtime validation
+import { zCompany, zProduct, zSignal } from './schema';
+const company = zCompany.parse(rawData);
+```
+
+For detailed schema documentation, see [`schema/README.md`](schema/README.md).
 
 ## 🔧 Backend API
 
@@ -267,7 +307,11 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Environment management
 - [x] Virtual environment setup
 
-### Phase 2: Database & Models (In Progress)
+### Phase 2: Data Schema & Models ✅
+- [x] TypeScript data models and interfaces
+- [x] Zod validation schemas
+- [x] Flexible specification system
+- [x] Source tracking and provenance
 - [ ] PostgreSQL integration
 - [ ] Database models (Competitor, Product, Feature, Release, Document)
 - [ ] Database migrations and seeding
