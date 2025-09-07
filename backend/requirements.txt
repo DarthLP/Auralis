@@ -4,3 +4,7 @@ pydantic>=2
 python-dotenv
 requests
 beautifulsoup4
+sqlalchemy
+psycopg[binary]
+alembic
+pydantic-settings
