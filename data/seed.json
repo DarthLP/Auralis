@@ -1,0 +1,208 @@
+{
+    "companies": [
+      {
+        "id": "cmp_pal",
+        "name": "PAL Robotics",
+        "aliases": ["PAL", "PAL-Robotics"],
+        "hq_country": "Spain",
+        "website": "https://pal-robotics.com/",
+        "status": "active",
+        "tags": ["humanoid", "mobile-manipulation", "retail", "research"]
+      }
+    ],
+    "company_summaries": [
+      {
+        "company_id": "cmp_pal",
+        "one_liner": "Barcelona-based maker of humanoid, social, and mobile robots used by research institutions and industry.",
+        "founded_year": 2004,
+        "hq_city": "Barcelona",
+        "employees": "≈100",
+        "footprint": "Robots deployed in 30+ countries",
+        "sites": ["Toulouse (France)", "Bari (Italy)"],
+        "sources": ["src_home", "src_about"]
+      }
+    ],
+    "products": [
+      {
+        "id": "prd_tiago",
+        "company_id": "cmp_pal",
+        "name": "TIAGo",
+        "category": "Mobile Manipulator",
+        "stage": "ga",
+        "markets": ["Research"],
+        "tags": ["ROS", "HRI", "Navigation"],
+        "short_desc": "Modular research robot combining perception, navigation, manipulation, and HRI.",
+        "product_url": "https://pal-robotics.com/robot/tiago/",
+        "docs_url": "https://docs.pal-robotics.com/edge/tiago",
+        "spec_profile": "robotics/mobile_manipulator@1",
+        "specs": {
+          "payload": { "type": "number", "value": 3, "unit": "kg" },
+          "dof": { "type": "number", "value": 7 },
+          "max_speed": { "type": "number", "value": 1.0, "unit": "m/s" },
+          "sensors": {
+            "type": "array",
+            "value": [{ "type": "text", "value": "Lidar" }, { "type": "text", "value": "RGB-D" }]
+          },
+          "runtime": { "type": "range", "min": 4, "max": 8, "unit": "hrs" }
+        }
+      },
+      {
+        "id": "prd_tiago_pro",
+        "company_id": "cmp_pal",
+        "name": "TIAGo Pro",
+        "category": "Mobile Manipulator",
+        "stage": "ga",
+        "markets": ["Manufacturing", "Research"],
+        "tags": ["Collaborative", "Manipulation", "Navigation"],
+        "short_desc": "Next-gen mobile manipulator with enhanced arms for agile manufacturing.",
+        "product_url": "https://pal-robotics.com/robot/tiago-pro/",
+        "spec_profile": "robotics/mobile_manipulator@1",
+        "specs": {
+          "payload": { "type": "number", "value": 6, "unit": "kg" },
+          "dof": { "type": "number", "value": 7 },
+          "safety": { "type": "text", "value": "Designed for human-centric collaboration" }
+        }
+      },
+      {
+        "id": "prd_ari",
+        "company_id": "cmp_pal",
+        "name": "ARI",
+        "category": "Social Robot",
+        "stage": "ga",
+        "markets": ["Research", "Retail"],
+        "tags": ["HRI", "Speech", "Multimodal"],
+        "short_desc": "Interactive social robot with advanced HRI and multi-language speech.",
+        "product_url": "https://pal-robotics.com/robot/ari/",
+        "docs_url": "https://docs.pal-robotics.com/edge/ari.html"
+      },
+      {
+        "id": "prd_stockbot",
+        "company_id": "cmp_pal",
+        "name": "StockBot",
+        "category": "AMR",
+        "stage": "ga",
+        "markets": ["Retail", "Intralogistics"],
+        "tags": ["RFID", "Inventory", "Navigation"],
+        "short_desc": "Autonomous RFID inventory-tracking AMR for stores and warehouses.",
+        "product_url": "https://pal-robotics.com/robot/stockbot/",
+        "docs_url": "https://pal-robotics.com/wp-content/uploads/2025/07/RFID-Autonomous-Solution-StockBot-brochure.pdf",
+        "spec_profile": "robotics/amr@1",
+        "specs": {
+          "sensors": {
+            "type": "array",
+            "value": [{ "type": "text", "value": "RFID UHF" }, { "type": "text", "value": "Lidar" }]
+          },
+          "runtime": { "type": "range", "min": 8, "max": 10, "unit": "hrs" }
+        }
+      }
+    ],
+    "capabilities": [
+      { "id": "cap_nav", "name": "Navigation/Autonomy", "definition": "Indoor localization, mapping, path planning", "tags": ["SLAM"] },
+      { "id": "cap_manip", "name": "Manipulation", "definition": "Arm/gripper control & compliance", "tags": [] },
+      { "id": "cap_hri", "name": "HRI", "definition": "Speech, gesture, face interaction", "tags": [] },
+      { "id": "cap_rfid", "name": "RFID Inventory", "definition": "Automated RFID stock counting/localization", "tags": [] }
+    ],
+    "product_capabilities": [
+      {
+        "id": "pc_tiago_nav",
+        "product_id": "prd_tiago",
+        "capability_id": "cap_nav",
+        "maturity": "ga",
+        "details": "Indoor navigation & mapping for research scenarios.",
+        "source_id": "src_tiago_pg"
+      },
+      {
+        "id": "pc_tiago_manip",
+        "product_id": "prd_tiago",
+        "capability_id": "cap_manip",
+        "maturity": "ga",
+        "details": "Mobile manipulation with configurable arms/grippers.",
+        "source_id": "src_tiago_pg"
+      },
+      {
+        "id": "pc_tiago_pro_manip",
+        "product_id": "prd_tiago_pro",
+        "capability_id": "cap_manip",
+        "maturity": "ga",
+        "details": "Enhanced arm accuracy and compliance; teach by guiding.",
+        "source_id": "src_tiagopro_pg"
+      },
+      {
+        "id": "pc_ari_hri",
+        "product_id": "prd_ari",
+        "capability_id": "cap_hri",
+        "maturity": "ga",
+        "details": "Social HRI, gestures, touchscreen; 30+ languages.",
+        "source_id": "src_ari_pg"
+      },
+      {
+        "id": "pc_stockbot_rfid",
+        "product_id": "prd_stockbot",
+        "capability_id": "cap_rfid",
+        "maturity": "ga",
+        "details": "Autonomous RFID stock counting and localization.",
+        "source_id": "src_stockbot_pg"
+      }
+    ],
+    "signals": [
+      {
+        "id": "sig_auto25",
+        "type": "news",
+        "headline": "PAL Robotics showcases embodied AI at automatica 2025",
+        "summary": "Exhibited embodied AI; demos across platforms.",
+        "published_at": "2025-06-24",
+        "url": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/",
+        "company_ids": ["cmp_pal"],
+        "product_ids": ["prd_tiago", "prd_ari"],
+        "capability_ids": ["cap_nav", "cap_hri"],
+        "impact": 2,
+        "source_id": "src_auto25_post"
+      },
+      {
+        "id": "sig_nrf25",
+        "type": "news",
+        "headline": "StockBot demos RFID at NRF 2025",
+        "summary": "RFID automation in retail; booth presence Jan 12–14.",
+        "published_at": "2025-01-12",
+        "url": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/",
+        "company_ids": ["cmp_pal"],
+        "product_ids": ["prd_stockbot"],
+        "capability_ids": ["cap_rfid"],
+        "impact": 1,
+        "source_id": "src_nrf25_blog"
+      }
+    ],
+    "releases": [
+      {
+        "id": "rel_tiagopro_intro",
+        "company_id": "cmp_pal",
+        "product_id": "prd_tiago_pro",
+        "version": "Intro",
+        "notes": "TIAGo Pro introduced with torque-controllable arms & HRI upgrades.",
+        "released_at": "2023-05-19",
+        "source_id": "src_tiagopro_blog"
+      },
+      {
+        "id": "rel_tiago_ui",
+        "company_id": "cmp_pal",
+        "product_id": "prd_tiago",
+        "version": "Web UI packages",
+        "notes": "Web-based Animation & Visual Programming; updated Advanced Navigation.",
+        "released_at": "2023-05-02",
+        "source_id": "src_tiago_ui_blog"
+      }
+    ],
+    "sources": [
+      { "id": "src_home", "origin": "https://pal-robotics.com/", "author": "PAL Robotics", "retrieved_at": "2025-09-07", "credibility": "high" },
+      { "id": "src_about", "origin": "https://pal-robotics.com/who-we-are/", "author": "PAL Robotics", "retrieved_at": "2025-09-07", "credibility": "high" },
+      { "id": "src_tiago_pg", "origin": "https://pal-robotics.com/robot/tiago/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_tiagopro_pg", "origin": "https://pal-robotics.com/robot/tiago-pro/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_ari_pg", "origin": "https://pal-robotics.com/robot/ari/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_stockbot_pg", "origin": "https://pal-robotics.com/robot/stockbot/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_auto25_post", "origin": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_nrf25_blog", "origin": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_tiagopro_blog", "origin": "https://pal-robotics.com/blog/new-robot-concept-in-mobile-manipulation/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
+      { "id": "src_tiago_ui_blog", "origin": "https://pal-robotics.com/blog/tiago-web-user-interface-packages/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" }
+    ]
+  }
+  

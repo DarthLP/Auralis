@@ -85,11 +85,13 @@ Auralis/
 │   │   ├── layouts/  # Layout components (AppLayout)
 │   │   ├── pages/    # Page components with routing
 │   │   ├── components/ # Reusable UI components
-│   │   ├── lib/      # API client and utilities
+│   │   ├── lib/      # API client and utilities (includes mockData.ts)
 │   │   └── hooks/    # Custom React hooks
 │   ├── package.json  # Dependencies and scripts
 │   ├── tailwind.config.js # Tailwind CSS configuration
 │   └── vite.config.ts # Vite build configuration
+├── data/             # Sample data and seed files
+│   └── seed.json     # Mock data for development and demo
 ├── schema/           # Shared data models and validation
 │   ├── enums.ts      # Core enumeration types
 │   ├── specs.ts      # Flexible specification value types
@@ -152,6 +154,8 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - **TanStack Query**: Powerful data fetching and caching
 - **TypeScript**: Full type safety throughout the application
 - **Responsive Design**: Mobile-first approach with responsive navigation
+- **Mock Data System**: Comprehensive seed data with PAL Robotics example
+- **Overview Dashboard**: Real-time signals and releases tracking
 
 ### Architecture
 
@@ -163,12 +167,23 @@ The `frontend/` directory contains a modern React application built with Vite, f
 
 ### Routes
 
-- `/` - Overview dashboard
+- `/` - Overview dashboard with signals and releases
 - `/companies` - Companies listing
 - `/companies/:companyId` - Individual company details
 - `/companies/:companyId/products/:productId` - Product details
 - `/signals` - Industry signals and news
 - `/releases` - Product releases tracking
+
+### Overview Dashboard
+
+The main dashboard (`/`) provides a comprehensive overview of the latest industry activity:
+
+- **This Week Signals**: Displays the top 5 most impactful signals from the past 7 days, sorted by impact score and recency
+- **Recent Releases**: Shows the 8 most recent product releases from the past 90 days
+- **Impact Scoring**: Visual indicators for signal impact levels (High, Medium, Neutral, Low, Very Low)
+- **Interactive Navigation**: Click-through links to detailed views for signals and product releases
+- **Loading States**: Skeleton loading animations for better user experience
+- **Error Handling**: Graceful error states with user-friendly messages
 
 ### Development
 
@@ -179,6 +194,42 @@ npm run dev
 ```
 
 Access the application at http://localhost:3000
+
+## 📊 Mock Data System
+
+The application includes a comprehensive mock data system for development and demonstration purposes:
+
+### Seed Data (`data/seed.json`)
+
+The `data/seed.json` file contains realistic sample data based on PAL Robotics, a Barcelona-based robotics company:
+
+- **Companies**: Complete company profiles with metadata
+- **Products**: Multiple product lines (TIAGo, TIAGo Pro, ARI, StockBot) with specifications
+- **Capabilities**: Technical capabilities with maturity assessments
+- **Signals**: Industry news and events with impact scoring
+- **Releases**: Product release history with version tracking
+- **Sources**: Data provenance and credibility tracking
+
+### Mock API (`frontend/src/lib/mockData.ts`)
+
+The mock data system provides:
+
+- **Realistic Delays**: Simulated network latency for authentic user experience
+- **Data Validation**: Zod schema validation for type safety
+- **Filtered Queries**: Specialized functions for dashboard views (recent signals, releases)
+- **Error Simulation**: Proper error handling and edge cases
+- **Type Safety**: Full TypeScript integration with schema types
+
+### Usage
+
+```typescript
+// Import mock API functions
+import { getThisWeekSignals, getRecentReleases, companies } from '@/lib/mockData';
+
+// Use in components
+const signals = await getThisWeekSignals(); // Top 5 signals from past week
+const releases = await getRecentReleases(); // Top 8 releases from past 90 days
+```
 
 ## 🔧 Backend API
 
@@ -383,7 +434,8 @@ Re-crawl → Detect Changes → Show What's New
 - [x] TanStack Query for data fetching
 - [x] Lazy loading and Suspense boundaries
 - [x] Responsive design and mobile support
-- [ ] Competitor overview dashboard
+- [x] Overview dashboard with signals and releases
+- [x] Mock data system with seed data
 - [ ] Competitor detail pages
 - [ ] Product detail pages
 - [ ] Change visualization
