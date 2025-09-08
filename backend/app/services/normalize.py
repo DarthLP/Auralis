@@ -27,7 +27,7 @@ def json_serial(obj):
 from sqlalchemy import func
 
 from app.models.extraction import (
-    ExtractedCompany, ExtractedProduct, Capability, ExtractedRelease, Document, ExtractedSignalEntity,
+    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, Document, ExtractedSignalEntity,
     ExtractionSource, EntitySnapshot, EntityChange, ExtractionSession
 )
 from app.core.config import settings
@@ -207,7 +207,7 @@ class EntityNormalizer:
             
             return ":".join(key_parts)
         
-        elif entity_type == "Capability":
+        elif entity_type == "ExtractedCapability":
             name = self.normalize_text(data.get("name", ""))
             category = data.get("category", "")
             
@@ -681,7 +681,7 @@ class NormalizationService:
         model_map = {
             "ExtractedCompany": ExtractedCompany,
             "ExtractedProduct": ExtractedProduct,
-            "Capability": Capability,
+            "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
             "Document": Document,
             "ExtractedSignalEntity": ExtractedSignalEntity
@@ -703,7 +703,7 @@ class NormalizationService:
         model_map = {
             "ExtractedCompany": ExtractedCompany,
             "ExtractedProduct": ExtractedProduct,
-            "Capability": Capability,
+            "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
             "Document": Document,
             "ExtractedSignalEntity": ExtractedSignalEntity
@@ -734,7 +734,7 @@ class NormalizationService:
         model_map = {
             "ExtractedCompany": ExtractedCompany,
             "ExtractedProduct": ExtractedProduct,
-            "Capability": Capability,
+            "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
             "Document": Document,
             "ExtractedSignalEntity": ExtractedSignalEntity

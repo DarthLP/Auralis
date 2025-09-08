@@ -151,11 +151,11 @@ class ExtractedProduct(Base):
                            cascade="all, delete-orphan")
 
 
-class Capability(Base):
+class ExtractedCapability(Base):
     """Extracted capability entities."""
-    __tablename__ = "capabilities"
+    __tablename__ = "extracted_capabilities"
     __table_args__ = (
-        UniqueConstraint('normalized_name', 'category', name='uq_capability_name_category'),
+        UniqueConstraint('normalized_name', 'category', name='uq_extracted_capability_name_category'),
         {"schema": "crawl_data"}
     )
     
@@ -178,7 +178,7 @@ class Capability(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Capability.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Capability')",
+                           primaryjoin="and_(ExtractedCapability.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='ExtractedCapability')",
                            cascade="all, delete-orphan")
 
 

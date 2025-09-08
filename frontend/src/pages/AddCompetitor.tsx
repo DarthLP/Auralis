@@ -1,35 +1,78 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  startScraperJob, 
-  getScraperJob, 
-  saveCompetitor, 
-  ScraperJob, 
-  ScraperResult,
+  startCrawlDiscovery,
+  startFingerprinting,
+  startExtraction,
+  ExtractionProgressTracker,
   companies
-} from '../lib/mockData';
+} from '../lib/api';
 import { 
   ValidationResult, 
   checkReachability, 
   checkDeduplication 
 } from '../utils/urlValidation';
 import UrlInputWithValidate from '../components/UrlInputWithValidate';
-import JobStatusBadge from '../components/JobStatusBadge';
-import EditableTagInput from '../components/EditableTagInput';
-import ProductsEditor from '../components/ProductsEditor';
-import SourcesList from '../components/SourcesList';
 import DedupAlert from '../components/DedupAlert';
+
+interface ProcessingState {
+  phase: 'idle' | 'discovering' | 'fingerprinting' | 'extracting' | 'completed' | 'error';
+  crawlSessionId: number | null;
+  fingerprintSessionId: number | null;
+  extractionSessionId: number | null;
+  
+  // Progress tracking
+  progress: {
+    discoveredPages: number;
+    processedPages: number;
+    extractedPages: number;
+    totalPages: number;
+    entitiesFound: {
+      companies: number;
+      products: number;
+      capabilities: number;
+      releases: number;
+      documents: number;
+      signals: number;
+    };
+  };
+  
+  // Real-time metrics
+  metrics: {
+    qps: number;
+    etaSeconds: number | null;
+    cacheHits: number;
+    retries: number;
+  };
+  
+  error: string | null;
+  competitorName: string | null;
+}
 
 export default function AddCompetitor() {
   const navigate = useNavigate();
   const [url, setUrl] = useState('');
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
-  const [currentJob, setCurrentJob] = useState<ScraperJob | null>(null);
-  const [previewData, setPreviewData] = useState<ScraperResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingCompanies, setExistingCompanies] = useState<Array<{ id: string; name: string; website?: string | null }>>([]);
+  const [processingState, setProcessingState] = useState<ProcessingState>({
+    phase: 'idle',
+    crawlSessionId: null,
+    fingerprintSessionId: null,
+    extractionSessionId: null,
+    progress: {
+      discoveredPages: 0,
+      processedPages: 0,
+      extractedPages: 0,
+      totalPages: 0,
+      entitiesFound: { companies: 0, products: 0, capabilities: 0, releases: 0, documents: 0, signals: 0 }
+    },
+    metrics: { qps: 0, etaSeconds: null, cacheHits: 0, retries: 0 },
+    error: null,
+    competitorName: null
+  });
+  const [progressTracker, setProgressTracker] = useState<ExtractionProgressTracker | null>(null);
 
   // Load existing companies for deduplication
   useEffect(() => {
@@ -44,34 +87,94 @@ export default function AddCompetitor() {
     loadCompanies();
   }, []);
 
-  // Poll job status when job is active
+  // Cleanup progress tracker on unmount
   useEffect(() => {
-    if (!currentJob || currentJob.status === 'done' || currentJob.status === 'error') {
-      return;
-    }
-
-    const interval = setInterval(async () => {
-      const updatedJob = await getScraperJob(currentJob.id);
-      if (updatedJob) {
-        setCurrentJob(updatedJob);
-        if (updatedJob.status === 'done' && updatedJob.result) {
-          setPreviewData(updatedJob.result);
-          setIsAnalyzing(false);
-        } else if (updatedJob.status === 'error') {
-          setIsAnalyzing(false);
-        }
+    return () => {
+      if (progressTracker) {
+        progressTracker.close();
       }
-    }, 500);
+    };
+  }, [progressTracker]);
 
-    return () => clearInterval(interval);
-  }, [currentJob]);
+  const extractCompetitorNameFromDomain = (domain: string): string => {
+    return domain
+      .replace('www.', '')
+      .split('.')[0]
+      .replace(/[-_]/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const startProgressTracking = (extractionSessionId: number) => {
+    const tracker = new ExtractionProgressTracker();
+    
+    tracker.on('metrics', (data: any) => {
+      setProcessingState(prev => ({
+        ...prev,
+        metrics: {
+          qps: data.qps || 0,
+          etaSeconds: data.eta_seconds || null,
+          cacheHits: data.cache_hits || 0,
+          retries: data.retries || 0
+        }
+      }));
+    });
+    
+    tracker.on('page_extracted', (_data: any) => {
+      setProcessingState(prev => ({
+        ...prev,
+        progress: {
+          ...prev.progress,
+          extractedPages: prev.progress.extractedPages + 1
+        }
+      }));
+    });
+    
+    tracker.on('session_completed', async (data: any) => {
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'completed',
+        progress: {
+          ...prev.progress,
+          entitiesFound: {
+            companies: data.stats?.companies_found || 0,
+            products: data.stats?.products_found || 0,
+            capabilities: data.stats?.capabilities_found || 0,
+            releases: data.stats?.releases_found || 0,
+            documents: data.stats?.documents_found || 0,
+            signals: data.stats?.signals_found || 0
+          }
+        }
+      }));
+      
+      // Auto-redirect to companies page with success message
+      setTimeout(() => {
+        navigate('/companies', { 
+          state: { 
+            message: `Successfully analyzed and added ${processingState.competitorName}! Found ${data.stats?.companies_found || 0} companies, ${data.stats?.products_found || 0} products, and ${data.stats?.capabilities_found || 0} capabilities.`
+          }
+        });
+      }, 3000);
+    });
+    
+    tracker.on('error', (data: any) => {
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'error',
+        error: data.message || 'Extraction failed'
+      }));
+      setIsAnalyzing(false);
+    });
+    
+    tracker.subscribe(extractionSessionId);
+    setProgressTracker(tracker);
+  };
 
   const handleAnalyze = async () => {
     if (!validationResult?.ok) return;
 
     setIsAnalyzing(true);
     setErrors({});
-    setPreviewData(null);
+    setProcessingState(prev => ({ ...prev, phase: 'discovering', error: null }));
 
     try {
       // First check reachability
@@ -100,94 +203,75 @@ export default function AddCompetitor() {
         return;
       }
 
-      // Start scraper job with normalized URL
-      const job = await startScraperJob(validationResult.normalized_origin);
-      setCurrentJob(job);
-    } catch (error) {
-      console.error('Failed to start scraper job:', error);
-      setIsAnalyzing(false);
-      setErrors({ general: 'Failed to start analysis. Please try again.' });
-    }
-  };
+      // Extract competitor name
+      const competitorName = extractCompetitorNameFromDomain(validationResult.eTLD1);
+      setProcessingState(prev => ({ ...prev, competitorName }));
 
-  const handleSave = async () => {
-    if (!previewData) return;
+      // Phase 1: Discovery
+      const crawlResult = await startCrawlDiscovery(validationResult.normalized_origin);
+      
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'fingerprinting',
+        crawlSessionId: crawlResult.crawl_session_id,
+        progress: {
+          ...prev.progress,
+          discoveredPages: crawlResult.pages.length,
+          totalPages: crawlResult.pages.length
+        }
+      }));
 
-    // Validation
-    const newErrors: Record<string, string> = {};
-    
-    if (!previewData.company.name.trim()) {
-      newErrors.companyName = 'Company name is required';
-    }
-    
-    if (!previewData.company.website.trim()) {
-      newErrors.website = 'Website is required';
-    }
-    
-    if (previewData.products.length === 0 && !previewData.summary.one_liner.trim()) {
-      newErrors.content = 'At least one product or company description is required';
-    }
+      // Phase 2: Fingerprinting
+      const fingerprintResult = await startFingerprinting(
+        crawlResult.crawl_session_id, 
+        competitorName
+      );
+      
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'extracting',
+        fingerprintSessionId: fingerprintResult.fingerprint_session_id,
+        progress: {
+          ...prev.progress,
+          processedPages: fingerprintResult.total_processed
+        }
+      }));
 
-    // Validate products
-    previewData.products.forEach((product, index) => {
-      if (!product.name.trim()) {
-        newErrors[`product_${index}_name`] = 'Product name is required';
-      }
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setIsSaving(true);
-    setErrors({});
-
-    try {
-      const result = await saveCompetitor(previewData);
-      navigate(`/companies/${result.company_id}`, { 
-        state: { message: 'Company created successfully!' }
+      // Phase 3: Extraction
+      const extractionResult = await startExtraction({
+        fingerprint_session_id: fingerprintResult.fingerprint_session_id,
+        competitor: competitorName,
+        schema_version: 'v1'
       });
+      
+      setProcessingState(prev => ({
+        ...prev,
+        extractionSessionId: extractionResult.extraction_session_id
+      }));
+
+      // Start real-time progress tracking
+      startProgressTracking(extractionResult.extraction_session_id);
+      
     } catch (error) {
-      console.error('Failed to save competitor:', error);
-      setErrors({ general: 'Failed to save company. Please try again.' });
-    } finally {
-      setIsSaving(false);
+      console.error('Analysis failed:', error);
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'error',
+        error: error instanceof Error ? error.message : 'Analysis failed'
+      }));
+      setErrors({ general: 'Failed to analyze website. Please try again.' });
+      setIsAnalyzing(false);
     }
   };
 
   const handleCancel = () => {
+    if (progressTracker) {
+      progressTracker.close();
+    }
     navigate('/companies');
   };
 
-  const updatePreviewData = (updates: Partial<ScraperResult>) => {
-    if (previewData) {
-      setPreviewData({ ...previewData, ...updates });
-    }
-  };
-
-  const updateCompany = (updates: Partial<ScraperResult['company']>) => {
-    if (previewData) {
-      updatePreviewData({
-        company: { ...previewData.company, ...updates }
-      });
-    }
-  };
-
-  const updateSummary = (updates: Partial<ScraperResult['summary']>) => {
-    if (previewData) {
-      updatePreviewData({
-        summary: { ...previewData.summary, ...updates }
-      });
-    }
-  };
-
   const isUrlValid = validationResult?.ok || false;
-
-  const canSave = previewData && 
-    currentJob?.status === 'done' && 
-    !isSaving &&
-    !previewData.dedupe;
 
   return (
     <div className="container max-w-4xl">
@@ -268,152 +352,160 @@ export default function AddCompetitor() {
         </div>
       </div>
 
-      {/* Status Row */}
-      {currentJob && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-gray-900">Analysis Status</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                {currentJob.status === 'queued' && 'Job queued for processing...'}
-                {currentJob.status === 'processing' && 'Extracting company information...'}
-                {currentJob.status === 'done' && 'Analysis complete!'}
-                {currentJob.status === 'error' && 'Analysis failed. Please try again.'}
-              </p>
-            </div>
-            <JobStatusBadge status={currentJob.status} />
-          </div>
-        </div>
-      )}
-
-      {/* Preview Form */}
-      {previewData && currentJob?.status === 'done' && (
+      {/* Progress Tracking */}
+      {processingState.phase !== 'idle' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Preview & Edit</h2>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Analysis Progress</h3>
+            <div className="mt-2 flex items-center space-x-4">
+              <div className={`flex items-center ${processingState.phase === 'discovering' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
+                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'discovering' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
+                <span className="text-sm font-medium">Discovery</span>
+              </div>
+              <div className={`flex items-center ${processingState.phase === 'fingerprinting' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
+                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'fingerprinting' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
+                <span className="text-sm font-medium">Fingerprinting</span>
+              </div>
+              <div className={`flex items-center ${processingState.phase === 'extracting' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
+                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'extracting' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
+                <span className="text-sm font-medium">Extraction</span>
+              </div>
+              <div className={`flex items-center ${processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
+                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
+                <span className="text-sm font-medium">Complete</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Dedupe Alert */}
-          {previewData.dedupe && (
-            <DedupAlert
-              existingCompanyId={previewData.dedupe.existing_company_id}
-              existingCompanyName={previewData.dedupe.existing_company_name}
-              className="mb-6"
-            />
+          {/* Progress Bars */}
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Pages Discovered</span>
+                <span>{processingState.progress.discoveredPages}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Pages Processed</span>
+                <span>{processingState.progress.processedPages}/{processingState.progress.totalPages}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ 
+                    width: `${(processingState.progress.processedPages / Math.max(processingState.progress.totalPages, 1)) * 100}%` 
+                  }}
+                />
+              </div>
+            </div>
+
+            {processingState.phase === 'extracting' && (
+              <div>
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Pages Extracted</span>
+                  <span>{processingState.progress.extractedPages}/{processingState.progress.totalPages}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${(processingState.progress.extractedPages / Math.max(processingState.progress.totalPages, 1)) * 100}%` 
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Real-time Metrics */}
+          {processingState.phase === 'extracting' && (
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-gray-500">Speed</div>
+                <div className="font-semibold">{processingState.metrics.qps.toFixed(1)} pages/sec</div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">ETA</div>
+                <div className="font-semibold">
+                  {processingState.metrics.etaSeconds 
+                    ? `${Math.ceil(processingState.metrics.etaSeconds / 60)}m ${processingState.metrics.etaSeconds % 60}s`
+                    : 'Calculating...'
+                  }
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Cache Hits</div>
+                <div className="font-semibold">{processingState.metrics.cacheHits}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Retries</div>
+                <div className="font-semibold">{processingState.metrics.retries}</div>
+              </div>
+            </div>
           )}
 
-          <div className="space-y-6">
-            {/* Company Information */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Company Information</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={previewData.company.name}
-                    onChange={(e) => updateCompany({ name: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.companyName ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.companyName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.companyName}</p>
-                  )}
+          {/* Entities Found */}
+          {processingState.phase === 'completed' && (
+            <div className="mt-4 p-4 bg-green-50 rounded-lg">
+              <h4 className="text-sm font-medium text-green-800 mb-2">Entities Extracted</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-green-700">Companies:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.companies}</span>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Website
-                  </label>
-                  <input
-                    type="url"
-                    value={previewData.company.website}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                  />
+                <div className="flex justify-between">
+                  <span className="text-green-700">Products:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.products}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Capabilities:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.capabilities}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Releases:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.releases}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Documents:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.documents}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Signals:</span>
+                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.signals}</span>
                 </div>
               </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  HQ Country
-                </label>
-                <input
-                  type="text"
-                  value={previewData.company.hq_country || ''}
-                  onChange={(e) => updateCompany({ hq_country: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., United States, Germany, etc."
-                />
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags
-                </label>
-                <EditableTagInput
-                  tags={previewData.company.tags}
-                  onChange={(tags) => updateCompany({ tags })}
-                  maxTags={8}
-                />
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  One-liner
-                </label>
-                <textarea
-                  value={previewData.summary.one_liner}
-                  onChange={(e) => updateSummary({ one_liner: e.target.value })}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Brief description of the company"
-                />
-                {errors.content && (
-                  <p className="mt-1 text-sm text-red-600">{errors.content}</p>
-                )}
+              <div className="mt-3 text-sm text-green-700">
+                <p>✅ Analysis complete! Redirecting to companies page...</p>
               </div>
             </div>
+          )}
 
-            {/* Products */}
-            <ProductsEditor
-              products={previewData.products}
-              onChange={(products) => updatePreviewData({ products })}
-            />
-
-            {/* Sources */}
-            <SourcesList sources={previewData.sources} />
-          </div>
+          {/* Error State */}
+          {processingState.phase === 'error' && (
+            <div className="mt-4 p-4 bg-red-50 rounded-lg">
+              <h4 className="text-sm font-medium text-red-800 mb-2">Analysis Failed</h4>
+              <p className="text-sm text-red-700">{processingState.error}</p>
+            </div>
+          )}
         </div>
       )}
 
       {/* Actions */}
-      {previewData && currentJob?.status === 'done' && (
-        <div className="flex items-center justify-between">
+      {processingState.phase === 'idle' && (
+        <div className="flex items-center justify-end">
           <button
             onClick={handleCancel}
             className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Cancel
-          </button>
-
-          <button
-            onClick={handleSave}
-            disabled={!canSave}
-            className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            {isSaving ? (
-              <>
-                <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Saving...
-              </>
-            ) : (
-              'Save & Add'
-            )}
           </button>
         </div>
       )}

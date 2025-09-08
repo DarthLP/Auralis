@@ -89,6 +89,7 @@ class CrawlResponse(BaseModel):
     top_by_category: Dict
     warnings: list = []
     error: str = None
+    crawl_session_id: int = None
 
 
 def setup_detailed_logging(log_file: str) -> logging.Logger:

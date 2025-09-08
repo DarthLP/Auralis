@@ -334,33 +334,65 @@ The companies section provides comprehensive company management and analysis:
 
 ### Add Competitor Page (`/competitors/new`)
 
-The Add Competitor page provides a comprehensive URL-based competitor ingestion system:
+The Add Competitor page provides a comprehensive URL-based competitor ingestion system with **auto-save functionality**:
+
+#### **3-Phase Automated Pipeline**
+- **Phase 1 - Discovery**: Crawls and classifies pages from competitor websites
+- **Phase 2 - Fingerprinting**: Generates content hashes and extracts text from discovered pages
+- **Phase 3 - Extraction**: Uses AI + rules to extract structured entities (companies, products, capabilities)
+- **Auto-Save Mode**: Automatically saves extracted entities to database without user intervention
+
+#### **Real-Time Progress Tracking**
+- **Visual Progress Indicators**: Shows current phase with animated status dots
+- **Progress Bars**: Tracks pages discovered, processed, and extracted
+- **Live Metrics**: Displays processing speed, ETA, cache hits, and retry counts
+- **Server-Sent Events**: Real-time updates during extraction phase
 
 #### **URL-Based Ingestion Flow**
 - **Smart URL Validation**: Real-time validation with scheme handling, hostname normalization, and security checks
 - **Domain Normalization**: Automatic eTLD+1 extraction for consistent domain matching
-- **Reachability Testing**: Mock reachability checks to ensure websites are accessible
+- **Reachability Testing**: Real reachability checks to ensure websites are accessible
 - **Deduplication Logic**: Automatic detection of existing companies by domain and name matching
 - **Visual Feedback**: Green highlighting for valid URLs, error messages for invalid ones
 
-#### **Mock Scraper System**
-- **Job Status Tracking**: Real-time status updates (queued → processing → done)
-- **Data Extraction**: Heuristic extraction of company name, description, products, and tags
-- **Source Attribution**: Automatic source tracking with origin and retrieval timestamps
-- **Editable Preview**: Review and modify extracted data before saving
-
 #### **User Experience Features**
-- **Comprehensive Guidance**: Step-by-step instructions and "How it works" explanation
-- **Form Validation**: Client-side validation for all required fields
-- **Error Handling**: Graceful error states with helpful messages
-- **Success Flow**: Automatic navigation to new company page with success toast
+- **One-Click Analysis**: Simply enter URL and click "Analyze" - everything else is automated
+- **Completion Notification**: Success message with option to view the new company
+- **Error Handling**: Graceful error states with helpful messages and retry options
 - **Entry Points**: Multiple ways to access (floating button, empty state CTA, companies grid)
 
 #### **Technical Implementation**
-- **Debounced Validation**: 250ms debounce for smooth real-time validation
+- **Backend Integration**: Full integration with crawling, fingerprinting, and extraction APIs
 - **Type Safety**: Full TypeScript integration with validation schemas
-- **Mock API Integration**: Seamless integration with existing mock data system
-- **Component Reusability**: Modular components for URL input, job status, and data editing
+- **Real-Time Updates**: WebSocket-like experience with Server-Sent Events
+- **Component Reusability**: Modular components for URL input, progress tracking, and status display
+
+### Crawling & Extraction API
+
+The backend provides a comprehensive 3-phase pipeline for competitor analysis:
+
+#### **Discovery API (`/api/crawl/discover`)**
+- **Purpose**: Discover and classify interesting pages from competitor websites
+- **Input**: Target URL
+- **Output**: List of discovered pages with categories, scores, and metadata
+- **Features**: JavaScript-enabled crawling, sitemap discovery, content classification
+
+#### **Fingerprinting API (`/api/crawl/fingerprint`)**
+- **Purpose**: Generate content hashes and extract text from discovered pages
+- **Input**: Crawl session ID and competitor name
+- **Output**: Fingerprint session with processed pages and content hashes
+- **Features**: Content deduplication, text extraction, change detection
+
+#### **Extraction API (`/api/extract/run`)**
+- **Purpose**: Extract structured entities using AI + rules-based extraction
+- **Input**: Fingerprint session ID and competitor name
+- **Output**: Extraction session with found entities (companies, products, capabilities)
+- **Features**: AI-powered entity extraction, real-time progress tracking, auto-save to database
+
+#### **Real-Time Progress (`/api/extract/stream/{session_id}`)**
+- **Purpose**: Stream real-time progress updates during extraction
+- **Format**: Server-Sent Events (SSE)
+- **Updates**: Processing speed, ETA, cache hits, retries, entity counts
 
 ### Signals Page (`/signals`)
 
