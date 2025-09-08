@@ -345,8 +345,10 @@ The Add Competitor page provides a comprehensive URL-based competitor ingestion 
 #### **Real-Time Progress Tracking**
 - **Visual Progress Indicators**: Shows current phase with animated status dots
 - **Progress Bars**: Tracks pages discovered, processed, and extracted
-- **Live Metrics**: Displays processing speed, ETA, cache hits, and retry counts
+- **Live Metrics**: Displays processing speed (pages/min), ETA, cache hits, and retry counts
 - **Server-Sent Events**: Real-time updates during extraction phase
+- **Fallback Polling**: 10-second polling backup if SSE connection fails
+- **Enhanced Metrics**: More frequent updates (every 5 pages + first page) for better responsiveness
 
 #### **URL-Based Ingestion Flow**
 - **Smart URL Validation**: Real-time validation with scheme handling, hostname normalization, and security checks
@@ -357,7 +359,8 @@ The Add Competitor page provides a comprehensive URL-based competitor ingestion 
 
 #### **User Experience Features**
 - **One-Click Analysis**: Simply enter URL and click "Analyze" - everything else is automated
-- **Completion Notification**: Success message with option to view the new company
+- **User-Controlled Completion**: No forced redirects - users choose their next action
+- **Completion Actions**: "View Companies" button to see results or "Add Another" to start over
 - **Error Handling**: Graceful error states with helpful messages and retry options
 - **Entry Points**: Multiple ways to access (floating button, empty state CTA, companies grid)
 
@@ -366,6 +369,7 @@ The Add Competitor page provides a comprehensive URL-based competitor ingestion 
 - **Type Safety**: Full TypeScript integration with validation schemas
 - **Real-Time Updates**: WebSocket-like experience with Server-Sent Events
 - **Component Reusability**: Modular components for URL input, progress tracking, and status display
+- **Robust Completion Detection**: Dual mechanism (SSE + polling) ensures reliable completion handling
 
 ### Crawling & Extraction API
 
@@ -392,7 +396,8 @@ The backend provides a comprehensive 3-phase pipeline for competitor analysis:
 #### **Real-Time Progress (`/api/extract/stream/{session_id}`)**
 - **Purpose**: Stream real-time progress updates during extraction
 - **Format**: Server-Sent Events (SSE)
-- **Updates**: Processing speed, ETA, cache hits, retries, entity counts
+- **Updates**: Processing speed (pages/min), ETA, cache hits, retries, entity counts
+- **Enhanced Metrics**: More frequent updates (every 5 pages + first page) for better responsiveness
 
 ### Signals Page (`/signals`)
 

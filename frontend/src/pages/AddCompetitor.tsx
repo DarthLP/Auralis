@@ -4,6 +4,7 @@ import {
   startCrawlDiscovery,
   startFingerprinting,
   startExtraction,
+  getExtractionStatus,
   ExtractionProgressTracker,
   companies
 } from '../lib/api';
@@ -145,15 +146,7 @@ export default function AddCompetitor() {
           }
         }
       }));
-      
-      // Auto-redirect to companies page with success message
-      setTimeout(() => {
-        navigate('/companies', { 
-          state: { 
-            message: `Successfully analyzed and added ${processingState.competitorName}! Found ${data.stats?.companies_found || 0} companies, ${data.stats?.products_found || 0} products, and ${data.stats?.capabilities_found || 0} capabilities.`
-          }
-        });
-      }, 3000);
+      setIsAnalyzing(false);
     });
     
     tracker.on('error', (data: any) => {
@@ -167,6 +160,49 @@ export default function AddCompetitor() {
     
     tracker.subscribe(extractionSessionId);
     setProgressTracker(tracker);
+    
+    // Fallback: Check extraction status every 10 seconds in case SSE doesn't work
+    const statusCheckInterval = setInterval(async () => {
+      try {
+        const status = await getExtractionStatus(extractionSessionId);
+        if (status.status === 'completed') {
+          clearInterval(statusCheckInterval);
+          setProcessingState(prev => ({
+            ...prev,
+            phase: 'completed',
+            progress: {
+              ...prev.progress,
+              entitiesFound: {
+                companies: status.stats?.companies_found || 0,
+                products: status.stats?.products_found || 0,
+                capabilities: status.stats?.capabilities_found || 0,
+                releases: status.stats?.releases_found || 0,
+                documents: status.stats?.documents_found || 0,
+                signals: status.stats?.signals_found || 0
+              }
+            }
+          }));
+          setIsAnalyzing(false);
+        } else if (status.status === 'failed') {
+          clearInterval(statusCheckInterval);
+          setProcessingState(prev => ({
+            ...prev,
+            phase: 'error',
+            error: 'Extraction failed'
+          }));
+          setIsAnalyzing(false);
+        }
+      } catch (error) {
+        console.error('Failed to check extraction status:', error);
+      }
+    }, 10000); // Check every 10 seconds
+    
+    // Clean up interval when component unmounts or tracker is closed
+    const originalClose = tracker.close.bind(tracker);
+    tracker.close = () => {
+      clearInterval(statusCheckInterval);
+      originalClose();
+    };
   };
 
   const handleAnalyze = async () => {
@@ -383,7 +419,7 @@ export default function AddCompetitor() {
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Pages Discovered</span>
                 <span>{processingState.progress.discoveredPages}</span>
-              </div>
+        </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full transition-all duration-300"
@@ -408,7 +444,7 @@ export default function AddCompetitor() {
             </div>
 
             {processingState.phase === 'extracting' && (
-              <div>
+                <div>
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
                   <span>Pages Extracted</span>
                   <span>{processingState.progress.extractedPages}/{processingState.progress.totalPages}</span>
@@ -423,14 +459,14 @@ export default function AddCompetitor() {
                 </div>
               </div>
             )}
-          </div>
+              </div>
 
           {/* Real-time Metrics */}
           {processingState.phase === 'extracting' && (
             <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div className="text-center">
                 <div className="text-gray-500">Speed</div>
-                <div className="font-semibold">{processingState.metrics.qps.toFixed(1)} pages/sec</div>
+                <div className="font-semibold">{processingState.metrics.qps.toFixed(1)} pages/min</div>
               </div>
               <div className="text-center">
                 <div className="text-gray-500">ETA</div>
@@ -483,7 +519,53 @@ export default function AddCompetitor() {
                 </div>
               </div>
               <div className="mt-3 text-sm text-green-700">
-                <p>✅ Analysis complete! Redirecting to companies page...</p>
+                <p>✅ Analysis complete! The competitor has been successfully added to your database.</p>
+                <div className="mt-3 flex space-x-3">
+                  <button
+                    onClick={() => navigate('/companies')}
+                    className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  >
+                    View Companies
+                  </button>
+                  <button
+                    onClick={() => {
+                      setProcessingState({
+                        phase: 'idle',
+                        crawlSessionId: null,
+                        fingerprintSessionId: null,
+                        extractionSessionId: null,
+                        progress: {
+                          discoveredPages: 0,
+                          processedPages: 0,
+                          extractedPages: 0,
+                          totalPages: 0,
+                          entitiesFound: {
+                            companies: 0,
+                            products: 0,
+                            capabilities: 0,
+                            releases: 0,
+                            documents: 0,
+                            signals: 0
+                          }
+                        },
+                        metrics: {
+                          qps: 0,
+                          etaSeconds: null,
+                          cacheHits: 0,
+                          retries: 0
+                        },
+                        competitorName: '',
+                        error: null
+                      });
+                      setUrl('');
+                      setValidationResult(null);
+                      setIsAnalyzing(false);
+                    }}
+                    className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  >
+                    Add Another
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -493,7 +575,7 @@ export default function AddCompetitor() {
             <div className="mt-4 p-4 bg-red-50 rounded-lg">
               <h4 className="text-sm font-medium text-red-800 mb-2">Analysis Failed</h4>
               <p className="text-sm text-red-700">{processingState.error}</p>
-            </div>
+          </div>
           )}
         </div>
       )}

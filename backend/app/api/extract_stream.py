@@ -311,7 +311,7 @@ def emit_page_failed(session_id: int, page_id: int, reason: str, retried: int = 
 
 
 def emit_metrics(session_id: int, processed: int, succeeded: int, failed: int, 
-                skipped: int, cache_hits: int, retries: int, qps: float, eta_seconds: Optional[int] = None):
+                skipped: int, cache_hits: int, retries: int, pages_per_minute: float, eta_seconds: Optional[int] = None):
     """Emit current processing metrics."""
     progress_tracker.update_session_progress(session_id, {
         "type": "metrics",
@@ -321,7 +321,7 @@ def emit_metrics(session_id: int, processed: int, succeeded: int, failed: int,
         "skipped": skipped,
         "cache_hits": cache_hits,
         "retries": retries,
-        "qps": qps,
+        "qps": pages_per_minute,  # Keep qps for backward compatibility, but now contains pages/min
         "eta_seconds": eta_seconds
     })
 

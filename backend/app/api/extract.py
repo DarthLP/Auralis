@@ -424,7 +424,7 @@ async def _run_extraction_background(
                 logger.error(f"Error processing {fingerprint.url}: {e}")
             
             # Update progress periodically and emit metrics
-            if (processed + skipped + failed) % 10 == 0 or i == len(fingerprints) - 1:
+            if (processed + skipped + failed) % 5 == 0 or i == len(fingerprints) - 1 or (processed + skipped + failed) == 1:
                 extraction_session.processed_pages = processed
                 extraction_session.skipped_pages = skipped
                 extraction_session.failed_pages = failed
@@ -435,9 +435,9 @@ async def _run_extraction_background(
                 
                 # Calculate metrics
                 elapsed_seconds = (datetime.utcnow() - start_time).total_seconds()
-                qps = (processed + failed) / max(elapsed_seconds, 1)
+                pages_per_minute = ((processed + failed) / max(elapsed_seconds, 1)) * 60
                 remaining = len(fingerprints) - (processed + skipped + failed)
-                eta_seconds = int(remaining / max(qps, 0.1)) if remaining > 0 else 0
+                eta_seconds = int(remaining / max(pages_per_minute / 60, 0.1)) if remaining > 0 else 0
                 
                 # Emit metrics
                 emit_metrics(
@@ -448,7 +448,7 @@ async def _run_extraction_background(
                     skipped,
                     cache_hits,
                     total_retries,
-                    qps,
+                    pages_per_minute,
                     eta_seconds if remaining > 0 else None
                 )
         
