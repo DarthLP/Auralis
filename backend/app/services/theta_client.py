@@ -188,10 +188,16 @@ class ThetaClient:
             
             expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
             
+            # Generate prompt hash for caching
+            import hashlib
+            prompt_text = json.dumps({"messages": messages, "model": self.model}, sort_keys=True)
+            prompt_hash = hashlib.sha256(prompt_text.encode()).hexdigest()
+            
             cache_entry = AICache(
                 cache_key=cache_key,
                 model_name=self.model,
                 schema_version=settings.SCHEMA_VERSION,
+                prompt_hash=prompt_hash,
                 response_json=json.dumps(response),
                 created_at=datetime.utcnow(),
                 last_used_at=datetime.utcnow(),
@@ -292,20 +298,42 @@ class ThetaClient:
     def _extract_content(self, response: Dict[str, Any]) -> str:
         """Extract content from Theta EdgeCloud response."""
         try:
-            # Handle different response formats
-            if "choices" in response and len(response["choices"]) > 0:
+            content = None
+            
+            # Handle Theta EdgeCloud response format
+            if "body" in response and "infer_requests" in response["body"]:
+                infer_requests = response["body"]["infer_requests"]
+                if len(infer_requests) > 0:
+                    infer_request = infer_requests[0]
+                    if "output" in infer_request and "message" in infer_request["output"]:
+                        content = infer_request["output"]["message"]
+            
+            # Handle standard OpenAI-style response formats
+            if not content and "choices" in response and len(response["choices"]) > 0:
                 choice = response["choices"][0]
                 if "message" in choice and "content" in choice["message"]:
-                    return choice["message"]["content"]
+                    content = choice["message"]["content"]
                 elif "text" in choice:
-                    return choice["text"]
+                    content = choice["text"]
             
             # Fallback - look for common content fields
-            for field in ["content", "text", "output", "result"]:
-                if field in response:
-                    return response[field]
-                    
-            raise ThetaClientError(f"Could not extract content from response: {response}")
+            if not content:
+                for field in ["content", "text", "output", "result"]:
+                    if field in response:
+                        content = response[field]
+                        break
+            
+            if not content:
+                raise ThetaClientError(f"Could not extract content from response: {response}")
+            
+            # Extract JSON from markdown code blocks if present
+            import re
+            json_match = re.search(r'```json\s*\n(.*?)\n```', content, re.DOTALL)
+            if json_match:
+                return json_match.group(1).strip()
+            
+            # If no markdown, return the content as-is
+            return content.strip()
             
         except Exception as e:
             raise ThetaClientError(f"Response parsing failed: {e}")

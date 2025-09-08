@@ -11,7 +11,7 @@ from sqlalchemy import (
     Column, DateTime, Float, Integer, String, Text, JSON, 
     ForeignKey, Boolean, Index, UniqueConstraint
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
@@ -98,7 +98,7 @@ class Company(Base):
     # Relationships
     products = relationship("Product", back_populates="company", cascade="all, delete-orphan")
     snapshots = relationship("EntitySnapshot", 
-                           primaryjoin="and_(Company.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Company')",
+                           primaryjoin="and_(Company.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Company')",
                            cascade="all, delete-orphan")
 
 
@@ -147,7 +147,7 @@ class Product(Base):
     # Relationships
     company = relationship("Company", back_populates="products")
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Product.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Product')",
+                           primaryjoin="and_(Product.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Product')",
                            cascade="all, delete-orphan")
 
 
@@ -178,7 +178,7 @@ class Capability(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Capability.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Capability')",
+                           primaryjoin="and_(Capability.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Capability')",
                            cascade="all, delete-orphan")
 
 
@@ -214,7 +214,7 @@ class Release(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Release.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Release')",
+                           primaryjoin="and_(Release.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Release')",
                            cascade="all, delete-orphan")
 
 
@@ -249,7 +249,7 @@ class Document(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Document.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Document')",
+                           primaryjoin="and_(Document.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Document')",
                            cascade="all, delete-orphan")
 
 
@@ -284,7 +284,7 @@ class Signal(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Signal.id==EntitySnapshot.entity_id, EntitySnapshot.entity_type=='Signal')",
+                           primaryjoin="and_(Signal.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Signal')",
                            cascade="all, delete-orphan")
 
 

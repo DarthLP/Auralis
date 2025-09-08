@@ -15,6 +15,15 @@ from dataclasses import dataclass
 from difflib import unified_diff
 
 from sqlalchemy.orm import Session
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
+
+
 from sqlalchemy import func
 
 from app.models.extraction import (
@@ -334,7 +343,7 @@ class SnapshotManager:
     ) -> str:
         """Create a new entity snapshot."""
         # Compute data hash for deduplication
-        data_json = json.dumps(data, sort_keys=True, default=str)
+        data_json = json.dumps(data, sort_keys=True, default=json_serial)
         data_hash = hashlib.sha256(data_json.encode()).hexdigest()
         
         # Check if identical snapshot already exists
@@ -353,7 +362,7 @@ class SnapshotManager:
             entity_type=entity_type,
             entity_id=entity_id,
             schema_version=schema_version,
-            data_json=data,
+            data_json=json.loads(data_json),  # Use the properly serialized JSON
             data_hash=data_hash,
             extraction_session_id=extraction_session_id
         )
@@ -414,7 +423,7 @@ class SnapshotManager:
             change_hash=change_hash,
             summary=change_summary,
             change_type="updated",
-            diff_json=diff_result["diff"],
+            diff_json=json.loads(json.dumps(diff_result["diff"], default=json_serial)),
             fields_changed=diff_result["changed_fields"],
             previous_snapshot_id=previous_snapshot.id,
             current_snapshot_id=new_snapshot_id,

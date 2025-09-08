@@ -275,7 +275,7 @@ class SchemaCompactor:
         truncated_text = TokenCounter.truncate_to_tokens(text, max_text_tokens)
         
         # Build the prompt
-        prompt = f"""Task: Extract structured entities from the following page text for competitive intelligence.
+        prompt = f"""Task: Extract structured entities from the following page text about products of a specific company.
 
 Context:
 - Competitor: {competitor}
@@ -285,12 +285,12 @@ Context:
 - Schema Version: {schema_version}
 
 Extraction Rules:
-1. Output ONLY valid JSON matching the provided schemas
-2. Use null for missing optional fields, never omit required fields
-3. Prefer factual data found in the text over assumptions
-4. For product names/versions, use exact text when possible
-5. Include confidence scores (0-1) in Source objects
-6. If multiple entities of same type, return arrays
+1. Output ONLY valid JSON matching the provided schemas!
+2. Use null for missing optional fields, never omit required fields!
+3. Never Hallucinate data, only use data that is explicitly provided in the text!
+4. For product names/versions, use exact text when possible.
+5. Include confidence scores (0-1) in Source objects.
+6. If multiple entities of same type, return arrays.
 
 Schemas (compact definitions):
 {json.dumps(compact_schemas, indent=2)}

@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
@@ -18,6 +18,7 @@ from app.core.db import get_db
 from app.core.config import settings
 from app.services.extract import ExtractionService
 from app.services.theta_client import ThetaClient
+from app.services.export_utils import ensure_exports_directory, export_extraction_data
 from app.services.normalize import NormalizationService
 from app.services.advisory_locks import competitor_lock
 from app.models.core_crawl import PageFingerprint, FingerprintSession
@@ -99,6 +100,8 @@ async def run_extraction(
     db: Session = Depends(get_db),
     extraction_service: ExtractionService = Depends(get_extraction_service)
 ):
+    # Ensure exports directory exists
+    ensure_exports_directory()
     """
     Start extraction on a fingerprint session.
     
@@ -244,9 +247,9 @@ async def get_extraction_status(
 
 @router.get("/sessions", response_model=List[ExtractionResponse])
 async def list_extraction_sessions(
-    competitor: Optional[str] = None,
-    limit: int = Field(default=50, le=200),
-    offset: int = Field(default=0, ge=0),
+    competitor: Optional[str] = Query(None),
+    limit: int = Query(50, le=200),
+    offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
 ):
     """

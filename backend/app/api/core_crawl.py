@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.models.core_crawl import FingerprintRequest, FingerprintResponse
 from app.services.core_crawl import CoreCrawlService
+from app.services.export_utils import export_fingerprinting_data
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,13 @@ async def fingerprint_crawl_session(
         result = await service.fingerprint_session(request)
         
         logger.info(f"Fingerprinting completed: {result.total_processed} processed, {result.total_errors} errors")
+        
+        # Automatically export fingerprinting data
+        try:
+            export_fingerprinting_data(result.fingerprint_session_id, request.competitor or "unknown")
+            logger.info(f"✅ Automatically exported fingerprinting data for session {result.fingerprint_session_id}")
+        except Exception as export_error:
+            logger.warning(f"Failed to auto-export fingerprinting data: {export_error}")
         
         return result
         

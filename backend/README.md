@@ -1182,6 +1182,83 @@ This progressive discovery system would transform the current "all-or-nothing" c
 4. Test all endpoints manually
 5. Ensure Docker builds successfully
 
+## 📁 Automated Data Export System
+
+The backend includes a comprehensive automated export system that creates clean JSON files for each pipeline stage.
+
+### Features
+
+- **Automatic Triggers**: Exports happen automatically after each pipeline stage completes
+- **Proper JSON Formatting**: No manual cleaning required - all records properly formatted
+- **Complete Data**: All records included (no truncation or missing entries)
+- **Rich Text Content**: 5,000 character previews instead of 500
+- **Error Handling**: Robust datetime serialization and special character handling
+
+### Export Locations
+
+```
+backend/exports/
+├── crawling/
+│   └── {competitor}_crawling_session_{id}.json      # Discovered pages with scores
+├── fingerprinting/
+│   └── {competitor}_fingerprinting_session_{id}.json # Extracted text content
+└── extraction/
+    └── {competitor}_extraction_session_{id}.json     # Extraction metadata
+```
+
+### Usage
+
+**Automatic (Recommended):**
+```python
+# Exports happen automatically after:
+# - POST /api/crawl/discover completes
+# - POST /api/crawl/fingerprint completes  
+# - POST /api/extract/run completes
+```
+
+**Manual:**
+```python
+from app.services.export_utils import (
+    export_crawling_data,
+    export_fingerprinting_data,
+    export_extraction_data,
+    auto_export_pipeline_data
+)
+
+# Export specific sessions
+export_crawling_data(session_id=1, competitor="pudu_robotics")
+export_fingerprinting_data(fingerprint_session_id=1, competitor="pudu_robotics")
+
+# Export all latest sessions
+auto_export_pipeline_data("competitor_name")
+```
+
+### Data Quality
+
+- **All 42 fingerprinted pages** included (no missing records due to parsing errors)
+- **5,000 character text previews** for rich content analysis
+- **Proper JSON validation** - no parsing errors or malformed data
+- **Datetime serialization** handled automatically with ISO format
+- **Special characters** properly escaped (quotes, newlines, unicode)
+
+## ⚠️ Known Issues
+
+### JSON Serialization Bug (Extraction Pipeline)
+- **Status**: ❌ Blocking extraction pipeline
+- **Error**: `Object of type datetime is not JSON serializable`
+- **Impact**: 100% extraction failure rate (42/42 pages fail)
+- **Location**: Entity data processing during AI extraction
+- **Root Cause**: Datetime objects not converted to strings before JSON serialization
+- **Database Impact**: No corruption; crawling/fingerprinting data intact
+- **Workaround**: Rich structured data available in fingerprinting exports
+- **Analysis**: See `backend/exports/JSON_SERIALIZATION_BUG_ANALYSIS.md`
+
+### Current Pipeline Status
+- ✅ **Crawling**: Fully functional (62 pages discovered)
+- ✅ **Fingerprinting**: Fully functional (42 pages processed with text)
+- ❌ **Extraction**: Blocked by datetime serialization issue
+- ✅ **Data Export**: All stages export clean JSON automatically
+
 ## 📚 Additional Resources
 
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)

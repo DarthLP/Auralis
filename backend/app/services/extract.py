@@ -74,23 +74,46 @@ class RulesExtractor:
     def _build_product_patterns(self) -> List[Dict[str, Any]]:
         """Build regex patterns for product detection."""
         return [
+            # Robotics product patterns (high priority)
             {
-                "name": "api_product",
-                "pattern": r"(?:^|\s)([A-Z][a-zA-Z0-9\s]+(?:API|SDK|Service))",
+                "name": "robot_model",
+                "pattern": r"(?:PUDU\s+)?([A-Z]{2,3}\d+(?:-[A-Z]+)?|[A-Z][a-z]+[Bb]ot\d*(?:\s+[A-Z][a-z]+)*)",
+                "confidence": 0.9,
+                "field": "name"
+            },
+            {
+                "name": "product_title",
+                "pattern": r"(?:^|\n)([A-Z][A-Za-z0-9\s\-]+(?:Robot|Bot|Service|Cleaner|Vacuum))",
                 "confidence": 0.85,
                 "field": "name"
             },
+            # Generic API/SDK patterns
+            {
+                "name": "api_product",
+                "pattern": r"(?:^|\s)([A-Z][a-zA-Z0-9\s]+(?:API|SDK|Service))",
+                "confidence": 0.8,
+                "field": "name"
+            },
+            # Version information
             {
                 "name": "version_pattern",
                 "pattern": r"(?:version|v\.?|release)\s*(\d+(?:\.\d+)*(?:\.\d+)*)",
                 "confidence": 0.9,
                 "field": "version"
             },
+            # Features and capabilities
             {
                 "name": "feature_list",
                 "pattern": r"(?:features?|capabilities?):\s*(.+?)(?:\n\n|\.|$)",
                 "confidence": 0.7,
                 "field": "features"
+            },
+            # Product specifications
+            {
+                "name": "tech_specs",
+                "pattern": r"(?:specifications?|specs?|technical\s+details?):\s*(.+?)(?:\n\n|\.|$)",
+                "confidence": 0.75,
+                "field": "specifications"
             }
         ]
     
@@ -167,9 +190,17 @@ class RulesExtractor:
             
             confidence_scores = []
             
+            # Always try to extract company info first
+            company_data, company_confidence = self._extract_company(text, url)
+            company_id = None
+            if company_data:
+                entities["Company"].append(company_data)
+                confidence_scores.append(company_confidence)
+                company_id = company_data.get("id")
+            
             # Extract based on page type
             if page_type.lower() in ["product", "pricing"]:
-                product_data, product_confidence = self._extract_product(text, url)
+                product_data, product_confidence = self._extract_product(text, url, company_id)
                 if product_data:
                     entities["Product"].append(product_data)
                     confidence_scores.append(product_confidence)
@@ -185,12 +216,6 @@ class RulesExtractor:
                 if doc_data:
                     entities["Document"].append(doc_data)
                     confidence_scores.append(doc_confidence)
-            
-            # Always try to extract company info
-            company_data, company_confidence = self._extract_company(text, url)
-            if company_data:
-                entities["Company"].append(company_data)
-                confidence_scores.append(company_confidence)
             
             # Create source record
             entities["Source"] = {
@@ -232,7 +257,7 @@ class RulesExtractor:
                 error=str(e)
             )
     
-    def _extract_product(self, text: str, url: str) -> Tuple[Optional[Dict], float]:
+    def _extract_product(self, text: str, url: str, company_id: Optional[str] = None) -> Tuple[Optional[Dict], float]:
         """Extract product information from text."""
         product = {}
         confidence_scores = []
@@ -280,7 +305,7 @@ class RulesExtractor:
         if product:
             product.update({
                 "id": f"prod_{hash(product.get('name', url)) % 100000}",
-                "company_id": "unknown",  # Will be resolved later
+                "company_id": company_id if company_id else "unknown",
                 "category": "unknown",
                 "stage": "unknown",
                 "markets": [],
@@ -559,17 +584,10 @@ class ExtractionService:
         Returns:
             ExtractionResult with extracted entities and metadata
         """
-        logger.info(f"Starting extraction for {url} (type: {page_type}, competitor: {competitor})")
+        logger.info(f"Starting LLM extraction for {url} (type: {page_type}, competitor: {competitor})")
         
-        # Step 1: Try rules-first extraction
-        rules_result = self.rules_extractor.extract_from_text(raw_text, page_type, url)
-        
-        if rules_result.success and rules_result.confidence >= self.confidence_threshold:
-            logger.info(f"Rules extraction succeeded with confidence {rules_result.confidence:.2f}")
-            return rules_result
-        
-        # Step 2: Fallback to AI extraction
-        logger.info(f"Rules extraction failed/low confidence ({rules_result.confidence:.2f}), falling back to AI")
+        # FORCE LLM EXTRACTION - Skip rules entirely
+        logger.info("FORCING LLM extraction - bypassing rules-based extraction")
         
         ai_result = await self.ai_extractor.extract_from_text(
             text=raw_text,
@@ -581,13 +599,8 @@ class ExtractionService:
         )
         
         if ai_result.success:
-            logger.info(f"AI extraction succeeded with confidence {ai_result.confidence:.2f}")
+            logger.info(f"LLM extraction succeeded with confidence {ai_result.confidence:.2f}")
             return ai_result
-        
-        # Step 3: Both failed, return the better of the two
-        if rules_result.confidence > ai_result.confidence:
-            logger.warning(f"Both extractions failed, returning rules result (confidence: {rules_result.confidence:.2f})")
-            return rules_result
         else:
-            logger.warning(f"Both extractions failed, returning AI result (confidence: {ai_result.confidence:.2f})")
+            logger.warning(f"LLM extraction failed with confidence {ai_result.confidence:.2f}")
             return ai_result

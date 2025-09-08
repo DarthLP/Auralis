@@ -15,6 +15,7 @@ from app.core.config import settings
 from app.core.db import get_db
 from app.models.crawl import CrawlSession, CrawledPage
 from app.services.scrape import discover_interesting_pages
+from app.services.export_utils import export_crawling_data, export_fingerprinting_data
 
 logger = logging.getLogger(__name__)
 
@@ -237,6 +238,13 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
             # Commit all changes
             db.commit()
             crawl_logger.info(f"Saved crawl session and {pages_saved} pages to database")
+            
+            # Automatically export crawling data
+            try:
+                export_crawling_data(crawl_session.id, result["base_domain"])
+                crawl_logger.info(f"✅ Automatically exported crawling data for session {crawl_session.id}")
+            except Exception as export_error:
+                crawl_logger.warning(f"Failed to auto-export crawling data: {export_error}")
             
             # Add database info to response
             result['crawl_session_id'] = crawl_session.id
