@@ -1,0 +1,934 @@
+{
+  "generated_at": "2025-09-08",
+  "currency": "USD",
+  "schema_version": "1.0",
+  "entities": [
+    {
+      "role": "self",
+      "name": "PAL Robotics",
+      "slug": "pal-robotics",
+      "website": "https://pal-robotics.com/",
+      "hq": {
+        "city": "Barcelona",
+        "country": "Spain",
+        "address": "C/ Pujades 77-79, 7-7 08005, Barcelona"
+      },
+      "founded_year": 2004,
+      "employees_estimate": 100,
+      "summary": "PAL Robotics designs and manufactures humanoid and service robots, mobile manipulators, and AMRs used in research, retail, logistics, and HRI applications. The company is known for ROS-first platforms like TIAGo, ARI, TALOS, and the StockBot RFID inventory robot.",
+      "business_model": [
+        "hardware",
+        "software",
+        "systems integration",
+        "support & services"
+      ],
+      "markets": [
+        "research",
+        "retail",
+        "logistics",
+        "healthcare",
+        "entertainment"
+      ],
+      "technologies": [
+        "ROS/ROS2",
+        "mobile manipulation",
+        "autonomous navigation",
+        "HRI",
+        "RFID inventory",
+        "perception"
+      ],
+      "key_people": [
+        {
+          "name": "Francesc Garcia",
+          "role": "CEO",
+          "note": "placeholder (mockup)"
+        },
+        {
+          "name": "Project teams",
+          "role": "Robotics R&D, Integration",
+          "note": "per website"
+        }
+      ],
+      "products": [
+        {
+          "name": "TIAGo",
+          "category": "mobile manipulator",
+          "status": "commercial",
+          "launch_date": "2015-07-31",
+          "description": "Research mobile manipulator combining perception, navigation, manipulation and HRI in a modular configuration.",
+          "specs": {
+            "base": "PMB2",
+            "manipulator": "7-DoF arm",
+            "navigation": "2D lidar + vision"
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/tiago/",
+            "docs": "https://pal-robotics.com/blog/tiago-your-best-robot-for-research/"
+          }
+        },
+        {
+          "name": "TIAGo Pro",
+          "category": "mobile manipulator",
+          "status": "commercial",
+          "launch_date": "2024-01-01",
+          "description": "Next-generation TIAGo with enhanced arm capabilities for agile manufacturing and safe collaboration.",
+          "specs": {
+            "teaching": "physical guiding",
+            "collab": "HRC-optimized"
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/tiago-pro/"
+          }
+        },
+        {
+          "name": "ARI",
+          "category": "social humanoid",
+          "status": "commercial",
+          "launch_date": "2020-08-20",
+          "description": "Interactive social robot for research and customer-facing roles with multimodal HRI and touchscreen.",
+          "specs": {
+            "compute": "Intel i7 + NVIDIA Jetson (typical)",
+            "languages": "30+ (per marketing)"
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/ari/",
+            "ros": "https://robots.ros.org/ari/"
+          }
+        },
+        {
+          "name": "TALOS",
+          "category": "humanoid research robot",
+          "status": "commercial",
+          "launch_date": "2017-01-01",
+          "description": "Torque-controlled, fully electric humanoid platform for research. Lifts up to 6 kg with one arm fully extended.",
+          "specs": {
+            "height_m": 1.75,
+            "payload_arm_kg": 6
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/talos/"
+          }
+        },
+        {
+          "name": "TIAGo Base (PMB-2)",
+          "category": "AMR mobile base",
+          "status": "commercial",
+          "launch_date": "2015-07-15",
+          "description": "Compact AMR base for intralogistics and research, with fleet management and ROS support.",
+          "specs": {
+            "omni": false,
+            "primary_sensors": [
+              "2D lidar",
+              "IMU"
+            ]
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/tiago-base/",
+            "ros": "https://wiki.ros.org/Robots/TIAGo-base"
+          }
+        },
+        {
+          "name": "TIAGo OMNI Base",
+          "category": "AMR mobile base",
+          "status": "commercial",
+          "launch_date": "2024-01-01",
+          "description": "Mecanum-wheel base with 360º motion and dual LiDAR for omnidirectional navigation.",
+          "specs": {
+            "omni": true,
+            "lidars": 2
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/tiago-omni-base/"
+          }
+        },
+        {
+          "name": "StockBot",
+          "category": "RFID inventory robot",
+          "status": "commercial",
+          "launch_date": "2013-01-01",
+          "description": "Autonomous RFID inventory tracking robot used in retail and warehouses, integrates with retailer systems.",
+          "specs": {
+            "rfid": true,
+            "use_cases": [
+              "retail",
+              "warehouse"
+            ]
+          },
+          "links": {
+            "product": "https://pal-robotics.com/robot/stockbot/",
+            "blog": "https://pal-robotics.com/blog/stockbot-empowering-retail-excellence-through-advanced-inventory-management/"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2023-11-13",
+          "type": "blog/customer",
+          "title": "Automation in retail: StockBot RFID robots to enhance click & collect",
+          "url": "https://pal-robotics.com/blog/automation-in-retail-stockbot-rfid-robots-to-enhance-click-and-collect-and-e-commerce-services/"
+        },
+        {
+          "date": "2023-08-09",
+          "type": "blog/product",
+          "title": "StockBot: empowering retail excellence",
+          "url": "https://pal-robotics.com/blog/stockbot-empowering-retail-excellence-through-advanced-inventory-management/"
+        },
+        {
+          "date": "2024-01-01",
+          "type": "product/launch",
+          "title": "TIAGo Pro launch for agile manufacturing",
+          "url": "https://pal-robotics.com/robot/tiago-pro/"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2024-01-01",
+          "type": "product",
+          "title": "TIAGo OMNI Base and TIAGo Base updates",
+          "summary": "PAL added mecanum OMNI base and updated docs for TIAGo Base fleet management.",
+          "url": "https://pal-robotics.com/robot/tiago-omni-base/"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Rainbow Robotics",
+      "slug": "rainbow-robotics",
+      "website": "https://www.rainbow-robotics.com/",
+      "hq": {
+        "city": "Daejeon",
+        "country": "South Korea",
+        "address": "10-19 Expo-ro 339beon-gil, Yuseong-gu, Daejeon 34122"
+      },
+      "founded_year": 2011,
+      "employees_estimate": 117,
+      "summary": "Korean robotics company originating from KAIST’s HUBO Lab. Builds collaborative robot arms (RB-series), humanoids (HUBO), and mobile/manipulation systems. Samsung became its largest shareholder in Dec 2024.",
+      "business_model": [
+        "hardware",
+        "software",
+        "industrial automation"
+      ],
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics",
+        "research"
+      ],
+      "technologies": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "key_people": [
+        {
+          "name": "Oh Jun-ho",
+          "role": "Founder/CEO (per listings)"
+        }
+      ],
+      "products": [
+        {
+          "name": "RB3-730",
+          "category": "cobot",
+          "status": "commercial",
+          "description": "3 kg payload, 730 mm reach, ±0.05 mm repeatability.",
+          "specs": {
+            "payload_kg": 3,
+            "reach_mm": 730,
+            "repeatability_mm": 0.05,
+            "ip_rating": "IP54"
+          },
+          "links": {
+            "product": "https://www.rainbow-robotics.com/en_rb"
+          }
+        },
+        {
+          "name": "RB3-1200",
+          "category": "cobot",
+          "status": "commercial",
+          "description": "3 kg payload, 1200 mm reach with IP66 option.",
+          "specs": {
+            "payload_kg": 3,
+            "reach_mm": 1200,
+            "repeatability_mm": 0.05,
+            "ip_rating": "IP66"
+          },
+          "links": {
+            "product": "https://www.rainbow-robotics.com/en_rb"
+          }
+        },
+        {
+          "name": "RB5-850",
+          "category": "cobot",
+          "status": "commercial",
+          "description": "5 kg payload, ~928 mm reach, ±0.05 mm repeatability; widely distributed.",
+          "specs": {
+            "payload_kg": 5,
+            "reach_mm": 928,
+            "repeatability_mm": 0.05
+          },
+          "links": {
+            "product": "https://www.rainbow-robotics.com/en_rb",
+            "reseller": "https://qviro.com/product/rainbow-robotics/rb5-850"
+          }
+        },
+        {
+          "name": "RB10-1300",
+          "category": "cobot",
+          "status": "commercial",
+          "description": "10 kg payload, 1300 mm reach—the longest in RB series.",
+          "specs": {
+            "payload_kg": 10,
+            "reach_mm": 1300
+          },
+          "links": {
+            "product": "https://www.rainbow-robotics.eu/rb10-1300"
+          }
+        },
+        {
+          "name": "RB-N Series (NSF)",
+          "category": "food & beverage cobot",
+          "status": "commercial",
+          "description": "NSF-certified variants of RB series for F&B environments (steam/oil).",
+          "specs": {
+            "models": [
+              "RB5-850N",
+              "RB3-1200N",
+              "RB10-1300N"
+            ]
+          },
+          "links": {
+            "catalog_pdf": "https://assets-global.website-files.com/64e86344689c0f5120865b28/65aa85e10f366f94b9cd4e57_%5BRainbow%20Robotics%5D%20RB%20Series%20Catalog.pdf"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2024-12-30",
+          "type": "ownership/investment",
+          "title": "Samsung becomes largest shareholder (~$181M)",
+          "url": "https://www.reuters.com/technology/samsung-electronics-becomes-largest-shareholder-south-koreas-rainbow-robotics-2024-12-30/"
+        },
+        {
+          "date": "2025-05-21",
+          "type": "product/devkit",
+          "title": "Unveils RB-Y1 dual‑arm robot and omniwheel kit",
+          "url": "https://www.therobotreport.com/rainbow-robotics-unveils-omnidirectional-wheels-development-kit-dual-arm-robot/"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2025-01-01",
+          "type": "funding",
+          "title": "Post‑IPO funding / stake increase by Samsung",
+          "summary": "Samsung’s additional 267B KRW stake to accelerate robotics expansion.",
+          "url": "https://www.reuters.com/technology/samsung-electronics-becomes-largest-shareholder-south-koreas-rainbow-robotics-2024-12-30/"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Dexmate",
+      "slug": "dexmate",
+      "website": "https://www.dexmate.ai/",
+      "hq": {
+        "city": "Santa Clara",
+        "country": "United States",
+        "address": "Not disclosed (mockup)"
+      },
+      "founded_year": 2024,
+      "employees_estimate": 10,
+      "summary": "Early-stage startup focused on dexterous hands and a general‑purpose mobile humanoid‑type robot (Vega) with foldable torso/arms and omni base for long duty cycles.",
+      "business_model": [
+        "hardware",
+        "R&D",
+        "developer platform"
+      ],
+      "markets": [
+        "R&D",
+        "light industrial",
+        "labs",
+        "education"
+      ],
+      "technologies": [
+        "dexterous hands",
+        "mobile manipulation",
+        "AGX Orin edge compute"
+      ],
+      "key_people": [
+        {
+          "name": "Yuzhe Qin",
+          "role": "Co‑founder & CEO (public bio)"
+        }
+      ],
+      "products": [
+        {
+          "name": "Vega",
+          "category": "mobile humanoid‑type robot",
+          "status": "pre‑order",
+          "price_usd": 90500,
+          "description": "Dual‑arm mobile robot with dexterous hands, foldable torso/arms (up to ~2.2m reach), omni base, >10h operation.",
+          "specs": {
+            "arm_payload_per_arm_kg": 7.0,
+            "degrees_of_freedom_total": 36,
+            "compute": "NVIDIA Jetson AGX Orin (32/64GB)",
+            "battery_hours_typical": 10
+          },
+          "links": {
+            "product": "https://www.dexmate.ai/vega",
+            "shop": "https://shop.dexmate.ai/products/vega",
+            "details": "https://www.aparobot.com/robots/vega"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2025-03-04",
+          "type": "media",
+          "title": "Vega foldable torso/arms overview",
+          "url": "https://www.roboticgizmos.com/dexmates-vega/"
+        },
+        {
+          "date": "2025-03-07",
+          "type": "blog",
+          "title": "Pre‑orders open for Vega",
+          "url": "https://mikekalil.com/blog/dexmate-vega/"
+        },
+        {
+          "date": "2025-08-18",
+          "type": "ecosystem",
+          "title": "Featured in NVIDIA robotics developer roundup",
+          "url": "https://blogs.nvidia.com/blog/2-million-robotics-developers/"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2024-12-03",
+          "type": "company/story",
+          "title": "Dexmate vision on dexterous hands",
+          "summary": "Investor blog highlights mission to advance dexterous manipulation.",
+          "url": "https://www.tsvcap.com/post/dexmate-revolutionizing-robotics-with-dexterous-hands"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Pollen Robotics",
+      "slug": "pollen-robotics",
+      "website": "https://www.pollen-robotics.com/",
+      "hq": {
+        "city": "Bordeaux",
+        "country": "France"
+      },
+      "founded_year": 2016,
+      "employees_estimate": 20,
+      "summary": "Open‑source robotics company behind Reachy / Reachy 2 humanoid platforms for embodied AI, HRI and teleoperation. Acquired by Hugging Face in April 2025 with commitment to open‑source hardware & software.",
+      "business_model": [
+        "hardware",
+        "open source software",
+        "developer tooling"
+      ],
+      "markets": [
+        "research",
+        "education",
+        "embodied AI"
+      ],
+      "technologies": [
+        "ROS2",
+        "teleoperation VR",
+        "stereo vision",
+        "open‑source SDKs"
+      ],
+      "key_people": [
+        {
+          "name": "Team Pollen",
+          "role": "Founders/Engineers (public profile)"
+        }
+      ],
+      "products": [
+        {
+          "name": "Reachy 2",
+          "category": "humanoid (upper‑body) + mobile",
+          "status": "commercial",
+          "price_usd": 70000,
+          "description": "Fully open‑source humanoid for embodied AI with 7‑DoF arms (~3kg/arm), VR teleop, stereo vision; available on mobile base.",
+          "specs": {
+            "height_cm": "136–166",
+            "weight_kg": 50,
+            "payload_per_arm_kg": 3,
+            "sdk": "Python SDK + ROS2"
+          },
+          "links": {
+            "product": "https://www.pollen-robotics.com/reachy/",
+            "docs": "https://docs.pollen-robotics.com/",
+            "datasheet": "https://www.pollen-robotics.com/wp-content/uploads/2025/02/Reachy2-Dual-arms-with-mobile-base-Datasheet-1.pdf"
+          }
+        },
+        {
+          "name": "Reachy (2021)",
+          "category": "humanoid (upper‑body)",
+          "status": "legacy",
+          "description": "First‑gen open robotic torso/head platform with teleop and Python SDK.",
+          "links": {
+            "docs": "https://pollen-robotics.github.io/reachy-2021-docs/"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2025-04-14",
+          "type": "M&A",
+          "title": "Hugging Face acquires Pollen Robotics",
+          "url": "https://www.wired.com/story/hugging-face-acquires-open-source-robot-startup"
+        },
+        {
+          "date": "2025-04-23",
+          "type": "open‑source",
+          "title": "Reachy 2 full ROS2 dev stack open‑sourced",
+          "url": "https://discourse.openrobotics.org/t/reachy-2-humanoid-full-ros-2-dev-stack-now-open-source-one-line-docker-sim-python-sdk/43362"
+        },
+        {
+          "date": "2025-07-09",
+          "type": "product/derivative",
+          "title": "‘Desktop’ mini robot pre‑orders start at $299",
+          "url": "https://www.automate.org/industry-insights/hugging-faces-open-source-desktop-pollen-robot-starts-at-299"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2025-02-01",
+          "type": "product",
+          "title": "Reachy 2 datasheet (dual arms + mobile base)",
+          "summary": "Published dimensions, payload, and sensor suite.",
+          "url": "https://www.pollen-robotics.com/wp-content/uploads/2025/02/Reachy2-Dual-arms-with-mobile-base-Datasheet-1.pdf"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Pudu Robotics",
+      "slug": "pudu-robotics",
+      "website": "https://www.pudurobotics.com/",
+      "hq": {
+        "city": "Shenzhen",
+        "country": "China"
+      },
+      "founded_year": 2016,
+      "employees_estimate": 500,
+      "summary": "Global service robotics maker focused on food delivery, reception/marketing, and commercial cleaning robots (BellaBot, KettyBot, PuduBot series, SwiftBot, CC1, etc.).",
+      "business_model": [
+        "hardware",
+        "fleet software",
+        "channel sales"
+      ],
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare",
+        "facilities"
+      ],
+      "technologies": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "key_people": [
+        {
+          "name": "Felix Zhang",
+          "role": "Founder/CEO (commonly cited)"
+        }
+      ],
+      "products": [
+        {
+          "name": "BellaBot",
+          "category": "food delivery robot",
+          "status": "commercial",
+          "price_usd": 15900,
+          "description": "Iconic tray‑delivery robot with multi‑modal HRI, 3D obstacle avoidance, and modular chassis.",
+          "specs": {
+            "trays": 4,
+            "obstacle_detection_front_deg": 192.64
+          },
+          "links": {
+            "product": "https://www.pudurobotics.com/product/detail/bellabot",
+            "pricing_example": "https://www.robotlab.com/restaurant-robots/store/bellabot"
+          }
+        },
+        {
+          "name": "PuduBot 2",
+          "category": "food delivery robot",
+          "status": "commercial",
+          "description": "Upgraded PuduBot with higher performance and adaptability for all‑scenario deliveries.",
+          "links": {
+            "product": "https://www.pudurobotics.com/product/detail/pudubot2"
+          }
+        },
+        {
+          "name": "KettyBot / KettyBot Pro",
+          "category": "reception & marketing robot",
+          "status": "commercial",
+          "description": "Reception/delivery robot with built‑in advertising display and navigation for guiding customers.",
+          "links": {
+            "case_study": "https://www.pudurobotics.com/case-studies/mediamarkt-kettybot-bellabot"
+          }
+        },
+        {
+          "name": "SwiftBot",
+          "category": "delivery robot",
+          "status": "commercial",
+          "description": "Secure delivery with advanced maneuverability for crowded environments.",
+          "links": {
+            "overview": "https://www.pringlerobotics.ai/Industry-Schools"
+          }
+        },
+        {
+          "name": "HolaBot",
+          "category": "collection robot",
+          "status": "commercial",
+          "description": "Autonomous dish‑busser / collection robot used in hospitality/healthcare.",
+          "links": {
+            "reseller": "https://solsticeav.com/product-category/robots/robots-robots/"
+          }
+        },
+        {
+          "name": "PUDU CC1 / CC1 Pro",
+          "category": "autonomous cleaning robot",
+          "status": "commercial",
+          "description": "Four‑in‑one cleaning (sweep/scrub/vacuum/mop), with Pro variant using AI for enhanced autonomy.",
+          "links": {
+            "product": "https://www.pudurobotics.com/product/detail/puduCC1",
+            "news": "https://www.pudurobotics.com/"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2025-06-10",
+          "type": "milestone",
+          "title": "Ships 100,000th robot",
+          "url": "https://www.pudurobotics.com/en/news/1115"
+        },
+        {
+          "date": "2025-03-20",
+          "type": "expansion",
+          "title": "Opens US HQ in Santa Clara, CA",
+          "url": "https://www.pudurobotics.com/en/news/1059"
+        },
+        {
+          "date": "2025-04-11",
+          "type": "award",
+          "title": "PUDU MT1 wins Red Dot Product Design 2025",
+          "url": "https://www.prnewswire.com/news-releases/pudu-robotics-pudu-mt1-wins-prestigious-2025-red-dot-award-for-product-design-302426466.html"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2025-01-15",
+          "type": "product",
+          "title": "CC1 Pro launch",
+          "summary": "AI‑powered upgrade to CC1 autonomous cleaning robot.",
+          "url": "https://www.pudurobotics.com/"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Hello Robot",
+      "slug": "hello-robot",
+      "website": "https://hello-robot.com/",
+      "hq": {
+        "city": "Martinez",
+        "country": "United States",
+        "region": "California"
+      },
+      "founded_year": 2017,
+      "employees_estimate": 13,
+      "summary": "US startup making lightweight, developer‑friendly mobile manipulators (Stretch). Focus on assistive robotics, embodied AI, and research deployments.",
+      "business_model": [
+        "hardware",
+        "open source software",
+        "services & support"
+      ],
+      "markets": [
+        "assistive tech",
+        "research & education",
+        "embodied AI"
+      ],
+      "technologies": [
+        "mobile manipulation",
+        "teleoperation",
+        "open SDKs"
+      ],
+      "key_people": [
+        {
+          "name": "Aaron Edsinger",
+          "role": "Co‑founder & CEO"
+        },
+        {
+          "name": "Charlie C. Kemp",
+          "role": "Co‑founder & CTO"
+        }
+      ],
+      "products": [
+        {
+          "name": "Stretch 3",
+          "category": "mobile manipulator",
+          "status": "commercial",
+          "price_usd": 24950,
+          "description": "Fully‑integrated mobile manipulator with dexterous wrist, gripper camera, dual head cameras; 24.5 kg.",
+          "links": {
+            "product": "https://hello-robot.com/stretch-3-product",
+            "purchase": "https://hello-robot.com/purchase"
+          }
+        },
+        {
+          "name": "Stretch 2 (legacy)",
+          "category": "mobile manipulator",
+          "status": "shipping (legacy)",
+          "price_usd": 19950,
+          "description": "Earlier model widely used in research; upgrade kit available to near‑Stretch‑3 capability.",
+          "links": {
+            "price": "https://teal-blue-zpt3.squarespace.com/purchase",
+            "upgrade": "https://hello-robot.com/stretch-2-upgrade"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2024-12-12",
+          "type": "partnership/grant",
+          "title": "Partners with ALS Association; $400k project with Pitt researchers",
+          "url": "https://hello-robot.com/press-release-als-2024"
+        },
+        {
+          "date": "2025-01-01",
+          "type": "product",
+          "title": "Stretch 3 price list and accessories",
+          "url": "https://hello-robot.com/purchase"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2024-12-12",
+          "type": "press",
+          "title": "ALS Association collaboration press release",
+          "summary": "Two‑year effort to adapt Stretch for people living with ALS.",
+          "url": "https://hello-robot.com/press-release-als-2024"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "Elephant Robotics",
+      "slug": "elephant-robotics",
+      "website": "https://www.elephantrobotics.com/",
+      "hq": {
+        "city": "Shenzhen",
+        "country": "China"
+      },
+      "founded_year": 2016,
+      "employees_estimate": 200,
+      "summary": "Maker of affordable desktop and entry‑level collaborative arms (myCobot, mechArm), mobile base (myAGV), and companion robots; strong community and education focus.",
+      "business_model": [
+        "hardware",
+        "kits & accessories",
+        "education"
+      ],
+      "markets": [
+        "STEM education",
+        "research",
+        "light automation",
+        "hobbyist"
+      ],
+      "technologies": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "key_people": [
+        {
+          "name": "Kirin (Kailin) Wu",
+          "role": "Co‑founder"
+        },
+        {
+          "name": "Junyi (Joey) Song",
+          "role": "Co‑founder"
+        }
+      ],
+      "products": [
+        {
+          "name": "myCobot 280",
+          "category": "desktop 6‑DoF arm",
+          "status": "commercial",
+          "description": "World’s smallest 6‑axis cobot (sub‑1 kg), up to 250 g payload; variants: M5, Pi, Arduino, Jetson Nano.",
+          "links": {
+            "product": "https://www.elephantrobotics.com/en/mycobot-en/",
+            "shop": "https://shop.elephantrobotics.com/products/mycobot-worlds-smallest-and-lightest-six-axis-collaborative-robot"
+          }
+        },
+        {
+          "name": "myCobot 320 (Pro)",
+          "category": "desktop/light industrial arm",
+          "status": "commercial",
+          "specs": {
+            "reach_mm": 350,
+            "payload_kg": 1.0,
+            "repeatability_mm": 1.0
+          },
+          "links": {
+            "product": "https://shop.elephantrobotics.com/products/commercial-and-economic-six-axis-collaborative-robot"
+          }
+        },
+        {
+          "name": "myAGV (2023)",
+          "category": "AMR mobile base",
+          "status": "commercial",
+          "description": "2D/3D navigation AMR that pairs with myCobot/mechArm/myPalletizer for composite robots.",
+          "links": {
+            "product": "https://shop.elephantrobotics.com/products/myagv-2d-3d-navigation-mobile-robot"
+          }
+        },
+        {
+          "name": "mechArm / myPalletizer series",
+          "category": "desktop arms",
+          "status": "commercial",
+          "description": "Affordable 6‑DoF arms and palletizing variants for labs and classrooms.",
+          "links": {
+            "support": "https://www.elephantrobotics.com/en/support-en/"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2024-12-20",
+          "type": "event",
+          "title": "Plans CES 2025 exhibit; debuts AI bionic pets",
+          "url": "https://shop.elephantrobotics.com/blogs/news/ces2025"
+        },
+        {
+          "date": "2025-01-07",
+          "type": "event",
+          "title": "CES 2025 showcase of AI bionic companion robots",
+          "url": "https://www.prnewswire.com/news-releases/elephant-robotics-to-exhibit-at-ces-2025-featuring-cutting-edge-innovative-robotics-solutions-and-ai-bionic-robots-debut-302336834.html"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2025-01-07",
+          "type": "product/companion",
+          "title": "metaCat AI / metaDog AI / metaPanda AI",
+          "summary": "Announced bionic companion robot pets at CES 2025.",
+          "url": "https://www.prnewswire.com/news-releases/elephant-robotics-to-exhibit-at-ces-2025-featuring-cutting-edge-innovative-robotics-solutions-and-ai-bionic-robots-debut-302336834.html"
+        }
+      ]
+    },
+    {
+      "role": "competitor",
+      "name": "NEURA Robotics",
+      "slug": "neura-robotics",
+      "website": "https://neura-robotics.com/",
+      "hq": {
+        "city": "Metzingen",
+        "country": "Germany"
+      },
+      "founded_year": 2019,
+      "employees_estimate": 600,
+      "summary": "German ‘cognitive robotics’ company building cobots (LARA), cognitive robots (MAiRA), AMRs (MAV), service robot MiPA, and humanoid 4NE1; expanding ecosystem ‘Neuraverse’.",
+      "business_model": [
+        "hardware",
+        "software",
+        "ecosystem partnerships"
+      ],
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service",
+        "consumer (emerging)"
+      ],
+      "technologies": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "key_people": [
+        {
+          "name": "David Reger",
+          "role": "Founder & CEO",
+          "note": "widely referenced"
+        }
+      ],
+      "products": [
+        {
+          "name": "MAiRA (S/M)",
+          "category": "cognitive cobot",
+          "status": "commercial",
+          "links": {
+            "product": "https://neura-robotics.com/products/maira/"
+          }
+        },
+        {
+          "name": "LARA",
+          "category": "industrial cobot",
+          "status": "commercial",
+          "links": {
+            "product": "https://neura-robotics.com/products/"
+          }
+        },
+        {
+          "name": "MAV",
+          "category": "autonomous mobile robot",
+          "status": "commercial",
+          "links": {
+            "product": "https://neura-robotics.com/products/mav/"
+          }
+        },
+        {
+          "name": "MiPA",
+          "category": "service/cognitive robot",
+          "status": "market‑launch 2025",
+          "links": {
+            "product": "https://neura-robotics.com/products/mipa/"
+          }
+        },
+        {
+          "name": "4NE1 (Gen‑3)",
+          "category": "humanoid",
+          "status": "prototype/launch 2025",
+          "links": {
+            "news": "https://neura-robotics.com/neura-robotics-launches-technological-revolution/"
+          }
+        }
+      ],
+      "signals": [
+        {
+          "date": "2025-01-15",
+          "type": "funding",
+          "title": "Raises €120M Series B",
+          "url": "https://neura-robotics.com/neura-robotics-secures-euro-120-million-series-b/"
+        },
+        {
+          "date": "2025-06-24",
+          "type": "product/event",
+          "title": "Automatica 2025: 4NE1 Gen‑3 world premiere; MiPA market launch; Neuraverse",
+          "url": "https://neura-robotics.com/neura-robotics-launches-technological-revolution/"
+        },
+        {
+          "date": "2025-06-30",
+          "type": "partnership",
+          "title": "GFT x NEURA partnership for Physical AI software",
+          "url": "https://www.gft.com/us/en/about-us/newsroom/press-and-news/2025/press-releases/gft-neura-strategic-partnership"
+        }
+      ],
+      "releases": [
+        {
+          "date": "2025-06-24",
+          "type": "product",
+          "title": "Neuraverse ecosystem & product updates at Automatica",
+          "summary": "Launch announcements for 4NE1 Gen‑3 humanoid, MiPA, and open robotics ecosystem.",
+          "url": "https://www.therobotreport.com/neura-robotics-launches-latest-cognitive-robots-neuraverse-ecosystem/"
+        }
+      ]
+    }
+  ]
+}
