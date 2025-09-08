@@ -104,12 +104,19 @@ Auralis/
 │   │   ├── services/ # Business logic (hybrid scraping, AI, validation)
 │   │   │   ├── fetch.py    # JavaScript-enabled fetching with Playwright
 │   │   │   ├── scrape.py   # Intelligent page discovery and classification
-│   │   │   └── validate.py # Schema validation service
+│   │   │   ├── validate.py # Schema validation service
+│   │   │   └── export_utils.py # Automated JSON export system ✅
 │   │   ├── schema/   # Generated JSON schemas for validation
 │   │   │   └── json/ # JSON Schema files (auto-generated)
 │   │   ├── api/      # API endpoints
-│   │   │   └── crawl.py    # Website discovery and crawling API
+│   │   │   ├── crawl.py    # Website discovery and crawling API
+│   │   │   ├── core_crawl.py # Fingerprinting pipeline API
+│   │   │   └── extract.py  # Extraction pipeline API (JSON bug ❌)
 │   │   └── main.py   # FastAPI application
+│   ├── exports/      # Automated JSON data exports ✅
+│   │   ├── crawling/     # Crawl session results
+│   │   ├── fingerprinting/ # Fingerprint results with text content
+│   │   └── extraction/   # Extraction session metadata
 │   ├── logs/         # Crawl session logs and JSON data files
 │   ├── Dockerfile.backend  # Backend container config
 │   ├── requirements.txt    # Python dependencies
@@ -505,10 +512,23 @@ The backend provides a RESTful API built with FastAPI for competitor analysis wi
 
 ### 🚀 Website Discovery & Fingerprinting API
 
-**`POST /api/crawl/discover`** - Advanced website crawling and page discovery
-**`POST /api/crawl/fingerprint`** - 3-step fingerprinting pipeline for content analysis with text extraction
-**`GET /api/crawl/sessions`** - List crawl sessions with metadata
-**`GET /api/crawl/sessions/{id}/fingerprints`** - Get fingerprint results with extracted text content
+**`POST /api/crawl/discover`** - Advanced website crawling and page discovery ✅
+**`POST /api/crawl/fingerprint`** - 3-step fingerprinting pipeline for content analysis with text extraction ✅
+**`GET /api/crawl/sessions`** - List crawl sessions with metadata ✅
+**`GET /api/crawl/sessions/{id}/fingerprints`** - Get fingerprint results with extracted text content ✅
+
+### 🤖 Extraction Pipeline API
+
+**`POST /api/extract/run`** - AI-powered structured data extraction ❌ (JSON serialization bug)
+**`GET /api/extract/status/{session_id}`** - Monitor extraction progress ✅
+**`GET /api/extract/sessions`** - List extraction sessions ✅
+
+### 📁 Automated Data Export System
+
+**Automatic JSON Export** - All pipeline stages automatically export structured JSON files ✅
+- **Location**: `backend/exports/{stage}/{competitor}_{stage}_session_{id}.json`
+- **Stages**: crawling, fingerprinting, extraction
+- **Features**: 5,000 character text previews, proper JSON formatting, all records included
 
 #### 🎯 3-Step Fingerprinting Pipeline
 
@@ -894,7 +914,11 @@ Re-crawl → Detect Changes → Show What's New
 
 ### Phase 4: API Development ✅
 - [x] **Website Discovery API** (`POST /api/crawl/discover`) with full feature set
+- [x] **Fingerprinting Pipeline API** (`POST /api/crawl/fingerprint`) with 3-step processing
+- [x] **Extraction Pipeline API** (`POST /api/extract/run`) with AI-powered extraction
 - [x] **Comprehensive response format** with pages, categories, and metadata
+- [x] **Automated JSON Export System** with proper formatting and all records
+- [x] **Data persistence** (PostgreSQL database + JSON exports)
 - [x] **Data persistence** (JSON files with complete crawl data)
 - [x] **Business Intelligence API endpoints** (Companies, Products, Signals, Releases, Capabilities, Sources)
 - [x] **Complete CRUD operations** for all entities
@@ -902,6 +926,8 @@ Re-crawl → Detect Changes → Show What's New
 - [x] **Frontend-Backend integration** with real API endpoints
 - [x] **Datetime formatting** for API responses with Zod compatibility
 - [ ] Change detection endpoints
+- [ ] Competitor CRUD endpoints
+- [ ] Product and feature endpoints
 
 ### Phase 5: Frontend Dashboard ✅
 - [x] React + Vite application setup
@@ -937,6 +963,22 @@ Re-crawl → Detect Changes → Show What's New
 - [ ] Change notification system
 - [ ] Historical data visualization
 - [ ] Automated re-crawling
+
+## ⚠️ Known Issues
+
+### JSON Serialization Bug (Extraction Pipeline)
+- **Status**: ❌ Blocking extraction pipeline
+- **Error**: `Object of type datetime is not JSON serializable`
+- **Impact**: 100% extraction failure rate
+- **Location**: Entity data processing during AI extraction
+- **Workaround**: Crawling and fingerprinting work perfectly; structured data available in exports
+- **Details**: See `backend/exports/JSON_SERIALIZATION_BUG_ANALYSIS.md`
+
+### Current Pipeline Status
+- ✅ **Crawling**: Fully functional with 62 pages discovered
+- ✅ **Fingerprinting**: Fully functional with 42 pages processed
+- ❌ **Extraction**: Blocked by datetime serialization issue
+- ✅ **Data Export**: All stages export clean JSON automatically
 
 ## 🤝 Contributing
 

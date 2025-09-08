@@ -1,0 +1,23 @@
+{
+  "extraction_session_id": 7,
+  "fingerprint_session_id": 1,
+  "competitor": "pudu_robotics_COMPLETE_LLM_TEST",
+  "schema_version": "v1",
+  "started_at": "2025-09-08T14:41:48.322371",
+  "completed_at": "2025-09-08T14:50:25.673079",
+  "total_pages": 42,
+  "processed_pages": 6,
+  "skipped_pages": 0,
+  "failed_pages": 4,
+  "cache_hits": 0,
+  "companies_found": 0,
+  "products_found": 0,
+  "capabilities_found": 0,
+  "releases_found": 0,
+  "documents_found": 0,
+  "signals_found": 0,
+  "changes_detected": 0,
+  "error_summary": {
+    "status": "cancelled_by_user_to_prevent_costs"
+  }
+}

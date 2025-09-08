@@ -1,0 +1,1068 @@
+[
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/mt1",
+    "canonical_url": "https://www.pudurobotics.com/de/products/mt1",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 1,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 0,
+    "size_bytes": 172584,
+    "mime_type": null,
+    "content_hash": "57286b47b649fda3d35f42221401b9d7f3e3933cced78185445dc1e24ebd37a6",
+    "crawled_at": "2025-09-08T13:09:34.804355"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/transportation-and-related-service",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/transportation-and-related-service",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 205826,
+    "mime_type": null,
+    "content_hash": "be111f3921b23beb5402dee0d028f35f14af8815c0db3b8206a534bc9ba51a5f",
+    "crawled_at": "2025-09-08T13:09:34.804525"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/industrial-warehouse-logistics",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/industrial-warehouse-logistics",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 207585,
+    "mime_type": null,
+    "content_hash": "b5f4f28e55c03ad669f299bf3cff56cd380a386056e209e7cb7f9c3f22f2e72c",
+    "crawled_at": "2025-09-08T13:09:34.804573"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/health-care",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/health-care",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 217482,
+    "mime_type": null,
+    "content_hash": "cf4e8d853fd13b590dd9d41b6835e48ee58a5a4c8685b219717a6a9ff9ff6ebf",
+    "crawled_at": "2025-09-08T13:09:34.80462"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/education",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/education",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 221673,
+    "mime_type": null,
+    "content_hash": "4323b600d2671be5920c84dd37ccfa3126591910536a0f56886b227714c62b65",
+    "crawled_at": "2025-09-08T13:09:34.804676"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/news",
+    "canonical_url": "https://www.pudurobotics.com/de/products/news",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "news_url"
+    ],
+    "depth": 1,
+    "size_bytes": 118528,
+    "mime_type": null,
+    "content_hash": "ed7311e2a1cf4bcd5428f0710185654346b25742c521f0dfdc78e7e4d4b7ba6c",
+    "crawled_at": "2025-09-08T13:09:34.804734"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/mt1-vac",
+    "canonical_url": "https://www.pudurobotics.com/de/products/mt1-vac",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 1,
+    "size_bytes": 208558,
+    "mime_type": null,
+    "content_hash": "988307ee75843c5f1ed251d2f604cbe5bf0de4b0ff3e9c1f83e9c015dcfa495a",
+    "crawled_at": "2025-09-08T13:09:34.804788"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/entertainment-and-sports",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/entertainment-and-sports",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 211249,
+    "mime_type": null,
+    "content_hash": "f44ce43ceaec7a11ab9b665ca69deeda7613cc0b729cac4198919c38b680b840",
+    "crawled_at": "2025-09-08T13:09:34.804852"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/cc1-pro",
+    "canonical_url": "https://www.pudurobotics.com/de/products/cc1-pro",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 1,
+    "size_bytes": 212657,
+    "mime_type": null,
+    "content_hash": "56b05c3a7c66aa37c41cc584faf90ed88b1560d93091db837b81a4bafa485bf5",
+    "crawled_at": "2025-09-08T13:09:34.804914"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/company",
+    "canonical_url": "https://www.pudurobotics.com/de/products/company",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 1,
+    "size_bytes": 120429,
+    "mime_type": null,
+    "content_hash": "265963d1597e780d0fd7d9b067f0fbf06d49fbc48af5d16a5ae26f5dc868b73e",
+    "crawled_at": "2025-09-08T13:09:34.804977"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/products",
+    "canonical_url": "https://www.pudurobotics.com/de/products/products",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 1,
+    "size_bytes": 120432,
+    "mime_type": null,
+    "content_hash": "9a8325a1c39403efecae59f785c6e08c1d5ee12572324b4e0ad7e855b8830d34",
+    "crawled_at": "2025-09-08T13:09:34.805039"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/hospitality",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/hospitality",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 225908,
+    "mime_type": null,
+    "content_hash": "4eb74966088fd37a843ce7944acddb5c3b3c61208acf091001d9e97b6fb922a2",
+    "crawled_at": "2025-09-08T13:09:34.805074"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/public-service",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/public-service",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 202422,
+    "mime_type": null,
+    "content_hash": "eb57316a0ec6ffde3dc407997928887f038ba69c283c37287633187088c8f1ed",
+    "crawled_at": "2025-09-08T13:09:34.805124"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 152487,
+    "mime_type": null,
+    "content_hash": "ae66e4b7b5a4ef23dd9624ff5462a7d9ee74a8de005f27ba8437fe8864f8311a",
+    "crawled_at": "2025-09-08T13:09:34.805162"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news?tab=news",
+    "canonical_url": "https://www.pudurobotics.com/de/news?tab=news",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_title",
+      "news_title"
+    ],
+    "depth": 1,
+    "size_bytes": 176528,
+    "mime_type": null,
+    "content_hash": "24ec5c33c785cf2bf263a022a69d3598d475a092995fcc1c5b5928329576ab05",
+    "crawled_at": "2025-09-08T13:09:34.805239"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news?tab=blog",
+    "canonical_url": "https://www.pudurobotics.com/de/news?tab=blog",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_title",
+      "news_title"
+    ],
+    "depth": 1,
+    "size_bytes": 164068,
+    "mime_type": null,
+    "content_hash": "539e3fb457427eb25d2eaa573c92da953bd31fb5757fc0376ba74dfe542c3c75",
+    "crawled_at": "2025-09-08T13:09:34.805281"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/support",
+    "canonical_url": "https://www.pudurobotics.com/de/support",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_title"
+    ],
+    "depth": 1,
+    "size_bytes": 146080,
+    "mime_type": null,
+    "content_hash": "03fe6479f28e123eb8259372c3bd3ec9fe29ed79eea2be258b3379a793797d18",
+    "crawled_at": "2025-09-08T13:09:34.805328"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/case-studies",
+    "canonical_url": "https://www.pudurobotics.com/de/case-studies",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_title",
+      "product_h1"
+    ],
+    "depth": 1,
+    "size_bytes": 179642,
+    "mime_type": null,
+    "content_hash": "9b63b0db55ecb202922911e605e70baa07f91d1a5df117110588d1ecfca06b49",
+    "crawled_at": "2025-09-08T13:09:34.80539"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/d9",
+    "canonical_url": "https://www.pudurobotics.com/de/products/d9",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url",
+      "product_title"
+    ],
+    "depth": 2,
+    "size_bytes": 151200,
+    "mime_type": null,
+    "content_hash": "962cbc75dcf38d5fd5c7c98f74d4ed61d6984daf4c5433e7033310e930671a25",
+    "crawled_at": "2025-09-08T13:09:34.805441"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/pudut300",
+    "canonical_url": "https://www.pudurobotics.com/de/products/pudut300",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 223048,
+    "mime_type": null,
+    "content_hash": "2b83b8351a3b3774749164d79ce2f8bf2c606c01a3ba07fff8f1227f6993970d",
+    "crawled_at": "2025-09-08T13:09:34.805524"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/flashbot-new",
+    "canonical_url": "https://www.pudurobotics.com/de/products/flashbot-new",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 187739,
+    "mime_type": null,
+    "content_hash": "1e8cfac45531693c281c724572265cae744d1e3d138eaacb71d8f12a52e84b3a",
+    "crawled_at": "2025-09-08T13:09:34.805568"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/kettybot_pro",
+    "canonical_url": "https://www.pudurobotics.com/de/products/kettybot_pro",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 128063,
+    "mime_type": null,
+    "content_hash": "30bd55c20af2cc5d2276601c2daa545c4db992acaba222b1bdbab32df0e866d6",
+    "crawled_at": "2025-09-08T13:09:34.805626"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/puduCC1",
+    "canonical_url": "https://www.pudurobotics.com/de/products/puduCC1",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 128050,
+    "mime_type": null,
+    "content_hash": "b64e2bd36366613d146f566ec4b56a7dff515fae3294be9e03cb3c2925455706",
+    "crawled_at": "2025-09-08T13:09:34.805711"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/pudut600",
+    "canonical_url": "https://www.pudurobotics.com/de/products/pudut600",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 212836,
+    "mime_type": null,
+    "content_hash": "4abdc4e7ae36e13326814c0fc86160182560937ef0cce45ff9dffb45c1e8de49",
+    "crawled_at": "2025-09-08T13:09:34.805771"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/mt1-max",
+    "canonical_url": "https://www.pudurobotics.com/de/products/mt1-max",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 198938,
+    "mime_type": null,
+    "content_hash": "dd190f642bf6e83cc23629bc7ec84397407097d9db81c1f3b016d7a94fe423d2",
+    "crawled_at": "2025-09-08T13:09:34.805817"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/sh",
+    "canonical_url": "https://www.pudurobotics.com/de/products/sh",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 262917,
+    "mime_type": null,
+    "content_hash": "65c95798b9a545768cd9ad5782534846c04cb2b9dc7d02e1e4a4cd3dcde5d6ac",
+    "crawled_at": "2025-09-08T13:09:34.805858"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/pudubot2",
+    "canonical_url": "https://www.pudurobotics.com/de/products/pudubot2",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 127954,
+    "mime_type": null,
+    "content_hash": "934472db6ed9507ddc20873d9fe16835c752c4b904d5dbd32895acc7f1cb88ff",
+    "crawled_at": "2025-09-08T13:09:34.805915"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/bellabotpro",
+    "canonical_url": "https://www.pudurobotics.com/de/products/bellabotpro",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 232133,
+    "mime_type": null,
+    "content_hash": "45121375dbd554c8a1c8f3dee7eb5c95cd00977af01c2e88bccda0e69b268b8c",
+    "crawled_at": "2025-09-08T13:09:34.805978"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/download",
+    "canonical_url": "https://www.pudurobotics.com/de/download",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_title",
+      "docs_url"
+    ],
+    "depth": 2,
+    "size_bytes": 158313,
+    "mime_type": null,
+    "content_hash": "cd24d841a153cf17b2393be41fc66f808b8bb4975ec5cf9dae8069d673372518",
+    "crawled_at": "2025-09-08T13:09:34.806026"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news/917",
+    "canonical_url": "https://www.pudurobotics.com/de/news/917",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_title",
+      "product_h1",
+      "news_url"
+    ],
+    "depth": 2,
+    "size_bytes": 120624,
+    "mime_type": null,
+    "content_hash": "1134493d9c5982ef03b7924c0b53c88480bd4e737330975e8b9c565ec43acba3",
+    "crawled_at": "2025-09-08T13:09:34.806066"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/events",
+    "canonical_url": "https://www.pudurobotics.com/de/events",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_title"
+    ],
+    "depth": 2,
+    "size_bytes": 36089,
+    "mime_type": null,
+    "content_hash": "4f7cc82fdd8a81a58b0fc65f1112cc68ab02c73036e4b2cf7f4d4d5122b355f8",
+    "crawled_at": "2025-09-08T13:09:34.806124"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/company",
+    "canonical_url": "https://www.pudurobotics.com/de/company",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_title"
+    ],
+    "depth": 2,
+    "size_bytes": 84801,
+    "mime_type": null,
+    "content_hash": "027b9f5d5fa0b6c82fb481bcbaf05c2f619767ce420464ecb287fc342e88a059",
+    "crawled_at": "2025-09-08T13:09:34.806169"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/[solutionTitle]",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/[solutionTitle]",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108155,
+    "mime_type": null,
+    "content_hash": "a3ffc7114e44fbce2005b589d98a692d0490b6f1887adfab84659be19a2e4cfa",
+    "crawled_at": "2025-09-08T13:09:34.806223"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/download",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/download",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url",
+      "docs_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108105,
+    "mime_type": null,
+    "content_hash": "db379982422506a96e9072a177fb886f68ef00812a8f5e588c9190b18b9d7918",
+    "crawled_at": "2025-09-08T13:09:34.80626"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/news",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/news",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url",
+      "news_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108091,
+    "mime_type": null,
+    "content_hash": "5467e09cc695b8b068133fba533d387fd41876c21d0269798e992721281ac8a9",
+    "crawled_at": "2025-09-08T13:09:34.806327"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/solutions",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/solutions",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108101,
+    "mime_type": null,
+    "content_hash": "a6676900d4a8dd442d420753c84f8b247bc65df0f3ffaa71ae697fe564dd331d",
+    "crawled_at": "2025-09-08T13:09:34.806408"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/products",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/products",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108105,
+    "mime_type": null,
+    "content_hash": "626c6d6bfeffadfde1cd06f58b70e5ff938884268d2cf7a8f382d56c516c72dd",
+    "crawled_at": "2025-09-08T13:09:34.806451"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/company",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/company",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 2,
+    "size_bytes": 108097,
+    "mime_type": null,
+    "content_hash": "dc0365dd3c8d9420ea266d6a2ce0a17b1d3bfb8c6678a3be1cc027c9ab889284",
+    "crawled_at": "2025-09-08T13:09:34.806484"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/[robot]",
+    "canonical_url": "https://www.pudurobotics.com/de/products/[robot]",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.7290000000000001,
+    "signals": [
+      "product_url"
+    ],
+    "depth": 3,
+    "size_bytes": 120429,
+    "mime_type": null,
+    "content_hash": "1259a11e845d42655d82fc9bf6c520b674613c5fad2f7afa1bade43444910d50",
+    "crawled_at": "2025-09-08T13:09:34.806531"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news/916",
+    "canonical_url": "https://www.pudurobotics.com/de/news/916",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.7290000000000001,
+    "signals": [
+      "product_title",
+      "product_h1",
+      "news_url"
+    ],
+    "depth": 3,
+    "size_bytes": 119876,
+    "mime_type": null,
+    "content_hash": "caadc4f5d48551197350c1f40961f3dac8125a10565aee1edaad0a06af4bb5ad",
+    "crawled_at": "2025-09-08T13:09:34.806562"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news/915",
+    "canonical_url": "https://www.pudurobotics.com/de/news/915",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.6561,
+    "signals": [
+      "product_title",
+      "product_h1",
+      "news_url"
+    ],
+    "depth": 4,
+    "size_bytes": 122477,
+    "mime_type": null,
+    "content_hash": "1db105600433f4cda9a128d19283f8d75c1ab59a8214ca0491bdfff68ce5ebb2",
+    "crawled_at": "2025-09-08T13:09:34.806589"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/news/911",
+    "canonical_url": "https://www.pudurobotics.com/de/news/911",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.6561,
+    "signals": [
+      "product_title",
+      "product_h1",
+      "news_url"
+    ],
+    "depth": 4,
+    "size_bytes": 119106,
+    "mime_type": null,
+    "content_hash": "60959fc841181c8b6f905101f356cba1a5d85d72f28de214bcc4f4244f4d72d1",
+    "crawled_at": "2025-09-08T13:09:34.80663"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products?tab=xlab",
+    "canonical_url": "https://www.pudurobotics.com/de/products?tab=xlab",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 257788,
+    "mime_type": null,
+    "content_hash": "41e0b8b042c68d0b659ba3d1dce1e7ec82a17f61925e370e6f9594a4f9a483df",
+    "crawled_at": "2025-09-08T13:09:34.806654"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products?tab=delivery",
+    "canonical_url": "https://www.pudurobotics.com/de/products?tab=delivery",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 256012,
+    "mime_type": null,
+    "content_hash": "5fa03d4f9647a28071ec2ab74e531ce05a9e86bbba2e36298a33aa96a0f990ab",
+    "crawled_at": "2025-09-08T13:09:34.806684"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products?tab=industrial",
+    "canonical_url": "https://www.pudurobotics.com/de/products?tab=industrial",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 256902,
+    "mime_type": null,
+    "content_hash": "0a282a000f22a0c9cd0cfaca5d28df9da5e2efd1a96cc7386e4ea89059146f2a",
+    "crawled_at": "2025-09-08T13:09:34.806726"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products?tab=cleaning",
+    "canonical_url": "https://www.pudurobotics.com/de/products?tab=cleaning",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 253505,
+    "mime_type": null,
+    "content_hash": "76edd066b06c302ca835ce9b1b622df3581d43a71fb3076974e632ea149fdc86",
+    "crawled_at": "2025-09-08T13:09:34.806756"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=mt1",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=mt1",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.806794"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/accessory",
+    "canonical_url": "https://www.pudurobotics.com/de/accessory",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 184022,
+    "mime_type": null,
+    "content_hash": "7f9f579e46deab5ce95580a12048c5fe4b3c1b1a3aeef2a67b2ea4cbdd1eafdb",
+    "crawled_at": "2025-09-08T13:09:34.806849"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.08100000000000002,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 2,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.806907"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=kettybot_pro",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=kettybot_pro",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.0729,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 3,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.806946"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=puduCC1",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=puduCC1",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.0729,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 3,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.806974"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=pudubot2",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=pudubot2",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.0729,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 3,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.806997"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=bellabotpro",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=bellabotpro",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.0729,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 3,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.807019"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/contact-us?robot=[robot]",
+    "canonical_url": "https://www.pudurobotics.com/de/contact-us?robot=[robot]",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.06561,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 4,
+    "size_bytes": 36662,
+    "mime_type": null,
+    "content_hash": "13142ac2c719bdaf38661f6e49ad94844f680d3f8feef942e530a22244dcf945",
+    "crawled_at": "2025-09-08T13:09:34.807059"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/privacy",
+    "canonical_url": "https://www.pudurobotics.com/privacy",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.05,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 2,
+    "size_bytes": 90769,
+    "mime_type": null,
+    "content_hash": "54b63cad4ae4a3ac0a64348589ff05921fc98d5687f82da8ce14b0b78d822a65",
+    "crawled_at": "2025-09-08T13:09:34.807104"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/privacy",
+    "canonical_url": "https://www.pudurobotics.com/de/privacy",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.05,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 3,
+    "size_bytes": 91215,
+    "mime_type": null,
+    "content_hash": "a44f531ead25168e6758910591a7bc08e2b8e77fd1d37164e5f08a92fa1c3ffb",
+    "crawled_at": "2025-09-08T13:09:34.807141"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/food-and-beverage",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/food-and-beverage",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.807167"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/solutions/retail",
+    "canonical_url": "https://www.pudurobotics.com/de/solutions/retail",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.807195"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/solutions",
+    "canonical_url": "https://www.pudurobotics.com/de/products/solutions",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.807241"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/download",
+    "canonical_url": "https://www.pudurobotics.com/de/products/download",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.80727"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products/flashbot-arm",
+    "canonical_url": "https://www.pudurobotics.com/de/products/flashbot-arm",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.807299"
+  },
+  {
+    "crawl_session_id": 1,
+    "url": "https://www.pudurobotics.com/de/products",
+    "canonical_url": "https://www.pudurobotics.com/de/products",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-08T13:09:34.807333"
+  }
+]
