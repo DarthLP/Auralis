@@ -11,8 +11,6 @@ interface CompanyWithSummary extends Company {
 
 export default function CompaniesIndex() {
   const [companiesData, setCompaniesData] = useState<CompanyWithSummary[]>([]);
-  const [filteredCompanies, setFilteredCompanies] = useState<CompanyWithSummary[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -25,7 +23,6 @@ export default function CompaniesIndex() {
         // For now, we'll just use the companies data without summaries
         // In a real implementation, you'd fetch summaries separately
         setCompaniesData(companiesList);
-        setFilteredCompanies(companiesList);
       } catch (error) {
         console.error('Failed to fetch companies:', error);
       } finally {
@@ -35,23 +32,6 @@ export default function CompaniesIndex() {
 
     fetchCompanies();
   }, []);
-
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredCompanies(companiesData);
-      return;
-    }
-
-    const filtered = companiesData.filter(company => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        company.name.toLowerCase().includes(searchLower) ||
-        company.aliases.some(alias => alias.toLowerCase().includes(searchLower))
-      );
-    });
-
-    setFilteredCompanies(filtered);
-  }, [searchTerm, companiesData]);
 
   const handleCompanyClick = (companyId: string) => {
     navigate(`/companies/${companyId}`);
@@ -70,8 +50,6 @@ export default function CompaniesIndex() {
   if (loading) {
     return (
       <div className="container">
-        <div className="mb-8">
-        </div>
         <LoadingSkeleton type="grid" count={6} />
       </div>
     );
@@ -79,22 +57,9 @@ export default function CompaniesIndex() {
 
   return (
     <div className="container">
-      <div className="mb-8">
-        {/* Search Input */}
-        <div className="max-w-md">
-          <input
-            type="text"
-            placeholder="Search companies by name or alias..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      </div>
-
       {/* Companies Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCompanies.map((company) => (
+        {companiesData.map((company) => (
           <div
             key={company.id}
             onClick={() => handleCompanyClick(company.id)}
@@ -161,22 +126,20 @@ export default function CompaniesIndex() {
         </div>
       </div>
 
-      {filteredCompanies.length === 0 && !loading && (
+      {companiesData.length === 0 && !loading && (
         <EmptyState
           icon={
             <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           }
-          title={searchTerm ? 'No companies found' : 'No companies available'}
-          description={searchTerm ? 'Try adjusting your search terms to find companies.' : 'No companies have been added to the system yet.'}
-          action={
-            !searchTerm ? {
-              label: 'Add Your First Competitor',
-              onClick: () => navigate('/competitors/new'),
-              variant: 'primary' as const
-            } : undefined
-          }
+          title="No companies available"
+          description="No companies have been added to the system yet."
+          action={{
+            label: 'Add Your First Competitor',
+            onClick: () => navigate('/competitors/new'),
+            variant: 'primary' as const
+          }}
         />
       )}
     </div>
