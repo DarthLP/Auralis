@@ -270,7 +270,7 @@ export interface DeduplicationResult {
 export function checkDeduplication(
   eTLD1: string, 
   companyName: string, 
-  existingCompanies: Array<{ id: string; name: string; website?: string }>
+  existingCompanies: Array<{ id: string; name: string; website?: string | null }>
 ): DeduplicationResult {
   for (const company of existingCompanies) {
     // Check by domain (eTLD+1)

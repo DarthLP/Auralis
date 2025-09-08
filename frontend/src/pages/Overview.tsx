@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getThisWeekSignals, getRecentReleases, source, getYourCompany, getYourCompanyStats } from '../lib/mockData';
+import { signals as fetchSignals, releases as fetchReleases, source, companies } from '../lib/api';
 import type { Signal, Release, Source as SourceType, Company } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
 import { useDateFormat } from '../hooks/useDateFormat';
@@ -43,20 +43,69 @@ export default function Overview() {
       try {
         console.log('Overview: Starting data load...');
         setLoading(true);
-        const [signalsData, releasesData, yourCompanyData, yourCompanyStatsData] = await Promise.all([
-          getThisWeekSignals(),
-          getRecentReleases(),
-          getYourCompany(),
-          getYourCompanyStats()
+        
+        // Load all data from the API
+        const [allSignals, allReleases, allCompanies] = await Promise.all([
+          fetchSignals(),
+          fetchReleases(),
+          companies()
         ]);
+        
+        // Find "Your Company" (PAL Robotics with isSelf: true)
+        const yourCompanyData = allCompanies.find(c => c.isSelf === true) || null;
+        
+        // Filter and sort signals for "This Week" (last 7 days, excluding your company)
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 7);
+        
+        const thisWeekSignals = allSignals
+          .filter(signal => {
+            const signalDate = new Date(signal.published_at);
+            return signalDate >= cutoffDate && !signal.company_ids.includes('cmp_self');
+          })
+          .sort((a, b) => {
+            const impactA = parseInt(a.impact);
+            const impactB = parseInt(b.impact);
+            if (impactA !== impactB) {
+              return impactB - impactA; // Higher impact first
+            }
+            return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+          })
+          .slice(0, 5); // Top 5
+        
+        // Filter and sort releases for "Recent" (last 90 days, from all companies)
+        const releaseCutoffDate = new Date();
+        releaseCutoffDate.setDate(releaseCutoffDate.getDate() - 90);
+        
+        const recentReleases = allReleases
+          .filter(release => {
+            const releaseDate = new Date(release.released_at);
+            return releaseDate >= releaseCutoffDate;
+          })
+          .sort((a, b) => new Date(b.released_at).getTime() - new Date(a.released_at).getTime())
+          .slice(0, 8); // Top 8
+        
+        // Calculate your company stats
+        const yourCompanyStatsData = yourCompanyData ? {
+          products: allReleases.filter(r => r.company_id === yourCompanyData.id).length,
+          capabilities: 0, // This would need to be calculated from product capabilities
+          recentSignals: allSignals.filter(signal => {
+            const signalDate = new Date(signal.published_at);
+            const signalCutoff = new Date();
+            signalCutoff.setDate(signalCutoff.getDate() - 60);
+            return signal.company_ids.includes(yourCompanyData.id) && signalDate >= signalCutoff;
+          }).length
+        } : null;
+        
         console.log('Overview: Data loaded successfully', { 
-          signals: signalsData.length, 
-          releases: releasesData.length,
+          signals: thisWeekSignals.length, 
+          releases: recentReleases.length,
           yourCompany: yourCompanyData?.name,
           yourCompanyStats: yourCompanyStatsData
         });
-        setSignals(signalsData);
-        setReleases(releasesData);
+        
+        setSignals(thisWeekSignals);
+        setReleases(recentReleases);
         setYourCompany(yourCompanyData);
         setYourCompanyStats(yourCompanyStatsData);
       } catch (err) {

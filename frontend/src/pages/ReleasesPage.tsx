@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { releases, companies as fetchCompanies, productsByCompany, source } from '../lib/mockData';
+import { releases as fetchReleases, companies as fetchCompanies, source, productsByCompany } from '../lib/api';
 import { Release, Company, Product, Source as SourceType } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -86,7 +86,7 @@ export default function ReleasesPage() {
     const loadAndFilterReleases = async () => {
       try {
         setLoading(true);
-        const allReleasesData = await releases();
+        const allReleasesData = await fetchReleases();
         
         // Apply filters
         let filtered = allReleasesData;

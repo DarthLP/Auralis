@@ -3,9 +3,10 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { 
   company, 
   companySummaries, 
-  productsByCompany, 
-  getCompanyRecentActivity 
-} from '../lib/mockData';
+  productsByCompany,
+  signals as fetchSignals,
+  releases as fetchReleases
+} from '../lib/api';
 import { Company, CompanySummary, Product } from '@schema/types';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useDateFormat } from '../hooks/useDateFormat';
@@ -45,12 +46,45 @@ export default function CompanyPage() {
         setLoading(true);
         setError(null);
 
-        const [companyData, summaries, products, recentActivity] = await Promise.all([
+        const [companyData, summaries, products, allSignals, allReleases] = await Promise.all([
           company(companyId),
           companySummaries(companyId),
           productsByCompany(companyId),
-          getCompanyRecentActivity(companyId)
+          fetchSignals(),
+          fetchReleases()
         ]);
+        
+        // Build recent activity from signals and releases
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 60); // Last 60 days
+        
+        const companySignals = allSignals
+          .filter(signal => signal.company_ids.includes(companyId))
+          .filter(signal => new Date(signal.published_at) >= cutoffDate)
+          .map(signal => ({
+            type: 'signal' as const,
+            id: signal.id,
+            title: signal.headline,
+            date: signal.published_at,
+            summary: signal.summary,
+            signalId: signal.id
+          }));
+        
+        const companyReleases = allReleases
+          .filter(release => release.company_id === companyId)
+          .map(release => ({
+            type: 'release' as const,
+            id: release.id,
+            title: `${release.version} - ${release.notes}`,
+            date: release.released_at,
+            summary: release.notes,
+            productId: release.product_id
+          }));
+        
+        // Combine and sort by date (newest first), limit to 10
+        const recentActivity = [...companySignals, ...companyReleases]
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 10);
 
         setData({
           company: companyData,

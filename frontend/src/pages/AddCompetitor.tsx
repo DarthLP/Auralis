@@ -29,7 +29,7 @@ export default function AddCompetitor() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [existingCompanies, setExistingCompanies] = useState<Array<{ id: string; name: string; website?: string }>>([]);
+  const [existingCompanies, setExistingCompanies] = useState<Array<{ id: string; name: string; website?: string | null }>>([]);
 
   // Load existing companies for deduplication
   useEffect(() => {

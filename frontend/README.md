@@ -15,7 +15,7 @@ This frontend application is fully implemented with a complete feature set inclu
 - **Styling**: Tailwind CSS
 - **Routing**: React Router DOM
 - **State Management**: React hooks (useState, useEffect)
-- **Data Fetching**: Mock API system with realistic delays
+- **Data Fetching**: Real API integration with backend endpoints
 - **Build Tool**: Vite for fast development and optimized builds
 
 ## 📁 Directory Structure
@@ -300,25 +300,33 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-## 🔌 Planned API Integration
+## 🔌 API Integration ✅
 
 ### Backend Communication
 
-The frontend will communicate with the backend API:
+The frontend now communicates with the backend API:
 
 - **Base URL**: `http://localhost:8000` (development)
 - **Authentication**: JWT tokens (future)
 - **CORS**: Configured for `http://localhost:3000`
+- **Real-time Data**: Live data fetching from database
 
-### Planned API Endpoints
+### Implemented API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/competitors` | Add new competitor |
-| `GET` | `/api/competitors` | List all competitors |
-| `GET` | `/api/competitors/{id}` | Get competitor details |
-| `POST` | `/api/competitors/{id}/crawl` | Trigger website crawl |
-| `GET` | `/api/competitors/{id}/products` | Get competitor products |
+| `GET` | `/api/companies/` | List all companies with search and filtering |
+| `GET` | `/api/companies/{id}` | Get detailed company information |
+| `GET` | `/api/products/` | List all products with filtering |
+| `GET` | `/api/products/{id}` | Get detailed product information |
+| `GET` | `/api/signals/` | List all signals with advanced filtering |
+| `GET` | `/api/signals/{id}` | Get detailed signal information |
+| `GET` | `/api/releases/` | List all product releases with filtering |
+| `GET` | `/api/releases/{id}` | Get detailed release information |
+| `GET` | `/api/capabilities/` | List all technical capabilities |
+| `GET` | `/api/sources/` | List all data sources |
+| `POST` | `/api/crawl/discover` | Website discovery and crawling |
+| `POST` | `/api/crawl/fingerprint` | Content fingerprinting pipeline |
 
 ## 🎨 Planned UI Components
 
@@ -394,6 +402,8 @@ The frontend will communicate with the backend API:
 - [x] Product detail pages with capabilities
 - [x] Advanced signals filtering and analysis
 - [x] Releases tracking with company and date filtering
+- [x] **Real API integration** with backend endpoints
+- [x] **Live data fetching** from database
 
 ### Phase 4: Advanced Features ✅
 - [x] Add Competitor URL-based ingestion

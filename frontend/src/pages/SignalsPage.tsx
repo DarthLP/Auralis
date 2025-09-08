@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
-  signals, 
+  signals as fetchSignals, 
   companies as fetchCompanies, 
-  productsByCompany,
-  source 
-} from '../lib/mockData';
+  source,
+  productsByCompany
+} from '../lib/api';
 import { Signal, Company, Product, Source as SourceType } from '@schema/types';
 import { SignalType } from '@schema/enums';
 import SourceDrawer from '../components/SourceDrawer';
@@ -224,7 +224,7 @@ export default function SignalsPage() {
     const loadAndFilterSignals = async () => {
       try {
         setLoading(true);
-        const allSignals = await signals();
+        const allSignals = await fetchSignals();
         
         // Apply filters
         let filteredSignals = allSignals;

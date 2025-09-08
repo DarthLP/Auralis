@@ -5,22 +5,22 @@ export interface Company {
   id: string;
   name: string;
   aliases: string[];
-  hq_country?: string;
-  website?: string;
+  hq_country?: string | null;
+  website?: string | null;
   status: 'active' | 'dormant';
   tags: string[];
-  logoUrl?: string;
-  isSelf?: boolean; // true if "Your Company"
+  logoUrl?: string | null;
+  isSelf?: boolean | null; // true if "Your Company"
 }
 
 export interface CompanySummary {
   company_id: string;
   one_liner: string;
-  founded_year?: number;
-  hq_city?: string;
-  employees?: string;
-  footprint?: string;
-  sites?: string[];
+  founded_year?: number | null;
+  hq_city?: string | null;
+  employees?: string | null;
+  footprint?: string | null;
+  sites?: string[] | null;
   sources: string[];
 }
 
@@ -33,13 +33,13 @@ export interface Product {
   markets: string[];
   tags: string[];
   short_desc?: string;
-  product_url?: string;
-  docs_url?: string;
-  media?: { hero?: string; video?: string };
-  spec_profile?: string;
-  specs?: Record<string, SpecValue>;
-  released_at?: string; // ISO date string
-  eol_at?: string; // ISO date string
+  product_url?: string | null;
+  docs_url?: string | null;
+  media?: { hero?: string; video?: string } | null;
+  spec_profile?: string | null;
+  specs?: Record<string, SpecValue> | null;
+  released_at?: string | null; // ISO date string
+  eol_at?: string | null; // ISO date string
   compliance?: string[];
 }
 
@@ -56,13 +56,13 @@ export interface ProductCapability {
   capability_id: string;
   maturity: CapabilityMaturity;
   details?: string;
-  metrics?: Record<string, string | number>;
-  observed_at?: string; // ISO date string
+  metrics?: Record<string, string | number> | null;
+  observed_at?: string | null; // ISO date string
   source_id?: string;
-  method?: 'measured' | 'reported' | 'inferred';
+  method?: 'measured' | 'reported' | 'inferred' | null;
 }
 
-export type CapabilityMaturity = 'basic' | 'intermediate' | 'advanced' | 'expert';
+export type CapabilityMaturity = 'basic' | 'intermediate' | 'advanced' | 'expert' | 'ga';
 
 export interface Signal {
   id: string;
@@ -93,7 +93,7 @@ export interface Source {
   origin: string;
   author?: string;
   retrieved_at?: string; // ISO date string
-  credibility?: 'low' | 'medium' | 'high';
+  credibility?: 'low' | 'medium' | 'high' | null;
 }
 
 export interface Seed {

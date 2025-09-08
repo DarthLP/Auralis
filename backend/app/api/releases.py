@@ -7,7 +7,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.db import get_db
 from app.models.signal import Release
@@ -15,6 +15,16 @@ from app.models.signal import Release
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/releases", tags=["releases"])
+
+
+def format_datetime_for_api(dt: datetime) -> str:
+    """Format datetime for API response in ISO format with Z suffix."""
+    if dt is None:
+        return None
+    # Convert to UTC and format with Z suffix for Zod compatibility
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 @router.get("/")
@@ -63,7 +73,7 @@ async def get_releases(
                 "product_id": release.product_id,
                 "version": release.version,
                 "notes": release.notes,
-                "released_at": release.released_at.isoformat(),
+                "released_at": format_datetime_for_api(release.released_at),
                 "source_id": release.source_id
             }
             result.append(release_dict)
@@ -131,7 +141,7 @@ async def get_recent_releases(
                 "product_id": release.product_id,
                 "version": release.version,
                 "notes": release.notes,
-                "released_at": release.released_at.isoformat(),
+                "released_at": format_datetime_for_api(release.released_at),
                 "source_id": release.source_id
             }
             result.append(release_dict)

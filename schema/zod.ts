@@ -17,21 +17,23 @@ export const zCompany = z.object({
   id: z.string(),
   name: z.string(),
   aliases: z.array(z.string()),
-  hq_country: z.string().optional(),
-  website: z.string().url().optional(),
+  hq_country: z.string().optional().nullable(),
+  website: z.string().url().optional().nullable(),
   status: z.enum(['active', 'dormant']),
   tags: z.array(z.string()),
+  logoUrl: z.string().optional().nullable(),
+  isSelf: z.boolean().optional().nullable(),
 });
 
 // CompanySummary schema
 export const zCompanySummary = z.object({
   company_id: z.string(),
   one_liner: z.string(),
-  founded_year: z.number().optional(),
-  hq_city: z.string().optional(),
-  employees: z.string().optional(),
-  footprint: z.string().optional(),
-  sites: z.array(z.string()).optional(),
+  founded_year: z.number().optional().nullable(),
+  hq_city: z.string().optional().nullable(),
+  employees: z.string().optional().nullable(),
+  footprint: z.string().optional().nullable(),
+  sites: z.array(z.string()).optional().nullable(),
   sources: z.array(z.string()),
 });
 
@@ -41,20 +43,26 @@ export const zProduct = z.object({
   company_id: z.string(),
   name: z.string(),
   category: z.string(),
-  stage: z.enum(['alpha', 'beta', 'ga', 'discontinued'] as const),
+  stage: z.enum(['alpha', 'beta', 'ga', 'discontinued', 'deprecated'] as const),
   markets: z.array(z.string()),
   tags: z.array(z.string()),
   short_desc: z.string().optional(),
-  product_url: z.string().url().optional(),
-  docs_url: z.string().url().optional(),
+  product_url: z.string().optional().nullable().refine(
+    (val) => !val || val === '' || z.string().url().safeParse(val).success,
+    { message: "Invalid URL" }
+  ),
+  docs_url: z.string().optional().nullable().refine(
+    (val) => !val || val === '' || z.string().url().safeParse(val).success,
+    { message: "Invalid URL" }
+  ),
   media: z.object({
     hero: z.string().optional(),
     video: z.string().optional(),
-  }).optional(),
-  spec_profile: z.string().optional(),
-  specs: z.record(z.string(), zSpecValue).optional(),
-  released_at: z.string().datetime().optional(),
-  eol_at: z.string().datetime().optional(),
+  }).optional().nullable(),
+  spec_profile: z.string().optional().nullable(),
+  specs: z.record(z.string(), zSpecValue).optional().nullable(),
+  released_at: z.string().datetime().optional().nullable(),
+  eol_at: z.string().datetime().optional().nullable(),
   compliance: z.array(z.string()).optional(),
 });
 
@@ -71,12 +79,12 @@ export const zProductCapability = z.object({
   id: z.string(),
   product_id: z.string(),
   capability_id: z.string(),
-  maturity: z.enum(['basic', 'intermediate', 'advanced', 'expert']),
+  maturity: z.enum(['basic', 'intermediate', 'advanced', 'expert', 'ga']),
   details: z.string().optional(),
-  metrics: z.record(z.string(), z.union([z.string(), z.number()])).optional(),
-  observed_at: z.string().datetime().optional(),
+  metrics: z.record(z.string(), z.union([z.string(), z.number()])).optional().nullable(),
+  observed_at: z.string().datetime().optional().nullable(),
   source_id: z.string().optional(),
-  method: z.enum(['measured', 'reported', 'inferred']).optional(),
+  method: z.enum(['measured', 'reported', 'inferred']).optional().nullable(),
 });
 
 // Signal schema
@@ -111,7 +119,7 @@ export const zSource = z.object({
   origin: z.string(),
   author: z.string().optional(),
   retrieved_at: z.string().datetime().optional(),
-  credibility: z.enum(['low', 'medium', 'high']).optional(),
+  credibility: z.enum(['low', 'medium', 'high']).optional().nullable(),
 });
 
 // Seed schema

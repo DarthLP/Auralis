@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { companies } from '../lib/mockData';
+import { companies } from '../lib/api';
 import { Company, CompanySummary } from '@schema/types';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';

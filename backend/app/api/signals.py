@@ -7,7 +7,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.db import get_db
 from app.models.signal import Signal
@@ -15,6 +15,16 @@ from app.models.signal import Signal
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/signals", tags=["signals"])
+
+
+def format_datetime_for_api(dt: datetime) -> str:
+    """Format datetime for API response in ISO format with Z suffix."""
+    if dt is None:
+        return None
+    # Convert to UTC and format with Z suffix for Zod compatibility
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 @router.get("/")
@@ -68,7 +78,7 @@ async def get_signals(
                 "type": signal.type,
                 "headline": signal.headline,
                 "summary": signal.summary,
-                "published_at": signal.published_at.isoformat(),
+                "published_at": format_datetime_for_api(signal.published_at),
                 "url": signal.url,
                 "company_ids": signal.company_ids or [],
                 "product_ids": signal.product_ids or [],
@@ -146,7 +156,7 @@ async def get_this_week_signals(
                 "type": signal.type,
                 "headline": signal.headline,
                 "summary": signal.summary,
-                "published_at": signal.published_at.isoformat(),
+                "published_at": format_datetime_for_api(signal.published_at),
                 "url": signal.url,
                 "company_ids": signal.company_ids or [],
                 "product_ids": signal.product_ids or [],

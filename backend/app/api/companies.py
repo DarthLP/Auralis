@@ -7,6 +7,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from datetime import datetime, timezone
 
 from app.core.db import get_db
 from app.models.company import Company, CompanySummary
@@ -17,6 +18,16 @@ from app.models.signal import Release
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/companies", tags=["companies"])
+
+
+def format_datetime_for_api(dt: datetime) -> str:
+    """Format datetime for API response in ISO format with Z suffix."""
+    if dt is None:
+        return None
+    # Convert to UTC and format with Z suffix for Zod compatibility
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 @router.get("/")
@@ -176,8 +187,8 @@ async def get_company_products(company_id: str, db: Session = Depends(get_db)) -
                 "media": product.media,
                 "spec_profile": product.spec_profile,
                 "specs": product.specs,
-                "released_at": product.released_at.isoformat() if product.released_at else None,
-                "eol_at": product.eol_at.isoformat() if product.eol_at else None,
+                "released_at": format_datetime_for_api(product.released_at),
+                "eol_at": format_datetime_for_api(product.eol_at),
                 "compliance": product.compliance or []
             }
             result.append(product_dict)
@@ -223,7 +234,7 @@ async def get_company_signals(
                 "type": signal.type,
                 "headline": signal.headline,
                 "summary": signal.summary,
-                "published_at": signal.published_at.isoformat(),
+                "published_at": format_datetime_for_api(signal.published_at),
                 "url": signal.url,
                 "company_ids": signal.company_ids or [],
                 "product_ids": signal.product_ids or [],
@@ -270,7 +281,7 @@ async def get_company_releases(
                 "product_id": release.product_id,
                 "version": release.version,
                 "notes": release.notes,
-                "released_at": release.released_at.isoformat(),
+                "released_at": format_datetime_for_api(release.released_at),
                 "source_id": release.source_id
             }
             result.append(release_dict)

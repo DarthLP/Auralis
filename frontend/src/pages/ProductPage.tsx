@@ -5,9 +5,8 @@ import {
   productCapabilities as fetchProductCapabilities, 
   capabilities,
   company,
-  specProfile,
   source
-} from '../lib/mockData';
+} from '../lib/api';
 import { Product, ProductCapability, Capability, Company, Source as SourceType } from '@schema/types';
 import SpecsGroup from '../components/SpecsGroup';
 import NotFound from './NotFound';
@@ -89,10 +88,10 @@ export default function ProductPage() {
             capabilities()
           ];
 
-          // Add spec profile fetch if product has spec_profile
-          if (productData.spec_profile) {
-            fetchPromises.push(specProfile(productData.spec_profile));
-          }
+          // Note: specProfile function is not yet implemented
+          // if (productData.spec_profile) {
+          //   fetchPromises.push(specProfile(productData.spec_profile));
+          // }
 
           const results = await Promise.all(fetchPromises);
           companyData = results[0] as Company;
