@@ -181,7 +181,7 @@ For detailed schema documentation, see [`schema/README.md`](schema/README.md).
 
 ## 🔧 Backend API
 
-The backend provides a RESTful API built with FastAPI for competitor analysis:
+The backend provides a RESTful API built with FastAPI for competitor analysis with **database-first architecture**:
 
 ### Core Endpoints
 
@@ -189,9 +189,12 @@ The backend provides a RESTful API built with FastAPI for competitor analysis:
 - `GET /health` - Health check endpoint
 - `GET /docs` - Interactive API documentation (Swagger UI)
 
-### 🚀 Website Discovery API
+### 🚀 Website Discovery & Fingerprinting API
 
 **`POST /api/crawl/discover`** - Advanced website crawling and page discovery
+**`POST /api/crawl/fingerprint`** - 3-step fingerprinting pipeline for content analysis
+**`GET /api/crawl/sessions`** - List crawl sessions with metadata
+**`GET /api/crawl/sessions/{id}/fingerprints`** - Get fingerprint results for a session
 
 **Features:**
 - **JavaScript-Enabled Crawling**: Full browser automation with Playwright for modern websites
@@ -231,9 +234,65 @@ The backend provides a RESTful API built with FastAPI for competitor analysis:
     "pricing": ["https://competitor.example.com/pricing"]
   },
   "log_file": "logs/crawl_20250907_161900.log",
-  "json_file": "logs/crawl_20250907_161900_data.json"
+  "crawl_session_id": 1,
+  "pages_saved_to_db": 45
 }
 ```
+
+### 🧬 Core Crawl Fingerprinting API
+
+**`POST /api/crawl/fingerprint`** - Process crawl sessions through 3-step fingerprinting pipeline
+
+**Request:**
+```json
+{
+  "crawl_session_id": 1,
+  "competitor": "competitor-name"
+}
+```
+
+**Response:**
+```json
+{
+  "fingerprint_session_id": 1,
+  "crawl_session_id": 1,
+  "competitor": "competitor-name",
+  "started_at": "2025-09-08T07:58:36.922300",
+  "completed_at": "2025-09-08T07:58:36.929679",
+  "total_processed": 24,
+  "total_errors": 0,
+  "fingerprints": [
+    {
+      "url": "https://example.com/product",
+      "key_url": "https://example.com/product",
+      "page_type": "product",
+      "content_hash": "a1b2c3d4e5f6...",
+      "normalized_text_len": 2048,
+      "low_text_pdf": false,
+      "needs_render": false,
+      "meta": {
+        "status": 200,
+        "content_type": "text/html",
+        "content_length": 15420,
+        "elapsed_ms": 250,
+        "notes": null
+      }
+    }
+  ]
+}
+```
+
+**3-Step Pipeline:**
+1. **Filter** - Score threshold (≥0.5), URL canonicalization, deduplication, caps (30/domain, 10/category)
+2. **Fetch** - Async HTTP with httpx, content type detection, 15MB size limit, configurable timeouts
+3. **Fingerprint** - Stable content hashing:
+   - HTML → trafilatura text extraction → normalized hash
+   - PDF → pdfminer text extraction → normalized hash (with low_text_pdf flag)
+   - Images/Videos → direct byte hashing
+
+**Session Management:**
+- `GET /api/crawl/sessions` - List all crawl sessions
+- `GET /api/crawl/sessions/{id}/fingerprints` - Get fingerprint results for a session
 
 ### Competitor Management (Planned)
 
@@ -257,21 +316,72 @@ The backend provides a RESTful API built with FastAPI for competitor analysis:
 - **Database Integration** - PostgreSQL with structured models
 - **AI Integration** - Theta EdgeCloud with local fallback
 
-## 🐳 Docker Services
+## 🐳 Docker Services & Database Integration
 
 ### Backend Service
 
 - **Image**: Custom build from `Dockerfile.backend`
 - **Port**: 8000 (mapped to host)
 - **Environment**: Loaded from `backend/.env`
+- **Database Connection**: `postgresql+psycopg://postgres:postgres@db:5432/auralis`
 - **Restart Policy**: `unless-stopped`
 
-### Database Service
+### Database Service (PostgreSQL 15)
 
 - **Image**: PostgreSQL 15
 - **Port**: 5432 (mapped to host)
 - **Database**: `auralis`
-- **Persistent Storage**: Docker volume for data persistence
+- **Username/Password**: `postgres/postgres`
+- **Persistent Storage**: Docker volume `postgres_data` for data persistence
+- **Schema**: `crawl_data` for all crawling and fingerprinting tables
+
+### 🗄️ Database Schema & Access
+
+**Database Tables:**
+- `crawl_data.crawl_sessions` - Discovery results and metadata
+- `crawl_data.crawled_pages` - Individual discovered pages with scores
+- `crawl_data.fingerprint_sessions` - Fingerprinting operations
+- `crawl_data.page_fingerprints` - Stable content hashes and metadata
+
+**Accessing the Database:**
+
+1. **Via Docker Desktop:**
+   - Open Docker Desktop app
+   - Go to Containers → `infra-db-1`
+   - Click "Open in Terminal" to access PostgreSQL container
+   - Run: `psql -U postgres -d auralis`
+
+2. **Via Terminal:**
+   ```bash
+   # Connect to PostgreSQL container
+   docker exec -it infra-db-1 psql -U postgres -d auralis
+   
+   # View tables
+   \dt crawl_data.*
+   
+   # Query crawl sessions
+   SELECT id, target_url, total_pages, started_at FROM crawl_data.crawl_sessions;
+   
+   # Query fingerprint results
+   SELECT url, page_type, content_hash FROM crawl_data.page_fingerprints LIMIT 5;
+   ```
+
+3. **Via Database Client (e.g., pgAdmin, DBeaver):**
+   - Host: `localhost`
+   - Port: `5432`
+   - Database: `auralis`
+   - Username: `postgres`
+   - Password: `postgres`
+
+**Database Migrations:**
+```bash
+# Run migrations (from backend directory)
+cd backend
+alembic upgrade head
+
+# Create new migration
+alembic revision --autogenerate -m "Description"
+```
 
 ### Frontend Service (Planned)
 

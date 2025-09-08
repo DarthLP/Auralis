@@ -51,6 +51,13 @@ class Settings(BaseSettings):
     SCRAPER_DOWNLOAD_THRESHOLD: float = 0.5
     SCRAPER_DOWNLOAD_MAX_PAGES: int = 100
     
+    # Core Crawl Configuration
+    CORE_CRAWL_CONCURRENCY: int = 8
+    CORE_CRAWL_BATCH_SIZE: int = 20
+    CORE_CRAWL_MAX_CONTENT_SIZE: int = 15 * 1024 * 1024  # 15MB
+    CORE_CRAWL_CONNECT_TIMEOUT: int = 5  # seconds
+    CORE_CRAWL_READ_TIMEOUT: int = 20  # seconds
+    
     class Config:
         env_file = ".env"
         case_sensitive = False

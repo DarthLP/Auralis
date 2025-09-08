@@ -7,15 +7,64 @@ import os
 from datetime import datetime
 from typing import Dict
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, validator
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.db import get_db
+from app.models.crawl import CrawlSession, CrawledPage
 from app.services.scrape import discover_interesting_pages
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/crawl", tags=["crawl"])
+
+
+def _canonicalize_url(url: str) -> str:
+    """
+    Simple URL canonicalization for deduplication.
+    """
+    if not url:
+        return ""
+    
+    try:
+        from urllib.parse import urlparse, urlunparse
+        
+        parsed = urlparse(url)
+        
+        # Remove common tracking parameters
+        query_params = []
+        if parsed.query:
+            params = parsed.query.split('&')
+            for param in params:
+                if '=' in param:
+                    key = param.split('=')[0].lower()
+                    # Skip common tracking parameters
+                    if key not in ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 
+                                 'utm_term', 'gclid', 'fbclid', 'msclkid', '_ga', '_gl']:
+                        query_params.append(param)
+        
+        # Rebuild query string
+        clean_query = '&'.join(query_params) if query_params else ''
+        
+        # Normalize path (remove trailing slash except for root)
+        clean_path = parsed.path.rstrip('/') if parsed.path != '/' else '/'
+        
+        # Rebuild URL
+        canonical = urlunparse((
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            clean_path,
+            parsed.params,
+            clean_query,
+            ''  # Remove fragment
+        ))
+        
+        return canonical
+        
+    except Exception:
+        return url
 
 
 class CrawlRequest(BaseModel):
@@ -68,7 +117,7 @@ def setup_detailed_logging(log_file: str) -> logging.Logger:
 
 
 @router.post("/discover", response_model=CrawlResponse)
-async def discover_pages(request: CrawlRequest) -> CrawlResponse:
+async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -> CrawlResponse:
     """
     Discover and classify interesting pages from a competitor website.
     
@@ -138,16 +187,66 @@ async def discover_pages(request: CrawlRequest) -> CrawlResponse:
         # Add log file path to response
         result['log_file'] = log_file
         
-        # Save complete crawl data to JSON file
-        import json
-        json_file = log_file.replace('.log', '_data.json')
+        # Save crawl session and pages to database
         try:
-            with open(json_file, 'w') as f:
-                json.dump(result, f, indent=2, default=str)
-            crawl_logger.info(f"Crawl data saved to: {json_file}")
-            result['json_file'] = json_file
-        except Exception as e:
-            crawl_logger.error(f"Failed to save JSON data: {e}")
+            # Create crawl session
+            crawl_session = CrawlSession(
+                target_url=str(request.url),
+                base_domain=result["base_domain"],
+                started_at=datetime.utcnow(),
+                completed_at=datetime.utcnow(),
+                total_pages=len(result.get("pages", [])),
+                limits=limits,
+                warnings=result.get("warnings", []),
+                log_file=log_file,
+                json_file=None  # We're not saving JSON files anymore
+            )
+            db.add(crawl_session)
+            db.flush()  # Get the ID without committing
+            
+            crawl_logger.info(f"Created crawl session with ID: {crawl_session.id}")
+            
+            # Save pages to database
+            pages_saved = 0
+            for page_data in result.get("pages", []):
+                try:
+                    # Canonicalize URL for deduplication
+                    canonical_url = _canonicalize_url(page_data.get("url", ""))
+                    
+                    crawled_page = CrawledPage(
+                        session_id=crawl_session.id,
+                        url=page_data.get("url", ""),
+                        canonical_url=canonical_url,
+                        content_hash=page_data.get("content_hash"),
+                        status_code=page_data.get("status"),
+                        depth=page_data.get("depth", 0),
+                        size_bytes=page_data.get("size_bytes", 0),
+                        mime_type=page_data.get("mime_type"),
+                        crawled_at=datetime.utcnow(),
+                        primary_category=page_data.get("primary_category", "other"),
+                        secondary_categories=page_data.get("secondary_categories", []),
+                        score=page_data.get("score", 0.0),
+                        signals=page_data.get("signals", [])
+                    )
+                    db.add(crawled_page)
+                    pages_saved += 1
+                except Exception as page_error:
+                    crawl_logger.warning(f"Failed to save page {page_data.get('url', 'unknown')}: {page_error}")
+                    continue
+            
+            # Commit all changes
+            db.commit()
+            crawl_logger.info(f"Saved crawl session and {pages_saved} pages to database")
+            
+            # Add database info to response
+            result['crawl_session_id'] = crawl_session.id
+            result['pages_saved_to_db'] = pages_saved
+            
+        except Exception as db_error:
+            db.rollback()
+            crawl_logger.error(f"Failed to save to database: {db_error}")
+            # Continue with the response even if DB save fails
+            result['db_error'] = str(db_error)
         
         # Check for homepage fetch failure
         if "error" in result and result["error"] == "HOMEPAGE_FETCH_FAILED":

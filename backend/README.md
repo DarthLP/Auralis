@@ -49,13 +49,16 @@ backend/
 | `GET` | `/health` | Health check endpoint | `{"status": "ok"}` |
 | `GET` | `/docs` | Interactive API documentation | Swagger UI HTML |
 
-### Discovery API
+### Discovery & Fingerprinting API
 
-The Discovery API enables crawling and analysis of competitor websites to identify interesting pages for competitive analysis.
+The core crawling API provides both discovery and fingerprinting capabilities with database-first architecture.
 
 | Method | Endpoint | Description | Response |
 |--------|----------|-------------|----------|
 | `POST` | `/api/crawl/discover` | Discover and classify pages from a website | JSON with categorized pages |
+| `POST` | `/api/crawl/fingerprint` | Process crawl session through 3-step pipeline | JSON with fingerprint results |
+| `GET` | `/api/crawl/sessions` | List crawl sessions with metadata | JSON array of sessions |
+| `GET` | `/api/crawl/sessions/{id}/fingerprints` | Get fingerprint results for a session | JSON with fingerprint data |
 
 #### POST /api/crawl/discover
 
@@ -114,7 +117,92 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 - `news`: News, blog posts, press releases
 - `other`: Other interesting pages
 
-**Note:** Discovery returns candidate pages only; no database writes occur. This is the first stage before normalization and storage.
+**Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.
+
+#### POST /api/crawl/fingerprint
+
+Processes pages from a crawl session through the 3-step fingerprinting pipeline for stable content analysis.
+
+**Request Body:**
+```json
+{
+  "crawl_session_id": 1,
+  "competitor": "competitor-name"
+}
+```
+
+**Response:**
+```json
+{
+  "fingerprint_session_id": 1,
+  "crawl_session_id": 1,
+  "competitor": "competitor-name",
+  "started_at": "2025-09-08T07:58:36.922300",
+  "completed_at": "2025-09-08T07:58:36.929679",
+  "total_processed": 24,
+  "total_errors": 0,
+  "fingerprints": [
+    {
+      "url": "https://example.com/product",
+      "key_url": "https://example.com/product",
+      "page_type": "product",
+      "content_hash": "a1b2c3d4e5f6...",
+      "normalized_text_len": 2048,
+      "low_text_pdf": false,
+      "needs_render": false,
+      "meta": {
+        "status": 200,
+        "content_type": "text/html",
+        "content_length": 15420,
+        "elapsed_ms": 250,
+        "notes": null
+      }
+    }
+  ]
+}
+```
+
+**3-Step Pipeline:**
+1. **Filter** - Score threshold (≥0.5), URL canonicalization, deduplication, caps (30/domain, 10/category)
+2. **Fetch** - Async HTTP with httpx, content type detection, 15MB size limit, configurable timeouts
+3. **Fingerprint** - Stable content hashing:
+   - HTML → trafilatura text extraction → normalized hash
+   - PDF → pdfminer text extraction → normalized hash (with low_text_pdf flag)
+   - Images/Videos → direct byte hashing
+
+#### GET /api/crawl/sessions
+
+Lists recent crawl sessions with pagination support.
+
+**Query Parameters:**
+- `limit` (default: 50) - Maximum sessions to return
+- `offset` (default: 0) - Number of sessions to skip
+
+**Response:**
+```json
+{
+  "sessions": [
+    {
+      "id": 1,
+      "target_url": "https://example.com",
+      "base_domain": "https://example.com",
+      "started_at": "2025-09-08T07:54:18.373900",
+      "completed_at": "2025-09-08T07:54:18.373901",
+      "total_pages": 45,
+      "warnings": []
+    }
+  ],
+  "total": 1,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+#### GET /api/crawl/sessions/{id}/fingerprints
+
+Retrieves fingerprint results for a specific crawl session.
+
+**Response:** Complete fingerprint session data with all processed pages and their content hashes.
 
 #### Download Threshold Configuration
 
@@ -240,6 +328,8 @@ npm run build  # Generates JSON schemas in backend/app/schema/json/
 
 - Python 3.11 or higher
 - pip (Python package manager)
+- PostgreSQL 15 (via Docker or local installation)
+- Docker & Docker Compose (recommended)
 
 ### Local Development
 
@@ -255,12 +345,23 @@ npm run build  # Generates JSON schemas in backend/app/schema/json/
    # Edit .env with your configuration
    ```
 
-3. **Run the development server**
+3. **Set up the database**
+   ```bash
+   # Start PostgreSQL with Docker Compose (from project root)
+   cd ..
+   make up  # or docker compose -f infra/docker-compose.yml up -d db
+   
+   # Run database migrations
+   cd backend
+   alembic upgrade head
+   ```
+
+4. **Run the development server**
    ```bash
    python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-4. **Access the API**
+5. **Access the API**
    - API: http://localhost:8000
    - Health Check: http://localhost:8000/health
    - Documentation: http://localhost:8000/docs
@@ -315,16 +416,57 @@ The application uses environment variables for configuration. Create a `.env` fi
 # Application Settings
 DEBUG=true
 LOG_LEVEL=info
+ENVIRONMENT=development
 
-# Database (Future)
-DATABASE_URL=postgresql://user:password@localhost:5432/auralis
+# Database Configuration
+DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/auralis
 
-# Security (Future)
-SECRET_KEY=your-secret-key-here
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
-# External APIs (Future)
-# API_KEY=your-api-key
+# Core Crawl Configuration
+CORE_CRAWL_CONCURRENCY=8
+CORE_CRAWL_BATCH_SIZE=20
+CORE_CRAWL_MAX_CONTENT_SIZE=15728640  # 15MB
+CORE_CRAWL_CONNECT_TIMEOUT=5
+CORE_CRAWL_READ_TIMEOUT=20
+
+# Scraper Configuration
+SCRAPER_MAX_PAGES=100
+SCRAPER_MAX_DEPTH=4
+SCRAPER_TIMEOUT=10
+SCRAPER_RATE_SLEEP=0.3
 ```
+
+### Database Setup
+
+The application uses PostgreSQL with Alembic for migrations:
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Initialize database (if needed)
+alembic upgrade head
+
+# Create new migration
+alembic revision --autogenerate -m "Description"
+
+# Apply migrations
+alembic upgrade head
+
+# View migration history
+alembic history
+
+# Downgrade (if needed)
+alembic downgrade -1
+```
+
+**Database Schema:**
+- `crawl_data.crawl_sessions` - Discovery results and metadata
+- `crawl_data.crawled_pages` - Individual discovered pages with scores
+- `crawl_data.fingerprint_sessions` - Fingerprinting operations
+- `crawl_data.page_fingerprints` - Stable content hashes and metadata
 
 ### CORS Configuration
 

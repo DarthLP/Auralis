@@ -6,10 +6,9 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from sqlalchemy import Column, DateTime, Float, Integer, String, Text, JSON, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from app.core.db import Base
 
 
 class CrawlSession(Base):
@@ -17,6 +16,7 @@ class CrawlSession(Base):
     Represents a complete crawl session.
     """
     __tablename__ = "crawl_sessions"
+    __table_args__ = {"schema": "crawl_data"}
     
     id = Column(Integer, primary_key=True, index=True)
     target_url = Column(String, nullable=False, index=True)
@@ -41,9 +41,10 @@ class CrawledPage(Base):
     Represents a single crawled page with all its metadata.
     """
     __tablename__ = "crawled_pages"
+    __table_args__ = {"schema": "crawl_data"}
     
     id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(Integer, ForeignKey("crawl_sessions.id"), nullable=False)
+    session_id = Column(Integer, ForeignKey("crawl_data.crawl_sessions.id"), nullable=False)
     
     # Page identification
     url = Column(String, nullable=False, index=True)
@@ -75,9 +76,10 @@ class PageContent(Base):
     Optional: Store actual page content for analysis.
     """
     __tablename__ = "page_contents"
+    __table_args__ = {"schema": "crawl_data"}
     
     id = Column(Integer, primary_key=True, index=True)
-    page_id = Column(Integer, ForeignKey("crawled_pages.id"), nullable=False)
+    page_id = Column(Integer, ForeignKey("crawl_data.crawled_pages.id"), nullable=False)
     
     # Content storage
     title = Column(String, nullable=True)
