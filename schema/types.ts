@@ -72,7 +72,7 @@ export interface Signal {
   company_ids: string[];
   product_ids: string[];
   capability_ids: string[];
-  impact: -2 | -1 | 0 | 1 | 2;
+  impact: '-2' | '-1' | '0' | '1' | '2';
   source_id?: string;
 }
 
