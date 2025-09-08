@@ -617,18 +617,57 @@ The backend provides a RESTful API built with FastAPI for competitor analysis wi
 - `GET /api/crawl/sessions` - List all crawl sessions
 - `GET /api/crawl/sessions/{id}/fingerprints` - Get fingerprint results for a session
 
-### Competitor Management (Planned)
+### 🏢 Business Intelligence API
 
-- `POST /api/competitors` - Add a new competitor
-- `GET /api/competitors` - List all competitors
-- `GET /api/competitors/{id}` - Get competitor details
-- `POST /api/competitors/{id}/crawl` - Trigger website crawl
+**Companies Management:**
+- `GET /api/companies/` - List all companies with search and filtering
+- `GET /api/companies/{id}` - Get detailed company information
+- `POST /api/companies/` - Create new company
+- `PUT /api/companies/{id}` - Update company information
+- `DELETE /api/companies/{id}` - Delete company
 
-### Data Access (Planned)
+**Products Management:**
+- `GET /api/products/` - List all products with filtering
+- `GET /api/products/{id}` - Get detailed product information
+- `POST /api/products/` - Create new product
+- `PUT /api/products/{id}` - Update product information
+- `DELETE /api/products/{id}` - Delete product
 
-- `GET /api/competitors/{id}/products` - Get competitor's products
-- `GET /api/products/{id}` - Get product details
-- `GET /api/products/{id}/changes` - Get product change history
+**Signals & Intelligence:**
+- `GET /api/signals/` - List all signals with advanced filtering
+- `GET /api/signals/{id}` - Get detailed signal information
+- `POST /api/signals/` - Create new signal
+- `PUT /api/signals/{id}` - Update signal information
+- `DELETE /api/signals/{id}` - Delete signal
+
+**Releases Tracking:**
+- `GET /api/releases/` - List all product releases with filtering
+- `GET /api/releases/{id}` - Get detailed release information
+- `POST /api/releases/` - Create new release
+- `PUT /api/releases/{id}` - Update release information
+- `DELETE /api/releases/{id}` - Delete release
+
+**Capabilities & Sources:**
+- `GET /api/capabilities/` - List all technical capabilities
+- `GET /api/capabilities/{id}` - Get detailed capability information
+- `GET /api/sources/` - List all data sources
+- `GET /api/sources/{id}` - Get detailed source information
+
+### 🗄️ Database Integration
+
+The backend now includes a complete database schema with:
+- **Companies**: Company profiles with metadata and summaries
+- **Products**: Product lifecycle management with specifications
+- **Signals**: Industry intelligence with impact scoring
+- **Releases**: Product release tracking with version history
+- **Capabilities**: Technical capabilities with maturity assessment
+- **Sources**: Data provenance and credibility tracking
+
+**Seed Data Loading:**
+- Automatic database population on startup
+- Comprehensive seed data from `data/seed.json`
+- Deduplication logic for data integrity
+- Foreign key constraint handling
 
 ### Features
 
