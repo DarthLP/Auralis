@@ -287,7 +287,6 @@ export default function ReleasesPage() {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">Releases</h1>
             <div className="text-sm text-gray-500">
               {filteredReleases.length} releases found
             </div>

@@ -83,7 +83,6 @@ export default function Overview() {
   if (loading) {
     return (
       <div className="container">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Overview</h1>
         <div className="space-y-8">
           {/* Loading skeleton for signals */}
           <div>
@@ -111,7 +110,6 @@ export default function Overview() {
   if (error) {
     return (
       <div className="container">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Overview</h1>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">Error loading data: {error}</p>
         </div>
@@ -121,8 +119,6 @@ export default function Overview() {
 
   return (
     <div className="container">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Overview</h1>
-      
       <div className="grid gap-8 lg:grid-cols-2">
         {/* This Week Signals */}
         <div>

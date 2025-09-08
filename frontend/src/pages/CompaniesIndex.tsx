@@ -71,8 +71,6 @@ export default function CompaniesIndex() {
     return (
       <div className="container">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Companies</h1>
-          <p className="text-gray-600 mb-6">Browse and manage tracked companies</p>
         </div>
         <LoadingSkeleton type="grid" count={6} />
       </div>
@@ -82,9 +80,6 @@ export default function CompaniesIndex() {
   return (
     <div className="container">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Companies</h1>
-        <p className="text-gray-600 mb-6">Browse and manage tracked companies</p>
-        
         {/* Search Input */}
         <div className="max-w-md">
           <input
