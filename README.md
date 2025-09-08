@@ -6,7 +6,7 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 
 ### 🏗️ Architecture
 
-- **Backend**: FastAPI-based REST API with Python 3.11+
+- **Backend**: FastAPI-based REST API with Python 3.12+
 - **Frontend**: React application with dashboard, drill-down views, and global search
 - **Database**: PostgreSQL with structured data models
 - **Scraping**: Hybrid JavaScript-enabled crawler (Playwright + Requests) with anti-bot protection
@@ -37,7 +37,7 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 
 ### Prerequisites
 
-- **Python 3.11+** - Backend runtime
+- **Python 3.12+** - Backend runtime
 - **Docker & Docker Compose** - Containerized services
 - **Make** - Development commands
 - **Git** - Version control

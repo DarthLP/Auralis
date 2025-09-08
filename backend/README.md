@@ -21,16 +21,16 @@
 
 ## 🚀 Overview
 
-The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.11+ and designed as a single-tenant prototype.
+The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.12+ and designed as a single-tenant prototype.
 
 ## 🏗️ Architecture
 
 - **Framework**: FastAPI (modern, fast web framework for building APIs)
-- **Python Version**: 3.11+
+- **Python Version**: 3.12+
 - **ASGI Server**: Uvicorn
 - **Data Validation**: Pydantic v2
 - **CORS**: Enabled for frontend integration
-- **Containerization**: Docker with Python 3.11-slim base image
+- **Containerization**: Docker with Python 3.12-slim base image
 
 ## 📁 Directory Structure
 
