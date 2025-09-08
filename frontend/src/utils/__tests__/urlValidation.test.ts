@@ -1,5 +1,5 @@
 // Simple test cases for URL validation
-import { validateAndNormalizeUrl, checkReachability, checkDeduplication } from '../urlValidation';
+import { validateAndNormalizeUrl, checkDeduplication } from '../urlValidation';
 
 // Test cases as specified in the requirements
 const testCases = [

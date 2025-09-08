@@ -16,7 +16,7 @@ export default function UrlInputWithValidate({
   onValidationChange,
   placeholder = "https://example.com",
   className = "",
-  showETLD1 = true
+  showETLD1: _showETLD1 = true
 }: UrlInputWithValidateProps) {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);

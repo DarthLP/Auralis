@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserPreferences, UserSession, DEFAULT_PREFERENCES, MOCK_USER } from '../types/user';
 
 interface UserContextType {

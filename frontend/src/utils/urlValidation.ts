@@ -113,11 +113,11 @@ export function validateAndNormalizeUrl(input: string): ValidationResult {
   
   // Auto-prepend https:// if no scheme
   let urlToProcess = trimmed;
-  let addedScheme = false;
+  // let addedScheme = false;
   
   if (!trimmed.includes('://')) {
     urlToProcess = `https://${trimmed}`;
-    addedScheme = true;
+    // addedScheme = true;
   }
   
   let parsedUrl: URL;

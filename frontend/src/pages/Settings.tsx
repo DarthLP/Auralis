@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { formatDate, getCommonTimezones, getBrowserTimezone } from '../lib/date';
 import { generateInitials, generateAvatarColor } from '../lib/avatar';
