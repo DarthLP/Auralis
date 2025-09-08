@@ -68,11 +68,11 @@ class ExtractionSession(Base):
 
 
 # Entity tables - normalized storage for operational queries
-class Company(Base):
+class ExtractedCompany(Base):
     """Extracted company entities."""
-    __tablename__ = "companies"
+    __tablename__ = "extracted_companies"
     __table_args__ = (
-        UniqueConstraint('competitor', 'normalized_name', name='uq_company_competitor_name'),
+        UniqueConstraint('competitor', 'normalized_name', name='uq_extracted_company_competitor_name'),
         {"schema": "crawl_data"}
     )
     
@@ -96,22 +96,22 @@ class Company(Base):
     confidence_score = Column(Float, default=0.0)  # Aggregate confidence
     
     # Relationships
-    products = relationship("Product", back_populates="company", cascade="all, delete-orphan")
+    products = relationship("ExtractedProduct", back_populates="company", cascade="all, delete-orphan")
     snapshots = relationship("EntitySnapshot", 
-                           primaryjoin="and_(Company.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Company')",
+                           primaryjoin="and_(ExtractedCompany.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='ExtractedCompany')",
                            cascade="all, delete-orphan")
 
 
-class Product(Base):
+class ExtractedProduct(Base):
     """Extracted product entities."""
-    __tablename__ = "products"
+    __tablename__ = "extracted_products"
     __table_args__ = (
-        UniqueConstraint('company_id', 'normalized_name', 'version', name='uq_product_company_name_version'),
+        UniqueConstraint('company_id', 'normalized_name', 'version', name='uq_extracted_product_company_name_version'),
         {"schema": "crawl_data"}
     )
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    company_id = Column(String, ForeignKey("crawl_data.companies.id"), nullable=False, index=True)
+    company_id = Column(String, ForeignKey("crawl_data.extracted_companies.id"), nullable=False, index=True)
     
     # Identity fields
     name = Column(String, nullable=False)
@@ -145,9 +145,9 @@ class Product(Base):
     confidence_score = Column(Float, default=0.0)
     
     # Relationships
-    company = relationship("Company", back_populates="products")
+    company = relationship("ExtractedCompany", back_populates="products")
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Product.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Product')",
+                           primaryjoin="and_(ExtractedProduct.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='ExtractedProduct')",
                            cascade="all, delete-orphan")
 
 
@@ -182,7 +182,7 @@ class Capability(Base):
                            cascade="all, delete-orphan")
 
 
-class Release(Base):
+class ExtractedRelease(Base):
     """Extracted release/version entities."""
     __tablename__ = "releases"
     __table_args__ = (
@@ -214,7 +214,7 @@ class Release(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Release.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Release')",
+                           primaryjoin="and_(ExtractedRelease.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Release')",
                            cascade="all, delete-orphan")
 
 
@@ -253,11 +253,11 @@ class Document(Base):
                            cascade="all, delete-orphan")
 
 
-class Signal(Base):
+class ExtractedSignalEntity(Base):
     """Extracted signal entities (news, events, changes)."""
-    __tablename__ = "signals"
+    __tablename__ = "extracted_signals"
     __table_args__ = (
-        UniqueConstraint('title', 'date', 'signal_type', name='uq_signal_title_date_type'),
+        UniqueConstraint('title', 'date', 'signal_type', name='uq_extracted_signal_title_date_type'),
         {"schema": "crawl_data"}
     )
     
@@ -284,7 +284,7 @@ class Signal(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Signal.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Signal')",
+                           primaryjoin="and_(ExtractedSignalEntity.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='ExtractedSignal')",
                            cascade="all, delete-orphan")
 
 
@@ -307,7 +307,7 @@ class ExtractionSource(Base):
     )
     
     # Entity reference
-    entity_type = Column(String, nullable=False, index=True)  # Company, Product, etc.
+    entity_type = Column(String, nullable=False, index=True)  # ExtractedCompany, ExtractedProduct, etc.
     entity_id = Column(String, nullable=False, index=True)
     
     # Source metadata

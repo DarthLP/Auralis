@@ -16,7 +16,7 @@ from app.services.extract import ExtractionService, RulesExtractor, AIExtractor
 from app.services.normalize import NormalizationService, EntityNormalizer
 from app.services.schema_utils import get_schema_compactor
 from app.services.theta_client import ThetaClient
-from app.models.extraction import ExtractionSession, Company, Product, EntitySnapshot
+from app.models.extraction import ExtractionSession, ExtractedCompany, ExtractedProduct, EntitySnapshot
 from app.models.core_crawl import PageFingerprint, FingerprintSession
 
 

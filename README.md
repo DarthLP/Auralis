@@ -86,6 +86,24 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 | `make logs` | View service logs in real-time |
 | `make help` | Show all available commands |
 
+### Docker Container Management
+
+**Important**: When making code changes, you must rebuild containers for changes to take effect:
+
+```bash
+# Stop and remove containers
+docker-compose down
+
+# Rebuild and start containers with latest code
+docker-compose up --build -d
+```
+
+**Why rebuild is necessary:**
+- `docker-compose restart` only restarts containers with existing code
+- Code changes require rebuilding the container image
+- This ensures your latest changes are properly applied
+- Always test endpoints after rebuild to verify changes are working
+
 #### Schema Development
 
 | Command | Description |
