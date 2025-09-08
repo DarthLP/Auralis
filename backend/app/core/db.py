@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
+# Models will be imported in main.py to avoid circular imports
+
 # Create SQLAlchemy engine
 engine = create_engine(
     settings.DATABASE_URL,

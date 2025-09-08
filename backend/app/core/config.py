@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     CORE_CRAWL_CONNECT_TIMEOUT: int = 5  # seconds
     CORE_CRAWL_READ_TIMEOUT: int = 20  # seconds
     
+    # On Demand API Configuration
+    on_demand_api_access_token: str = ""
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
