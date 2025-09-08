@@ -1,7 +1,8 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 
 export default function AppLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navItems = [
     { path: '/', label: 'Overview' },
@@ -38,18 +39,6 @@ export default function AppLayout() {
               ))}
             </nav>
 
-            {/* Right Side - Open Source Drawer Button */}
-            <div className="flex items-center">
-              <button
-                onClick={() => {
-                  // Placeholder no-op function
-                  console.log('Open Source Drawer clicked')
-                }}
-                className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              >
-                Open Source Drawer
-              </button>
-            </div>
           </div>
 
           {/* Mobile Navigation */}
@@ -77,6 +66,18 @@ export default function AppLayout() {
       <main className="container">
         <Outlet />
       </main>
+
+      {/* Floating Add Competitor Button */}
+      <button
+        onClick={() => navigate('/competitors/new')}
+        className="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50 flex items-center gap-2"
+        title="Add Competitor"
+      >
+        <span className="text-sm font-medium">Add competitor</span>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </button>
     </div>
   )
 }

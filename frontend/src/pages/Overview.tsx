@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getThisWeekSignals, getRecentReleases } from '../lib/mockData';
-import type { Signal, Release } from '@schema/types';
+import { getThisWeekSignals, getRecentReleases, source } from '../lib/mockData';
+import type { Signal, Release, Source as SourceType } from '@schema/types';
+import SourceDrawer from '../components/SourceDrawer';
 
 // Format date to "MMM d, yyyy" format
 function formatDate(dateString: string): string {
@@ -39,6 +40,9 @@ export default function Overview() {
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sourceDrawer, setSourceDrawer] = useState<{ isOpen: boolean; source?: SourceType; signalUrl?: string }>({
+    isOpen: false
+  });
 
   useEffect(() => {
     async function loadData() {
@@ -62,6 +66,19 @@ export default function Overview() {
 
     loadData();
   }, []);
+
+  const handleSourceClick = async (sourceId: string, signalUrl: string) => {
+    try {
+      const sourceData = await source(sourceId);
+      setSourceDrawer({
+        isOpen: true,
+        source: sourceData,
+        signalUrl: signalUrl
+      });
+    } catch (error) {
+      console.error('Failed to fetch source:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -121,10 +138,16 @@ export default function Overview() {
           ) : (
             <div className="space-y-3">
               {signals.map((signal) => (
-                <Link
+                <div
                   key={signal.id}
-                  to={`/signals?highlight=${signal.id}`}
-                  className="block p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200"
+                  onClick={() => {
+                    if (signal.source_id) {
+                      handleSourceClick(signal.source_id, signal.url);
+                    }
+                  }}
+                  className={`p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 ${
+                    signal.source_id ? 'cursor-pointer' : 'cursor-default'
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -137,7 +160,7 @@ export default function Overview() {
                       {getImpactLabel(signal.impact)}
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}
@@ -184,6 +207,14 @@ export default function Overview() {
           )}
         </div>
       </div>
+
+      {/* Source Drawer */}
+      <SourceDrawer
+        isOpen={sourceDrawer.isOpen}
+        onClose={() => setSourceDrawer({ isOpen: false })}
+        source={sourceDrawer.source}
+        signalUrl={sourceDrawer.signalUrl}
+      />
     </div>
   );
 }

@@ -169,6 +169,13 @@ The frontend includes several reusable components for consistent user experience
 - **EmptyState**: Friendly empty state component with icons and actions
 - **NotFound**: 404 page component for unknown routes
 - **SourceDrawer**: Modal drawer for displaying source information
+- **UrlInputWithValidate**: URL input with live validation and normalization
+- **JobStatusBadge**: Status indicator for background jobs (queued, processing, done, error)
+- **EditableTagInput**: Tag management component with add/remove functionality
+- **ProductsEditor**: Product list editor with add/remove rows
+- **SourcesList**: Read-only source information display
+- **DedupAlert**: Duplicate company detection and warning component
+- **Toast**: Transient notification component for success/error messages
 
 ### Architecture
 
@@ -184,6 +191,7 @@ The frontend includes several reusable components for consistent user experience
 - `/companies` - Companies listing with search and filtering
 - `/companies/:companyId` - Individual company details with products and recent activity
 - `/companies/:companyId/products/:productId` - Product details with capabilities
+- `/competitors/new` - Add new competitor via URL-based ingestion
 - `/signals` - Advanced signals filtering and analysis
 - `/releases` - Product releases tracking with company and date filtering
 
@@ -231,6 +239,36 @@ The companies section provides comprehensive company management and analysis:
 - **Loading States**: Skeleton loading animations for hero and capabilities sections
 - **Error Handling**: Product not found, company mismatch, and data loading errors
 - **Navigation**: Breadcrumb-style navigation back to company page
+
+### Add Competitor Page (`/competitors/new`)
+
+The Add Competitor page provides a comprehensive URL-based competitor ingestion system:
+
+#### **URL-Based Ingestion Flow**
+- **Smart URL Validation**: Real-time validation with scheme handling, hostname normalization, and security checks
+- **Domain Normalization**: Automatic eTLD+1 extraction for consistent domain matching
+- **Reachability Testing**: Mock reachability checks to ensure websites are accessible
+- **Deduplication Logic**: Automatic detection of existing companies by domain and name matching
+- **Visual Feedback**: Green highlighting for valid URLs, error messages for invalid ones
+
+#### **Mock Scraper System**
+- **Job Status Tracking**: Real-time status updates (queued → processing → done)
+- **Data Extraction**: Heuristic extraction of company name, description, products, and tags
+- **Source Attribution**: Automatic source tracking with origin and retrieval timestamps
+- **Editable Preview**: Review and modify extracted data before saving
+
+#### **User Experience Features**
+- **Comprehensive Guidance**: Step-by-step instructions and "How it works" explanation
+- **Form Validation**: Client-side validation for all required fields
+- **Error Handling**: Graceful error states with helpful messages
+- **Success Flow**: Automatic navigation to new company page with success toast
+- **Entry Points**: Multiple ways to access (floating button, empty state CTA, companies grid)
+
+#### **Technical Implementation**
+- **Debounced Validation**: 250ms debounce for smooth real-time validation
+- **Type Safety**: Full TypeScript integration with validation schemas
+- **Mock API Integration**: Seamless integration with existing mock data system
+- **Component Reusability**: Modular components for URL input, job status, and data editing
 
 ### Signals Page (`/signals`)
 
@@ -343,6 +381,9 @@ The mock data system provides:
 - **Company-Specific Data**: Functions to fetch company products, summaries, and recent activity
 - **Product-Specific Data**: Functions to fetch individual products and their capabilities
 - **Capability Lookup**: Functions to fetch all capabilities for name resolution
+- **Scraper Job System**: Mock scraper jobs with status tracking (queued, processing, done)
+- **Data Extraction**: Heuristic company data extraction from URLs
+- **Deduplication**: Smart duplicate detection using domain and name matching
 - **Error Simulation**: Proper error handling and edge cases
 - **Type Safety**: Full TypeScript integration with schema types
 
@@ -360,7 +401,10 @@ import {
   getCompanyRecentActivity,
   product,
   productCapabilities,
-  capabilities
+  capabilities,
+  startScraperJob,
+  getScraperJob,
+  saveCompetitor
 } from '@/lib/mockData';
 
 // Use in components
@@ -373,6 +417,11 @@ const activity = await getCompanyRecentActivity('cmp_pal'); // Recent activity
 const productData = await product('prd_tiago'); // Specific product
 const productCaps = await productCapabilities('prd_tiago'); // Product capabilities
 const allCapabilities = await capabilities(); // All capabilities for lookup
+
+// Scraper job system
+const job = await startScraperJob('https://example.com'); // Start scraping job
+const jobStatus = await getScraperJob(job.id); // Check job status
+const newCompany = await saveCompetitor(jobResult); // Save extracted data
 ```
 
 ## 🔧 Backend API
@@ -584,6 +633,11 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Company detail pages with products and recent activity
 - [x] Product detail pages with capabilities and maturity tracking
 - [x] Advanced signals page with comprehensive filtering and analysis
+- [x] Add Competitor page with URL-based ingestion
+- [x] URL validation and normalization system
+- [x] Mock scraper job system with status tracking
+- [x] Deduplication logic for existing companies
+- [x] Reusable UI components for competitor addition
 - [ ] Change visualization
 
 ### Phase 6: AI Integration

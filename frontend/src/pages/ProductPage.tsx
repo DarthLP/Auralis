@@ -5,13 +5,15 @@ import {
   productCapabilities as fetchProductCapabilities, 
   capabilities,
   company,
-  specProfile
+  specProfile,
+  source
 } from '../lib/mockData';
-import { Product, ProductCapability, Capability, Company } from '@schema/types';
+import { Product, ProductCapability, Capability, Company, Source as SourceType } from '@schema/types';
 import SpecsGroup from '../components/SpecsGroup';
 import NotFound from './NotFound';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
+import SourceDrawer from '../components/SourceDrawer';
 
 // Extended maturity type to handle seed data
 type ExtendedMaturity = 'basic' | 'intermediate' | 'advanced' | 'expert' | 'ga' | 'alpha' | 'beta';
@@ -50,6 +52,9 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [sourceDrawer, setSourceDrawer] = useState<{ isOpen: boolean; source?: SourceType; signalUrl?: string }>({
+    isOpen: false
+  });
 
   useEffect(() => {
     if (!companyId || !productId) return;
@@ -123,9 +128,16 @@ export default function ProductPage() {
     return capability?.name || 'Unknown Capability';
   };
 
-  const handleSourceClick = (sourceId?: string) => {
-    // TODO: Implement Source Drawer
-    console.log('Source clicked:', sourceId);
+  const handleSourceClick = async (sourceId: string) => {
+    try {
+      const sourceData = await source(sourceId);
+      setSourceDrawer({
+        isOpen: true,
+        source: sourceData
+      });
+    } catch (error) {
+      console.error('Failed to fetch source:', error);
+    }
   };
 
   if (loading) {
@@ -300,7 +312,7 @@ export default function ProductPage() {
                 {/* Source Icon */}
                 {productCap.source_id && (
                   <button
-                    onClick={() => handleSourceClick(productCap.source_id)}
+                    onClick={() => handleSourceClick(productCap.source_id!)}
                     className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
                     title="View source"
                   >
@@ -322,6 +334,14 @@ export default function ProductPage() {
           <SpecsGroup product={productData} profile={specProfileData} />
         </div>
       )}
+
+      {/* Source Drawer */}
+      <SourceDrawer
+        isOpen={sourceDrawer.isOpen}
+        onClose={() => setSourceDrawer({ isOpen: false })}
+        source={sourceDrawer.source}
+        signalUrl={sourceDrawer.signalUrl}
+      />
     </div>
   );
 }

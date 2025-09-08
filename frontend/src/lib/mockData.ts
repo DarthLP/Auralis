@@ -15,6 +15,43 @@ import seedData from '../../../data/seed.json';
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Mock scraper job status
+export type ScraperJobStatus = 'queued' | 'processing' | 'done' | 'error';
+
+export interface ScraperJob {
+  id: string;
+  status: ScraperJobStatus;
+  url: string;
+  result?: ScraperResult;
+  error?: string;
+}
+
+export interface ScraperResult {
+  company: {
+    name: string;
+    website: string;
+    hq_country?: string;
+    tags: string[];
+  };
+  summary: {
+    one_liner: string;
+  };
+  products: Array<{
+    name: string;
+    category: string;
+    short_desc: string;
+  }>;
+  sources: Array<{
+    origin: string;
+    author?: string;
+    retrieved_at: string;
+  }>;
+  dedupe?: {
+    existing_company_id: string;
+    existing_company_name: string;
+  };
+}
+
 // Use seed data directly with type assertions (validation was causing issues)
 const parsedSeed = {
   companies: seedData.companies as unknown as Company[],
@@ -284,4 +321,223 @@ export async function getCompanyRecentActivity(companyId: string): Promise<Array
   
   await delay(200);
   return limited;
+}
+
+// Mock scraper functionality
+const activeJobs = new Map<string, ScraperJob>();
+
+/**
+ * Start a mock scraper job for a URL
+ */
+export async function startScraperJob(url: string): Promise<ScraperJob> {
+  const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  const job: ScraperJob = {
+    id: jobId,
+    status: 'queued',
+    url
+  };
+  
+  activeJobs.set(jobId, job);
+  
+  // Simulate job progression
+  setTimeout(() => {
+    const currentJob = activeJobs.get(jobId);
+    if (currentJob) {
+      currentJob.status = 'processing';
+    }
+  }, 500);
+  
+  setTimeout(() => {
+    const currentJob = activeJobs.get(jobId);
+    if (currentJob) {
+      currentJob.status = 'done';
+      currentJob.result = extractCompanyData(url);
+    }
+  }, 2000);
+  
+  return job;
+}
+
+/**
+ * Get scraper job status
+ */
+export async function getScraperJob(jobId: string): Promise<ScraperJob | null> {
+  await delay(100);
+  return activeJobs.get(jobId) || null;
+}
+
+/**
+ * Extract company data from URL (mocked heuristic extraction)
+ */
+function extractCompanyData(url: string): ScraperResult {
+  const domain = new URL(url).hostname.replace('www.', '');
+  const domainParts = domain.split('.')[0].split('-');
+  
+  // Generate company name from domain
+  const companyName = domainParts
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+  
+  // Generate tags from domain keywords
+  const keywords = ['robots', 'ai', 'vision', 'platform', 'retail', 'humanoid', 'amr', 'cloud', 'saas', 'tech', 'software', 'hardware', 'automation', 'intelligence', 'data', 'analytics'];
+  const domainLower = domain.toLowerCase();
+  const extractedTags = keywords.filter(keyword => domainLower.includes(keyword));
+  
+  // Add some default tags if none found
+  if (extractedTags.length === 0) {
+    extractedTags.push('tech', 'startup');
+  }
+  
+  // Generate product based on domain content
+  const products = [];
+  if (domainLower.includes('robot')) {
+    products.push({
+      name: 'Starter Robot',
+      category: 'Uncategorized',
+      short_desc: 'Placeholder product. Edit to match reality.'
+    });
+  } else if (domainLower.includes('ai') || domainLower.includes('cloud')) {
+    products.push({
+      name: 'Starter Platform',
+      category: 'SaaS',
+      short_desc: 'Placeholder platform.'
+    });
+  } else {
+    products.push({
+      name: 'Main Product',
+      category: 'Uncategorized',
+      short_desc: 'Placeholder product. Edit to match reality.'
+    });
+  }
+  
+  // Check for duplicates using the new validation system
+  const dedupe = checkForDuplicatesNew(domain, companyName);
+  
+  return {
+    company: {
+      name: companyName,
+      website: url,
+      tags: extractedTags.slice(0, 8) // Limit to 8 tags
+    },
+    summary: {
+      one_liner: 'Company discovered via URL-based ingest. Edit before saving.'
+    },
+    products,
+    sources: [{
+      origin: url,
+      retrieved_at: new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Berlin' })
+    }],
+    ...(dedupe && { dedupe })
+  };
+}
+
+
+/**
+ * Check for duplicate companies (new function using validation system)
+ */
+function checkForDuplicatesNew(domain: string, companyName: string): ScraperResult['dedupe'] | null {
+  // Simple eTLD+1 extraction for deduplication
+  function extractETLD1(hostname: string): string {
+    const parts = hostname.toLowerCase().split('.');
+    if (parts.length <= 1) return hostname.toLowerCase();
+    
+    // Handle common two-part TLDs
+    const twoPartTLDs = [
+      'co.uk', 'com.au', 'co.jp', 'co.kr', 'co.za', 'co.in',
+      'com.br', 'com.mx', 'com.ar', 'com.sg', 'com.hk',
+      'org.uk', 'net.uk', 'ac.uk', 'gov.uk',
+      'com.cn', 'net.cn', 'org.cn', 'gov.cn',
+    ];
+    
+    if (parts.length >= 3) {
+      const potentialTLD = `${parts[parts.length - 2]}.${parts[parts.length - 1]}`;
+      if (twoPartTLDs.includes(potentialTLD)) {
+        return `${parts[parts.length - 3]}.${potentialTLD}`;
+      }
+    }
+    
+    return parts.slice(-2).join('.');
+  }
+  
+  const inputETLD1 = extractETLD1(domain);
+  
+  for (const company of parsedSeed.companies) {
+    // Check by domain (eTLD+1)
+    if (company.website) {
+      try {
+        const companyUrl = new URL(company.website);
+        const companyETLD1 = extractETLD1(companyUrl.hostname.toLowerCase());
+        
+        if (companyETLD1 === inputETLD1) {
+          return {
+            existing_company_id: company.id,
+            existing_company_name: company.name
+          };
+        }
+      } catch {
+        // Invalid URL, skip
+      }
+    }
+    
+    // Check by name (soft match)
+    const normalizedCompanyName = company.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const normalizedInputName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    if (normalizedCompanyName === normalizedInputName && normalizedInputName.length > 2) {
+      return {
+        existing_company_id: company.id,
+        existing_company_name: company.name
+      };
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Save a new competitor (mock implementation)
+ */
+export async function saveCompetitor(data: ScraperResult): Promise<{ company_id: string }> {
+  await delay(500);
+  
+  // Generate new IDs
+  const companyId = `comp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Create new company
+  const newCompany: Company = {
+    id: companyId,
+    name: data.company.name,
+    aliases: [],
+    hq_country: data.company.hq_country,
+    website: data.company.website,
+    status: 'active',
+    tags: data.company.tags
+  };
+  
+  // Create company summary
+  const newSummary: CompanySummary = {
+    company_id: companyId,
+    one_liner: data.summary.one_liner,
+    sources: data.sources.map(s => s.origin)
+  };
+  
+  // Create products
+  const newProducts: Product[] = data.products.map((product, index) => ({
+    id: `prod_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+    company_id: companyId,
+    name: product.name,
+    category: product.category,
+    stage: 'ga' as any,
+    markets: [],
+    tags: [],
+    short_desc: product.short_desc
+  }));
+  
+  // Add to mock data (in a real app, this would be a database operation)
+  parsedSeed.companies.push(newCompany);
+  parsedSeed.company_summaries.push(newSummary);
+  parsedSeed.products.push(...newProducts);
+  
+  return { company_id: companyId };
 }

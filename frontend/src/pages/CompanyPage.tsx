@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { 
   company, 
   companySummaries, 
@@ -9,6 +9,7 @@ import {
 import { Company, CompanySummary, Product } from '@schema/types';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
+import Toast from '../components/Toast';
 
 interface CompanyData {
   company: Company;
@@ -28,9 +29,11 @@ interface CompanyData {
 export default function CompanyPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     if (!companyId) return;
@@ -63,6 +66,15 @@ export default function CompanyPage() {
 
     fetchData();
   }, [companyId]);
+
+  // Show toast if coming from AddCompetitor page
+  useEffect(() => {
+    if (location.state?.message) {
+      setShowToast(true);
+      // Clear the state to prevent showing toast on refresh
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -332,6 +344,15 @@ export default function CompanyPage() {
           </div>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={location.state?.message || 'Company created successfully!'}
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }

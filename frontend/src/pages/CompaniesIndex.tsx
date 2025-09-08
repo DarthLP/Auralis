@@ -146,6 +146,24 @@ export default function CompaniesIndex() {
             </div>
           </div>
         ))}
+
+        {/* Add Competitor Card */}
+        <div
+          onClick={() => navigate('/competitors/new')}
+          className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-6 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[200px] text-center"
+        >
+          <div className="mb-4">
+            <svg className="w-12 h-12 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">
+            Add Competitor
+          </h3>
+          <p className="text-sm text-gray-500">
+            Click to add a new competitor by pasting their website URL
+          </p>
+        </div>
       </div>
 
       {filteredCompanies.length === 0 && !loading && (
@@ -157,6 +175,13 @@ export default function CompaniesIndex() {
           }
           title={searchTerm ? 'No companies found' : 'No companies available'}
           description={searchTerm ? 'Try adjusting your search terms to find companies.' : 'No companies have been added to the system yet.'}
+          action={
+            !searchTerm ? {
+              label: 'Add Your First Competitor',
+              onClick: () => navigate('/competitors/new'),
+              variant: 'primary' as const
+            } : undefined
+          }
         />
       )}
     </div>
