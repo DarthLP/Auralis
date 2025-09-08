@@ -64,6 +64,31 @@ const parsedSeed = {
   sources: seedData.sources as unknown as Source[],
 };
 
+
+// Add logos to some existing companies for demonstration
+const companiesWithLogos = [
+  {
+    id: "cmp_pal",
+    logoUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=center"
+  },
+  {
+    id: "cmp_agility",
+    logoUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=64&h=64&fit=crop&crop=center"
+  },
+  {
+    id: "cmp_boston",
+    logoUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=64&h=64&fit=crop&crop=center"
+  }
+];
+
+// Update existing companies with logos
+companiesWithLogos.forEach(companyUpdate => {
+  const company = parsedSeed.companies.find(c => c.id === companyUpdate.id);
+  if (company) {
+    company.logoUrl = companyUpdate.logoUrl;
+  }
+});
+
 /**
  * Generic mock fetch function with artificial delay
  */
@@ -100,7 +125,13 @@ function getReleasesFromLastDays(days: number): Release[] {
 
 // Mock API functions - same interface as real api.ts
 export async function companies(): Promise<Company[]> {
-  return mockFetch(parsedSeed.companies);
+  const companies = await mockFetch(parsedSeed.companies);
+  // Sort "Your Company" to the top, then alphabetically by name
+  return companies.sort((a, b) => {
+    if (a.isSelf && !b.isSelf) return -1;
+    if (!a.isSelf && b.isSelf) return 1;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export async function company(id: string): Promise<Company> {
@@ -190,6 +221,136 @@ const mockSpecProfiles = {
         }
       ]
     }
+  },
+  'ai/platform@1': {
+    id: 'ai/platform@1',
+    name: 'AI Platform',
+    version: '1.0',
+    schema: {
+      ai_models: { type: 'array', label: 'AI Models' },
+      processing_power: { type: 'number', unit: 'TOPS', label: 'Processing Power' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'AI Capabilities',
+          fields: ['ai_models', 'processing_power']
+        }
+      ]
+    }
+  },
+  'robotics/general@1': {
+    id: 'robotics/general@1',
+    name: 'General Robotics',
+    version: '1.0',
+    schema: {
+      payload: { type: 'number', unit: 'kg', label: 'Payload Capacity' },
+      reach: { type: 'number', unit: 'mm', label: 'Reach' },
+      repeatability: { type: 'number', unit: 'mm', label: 'Repeatability' },
+      ip_rating: { type: 'text', label: 'IP Rating' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Performance',
+          fields: ['payload', 'reach', 'repeatability']
+        },
+        {
+          name: 'Protection',
+          fields: ['ip_rating']
+        }
+      ]
+    }
+  },
+  'robotics/mobile_humanoid@1': {
+    id: 'robotics/mobile_humanoid@1',
+    name: 'Mobile Humanoid Robot',
+    version: '1.0',
+    schema: {
+      arm_payload_per_arm_kg: { type: 'number', unit: 'kg', label: 'Arm Payload per Arm' },
+      degrees_of_freedom_total: { type: 'number', label: 'Total Degrees of Freedom' },
+      compute: { type: 'text', label: 'Compute Platform' },
+      battery_hours_typical: { type: 'number', unit: 'hrs', label: 'Typical Battery Life' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Manipulation',
+          fields: ['arm_payload_per_arm_kg', 'degrees_of_freedom_total']
+        },
+        {
+          name: 'System',
+          fields: ['compute', 'battery_hours_typical']
+        }
+      ]
+    }
+  },
+  'robotics/cobot@1': {
+    id: 'robotics/cobot@1',
+    name: 'Collaborative Robot',
+    version: '1.0',
+    schema: {
+      payload_kg: { type: 'number', unit: 'kg', label: 'Payload Capacity' },
+      reach_mm: { type: 'number', unit: 'mm', label: 'Reach' },
+      repeatability_mm: { type: 'number', unit: 'mm', label: 'Repeatability' },
+      ip_rating: { type: 'text', label: 'IP Rating' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Performance',
+          fields: ['payload_kg', 'reach_mm', 'repeatability_mm']
+        },
+        {
+          name: 'Protection',
+          fields: ['ip_rating']
+        }
+      ]
+    }
+  },
+  'robotics/humanoid_upper@1': {
+    id: 'robotics/humanoid_upper@1',
+    name: 'Humanoid Upper Body',
+    version: '1.0',
+    schema: {
+      height_cm: { type: 'text', label: 'Height Range' },
+      weight_kg: { type: 'number', unit: 'kg', label: 'Weight' },
+      payload_per_arm_kg: { type: 'number', unit: 'kg', label: 'Payload per Arm' },
+      sdk: { type: 'text', label: 'SDK' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Physical',
+          fields: ['height_cm', 'weight_kg']
+        },
+        {
+          name: 'Capabilities',
+          fields: ['payload_per_arm_kg', 'sdk']
+        }
+      ]
+    }
+  },
+  'robotics/service_robot@1': {
+    id: 'robotics/service_robot@1',
+    name: 'Service Robot',
+    version: '1.0',
+    schema: {
+      obstacle_detection_front_deg: { type: 'number', unit: 'deg', label: 'Front Detection Angle' },
+      trays: { type: 'number', label: 'Number of Trays' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Navigation',
+          fields: ['obstacle_detection_front_deg']
+        },
+        {
+          name: 'Capacity',
+          fields: ['trays']
+        }
+      ]
+    }
   }
 };
 
@@ -201,11 +362,49 @@ export async function specProfile(id: string): Promise<any> {
 }
 
 // Specialized functions for Overview page
+export async function getYourCompany(): Promise<Company | null> {
+  await delay(100);
+  const yourCompany = parsedSeed.companies.find(c => c.isSelf === true);
+  return yourCompany || null;
+}
+
+export async function getYourCompanyStats(): Promise<{
+  products: number;
+  capabilities: number;
+  recentSignals: number;
+}> {
+  await delay(100);
+  const yourCompany = parsedSeed.companies.find(c => c.isSelf === true);
+  if (!yourCompany) {
+    return { products: 0, capabilities: 0, recentSignals: 0 };
+  }
+
+  const products = parsedSeed.products.filter(p => p.company_id === yourCompany.id).length;
+  const capabilities = parsedSeed.product_capabilities.filter(pc => 
+    parsedSeed.products.some(p => p.id === pc.product_id && p.company_id === yourCompany.id)
+  ).length;
+  
+  // Get signals from last 60 days
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - 60);
+  const recentSignals = parsedSeed.signals.filter(signal => {
+    const signalDate = new Date(signal.published_at);
+    return signal.company_ids.includes(yourCompany.id) && signalDate >= cutoffDate;
+  }).length;
+
+  return { products, capabilities, recentSignals };
+}
+
 export async function getThisWeekSignals(): Promise<Signal[]> {
   const thisWeekSignals = getSignalsFromLastDays(7);
   
+  // Filter out "Your Company" signals since they have their own dedicated section
+  const filteredSignals = thisWeekSignals.filter(signal => 
+    !signal.company_ids.includes('cmp_self')
+  );
+  
   // Sort by impact desc (2..-2), then published_at desc
-  const sorted = thisWeekSignals.sort((a, b) => {
+  const sorted = filteredSignals.sort((a, b) => {
     const impactA = parseInt(a.impact);
     const impactB = parseInt(b.impact);
     
@@ -223,8 +422,13 @@ export async function getThisWeekSignals(): Promise<Signal[]> {
 export async function getRecentReleases(): Promise<Release[]> {
   const recentReleases = getReleasesFromLastDays(90);
   
+  // Filter out "Your Company" releases since they have their own dedicated section
+  const filteredReleases = recentReleases.filter(release => 
+    release.company_id !== 'cmp_self'
+  );
+  
   // Sort by released_at desc (newest first)
-  const sorted = recentReleases.sort((a, b) => {
+  const sorted = filteredReleases.sort((a, b) => {
     return new Date(b.released_at).getTime() - new Date(a.released_at).getTime();
   });
   

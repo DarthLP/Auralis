@@ -12,7 +12,6 @@ import { Product, ProductCapability, Capability, Company, Source as SourceType }
 import SpecsGroup from '../components/SpecsGroup';
 import NotFound from './NotFound';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import EmptyState from '../components/EmptyState';
 import SourceDrawer from '../components/SourceDrawer';
 
 // Extended maturity type to handle seed data
@@ -273,16 +272,9 @@ export default function ProductPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Capabilities</h2>
         
         {productCapabilities.length === 0 ? (
-          <EmptyState
-            icon={
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
-            title="No capabilities documented yet"
-            description="This product doesn't have any capabilities documented yet."
-            className="bg-gray-50 rounded-lg"
-          />
+          <div className="text-center py-4">
+            <p className="text-sm text-gray-500">No capabilities documented yet</p>
+          </div>
         ) : (
           <div className="space-y-3">
             {productCapabilities.map((productCap) => (

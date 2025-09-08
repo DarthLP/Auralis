@@ -11,6 +11,7 @@ import { SignalType } from '@schema/enums';
 import SourceDrawer from '../components/SourceDrawer';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
+import { useDateFormat } from '../hooks/useDateFormat';
 
 interface Facets {
   types: SignalType[];
@@ -153,6 +154,7 @@ export default function SignalsPage() {
   const [signalsData, setSignalsData] = useState<Signal[]>([]);
   const [companiesData, setCompaniesData] = useState<Company[]>([]);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const { formatDate } = useDateFormat();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
@@ -358,7 +360,7 @@ export default function SignalsPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Facet Panel */}
         <div className="w-full lg:w-64 flex-shrink-0">
-          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-20">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
             
             <div className="space-y-4">
@@ -554,7 +556,7 @@ export default function SignalsPage() {
               {/* Date Range */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Since: {facets.since ? new Date(facets.since).toLocaleDateString() : 'All time'}
+                  Since: {facets.since ? formatDate(facets.since) : 'All time'}
                 </label>
                 <div className="space-y-2">
                   <div className="flex gap-2">
@@ -674,7 +676,7 @@ export default function SignalsPage() {
                       {currentPageData.map((signal) => (
                         <tr key={signal.id} className="hover:bg-gray-50">
                           <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {new Date(signal.published_at).toLocaleDateString()}
+                            {formatDate(signal.published_at)}
                           </td>
                           <td className="px-6 py-4 text-sm">
                             <button

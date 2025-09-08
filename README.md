@@ -125,7 +125,8 @@ Auralis/
 │   ├── tailwind.config.js # Tailwind CSS configuration
 │   └── vite.config.ts # Vite build configuration
 ├── data/             # Sample data and seed files
-│   └── seed.json     # Mock data for development and demo
+│   ├── seed.json     # Comprehensive mock data for development and demo
+│   └── competitor_mock_data_pal_and_peers.json  # Additional competitor data
 ├── schema/           # Shared data models and validation
 │   ├── enums.ts      # Core enumeration types
 │   ├── specs.ts      # Flexible specification value types
@@ -304,6 +305,7 @@ The companies section provides comprehensive company management and analysis:
 - **Loading States**: Skeleton loading animations for hero and capabilities sections
 - **Error Handling**: Product not found, company mismatch, and data loading errors
 - **Navigation**: Breadcrumb-style navigation back to company page
+- **Simplified Empty States**: Clean, minimal display for products without documented capabilities
 
 ### Add Competitor Page (`/competitors/new`)
 
@@ -427,14 +429,15 @@ The application includes a comprehensive mock data system for development and de
 
 ### Seed Data (`data/seed.json`)
 
-The `data/seed.json` file contains realistic sample data based on PAL Robotics, a Barcelona-based robotics company:
+The `data/seed.json` file contains comprehensive sample data based on PAL Robotics and industry peers:
 
-- **Companies**: Complete company profiles with metadata
-- **Products**: Multiple product lines (TIAGo, TIAGo Pro, ARI, StockBot) with specifications
-- **Capabilities**: Technical capabilities with maturity assessments
-- **Signals**: Industry news and events with impact scoring
-- **Releases**: Product release history with version tracking
-- **Sources**: Data provenance and credibility tracking
+- **Companies**: Complete company profiles with metadata including PAL Robotics as "Your Company" and industry competitors
+- **Products**: Multiple product lines (TIAGo, TIAGo Pro, ARI, StockBot) with detailed specifications and capabilities
+- **Capabilities**: Technical capabilities with maturity assessments across robotics, AI, and automation domains
+- **Signals**: Industry news and events with impact scoring spanning multiple months
+- **Releases**: Product release history with version tracking and detailed notes
+- **Sources**: Data provenance and credibility tracking with comprehensive source attribution
+- **Spec Profiles**: Flexible specification schemas for robotics, AI platforms, and general automation products
 
 ### Mock API (`frontend/src/lib/mockData.ts`)
 
@@ -451,6 +454,7 @@ The mock data system provides:
 - **Deduplication**: Smart duplicate detection using domain and name matching
 - **Error Simulation**: Proper error handling and edge cases
 - **Type Safety**: Full TypeScript integration with schema types
+- **Extended Spec Profiles**: Support for AI platforms, general robotics, mobile humanoids, cobots, and service robots
 
 ### Usage
 

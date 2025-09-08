@@ -47,6 +47,15 @@ export default function CompaniesIndex() {
     }
   };
 
+  const getCompanyInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (loading) {
     return (
       <div className="container">
@@ -66,21 +75,48 @@ export default function CompaniesIndex() {
             className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md hover:border-blue-300 cursor-pointer transition-all duration-200"
           >
             <div className="mb-4">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {company.name}
-              </h3>
-              
-              {company.website && (
-                <p className="text-sm text-blue-600 mb-2">
-                  {getWebsiteDomain(company.website)}
-                </p>
-              )}
-              
-              {company.hq_country && (
-                <p className="text-sm text-gray-600 mb-2">
-                  HQ: {company.hq_country}
-                </p>
-              )}
+              <div className="flex items-start space-x-3 mb-3">
+                {/* Company Logo */}
+                <div className="flex-shrink-0">
+                  {company.logoUrl ? (
+                    <img
+                      src={company.logoUrl}
+                      alt={`${company.name} logo`}
+                      className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-sm">
+                      {getCompanyInitials(company.name)}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Company Name and Badge */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h3 className="text-xl font-semibold text-gray-900 truncate">
+                      {company.name}
+                    </h3>
+                    {company.isSelf && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium flex-shrink-0">
+                        Your Company
+                      </span>
+                    )}
+                  </div>
+                  
+                  {company.website && (
+                    <p className="text-sm text-blue-600 mb-1">
+                      {getWebsiteDomain(company.website)}
+                    </p>
+                  )}
+                  
+                  {company.hq_country && (
+                    <p className="text-sm text-gray-600">
+                      HQ: {company.hq_country}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
             
             {company.summary?.one_liner && (
