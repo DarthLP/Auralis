@@ -11,6 +11,7 @@ const ProductPage = React.lazy(() => import('./pages/ProductPage'))
 const SignalsPage = React.lazy(() => import('./pages/SignalsPage'))
 const ReleasesPage = React.lazy(() => import('./pages/ReleasesPage'))
 const AddCompetitor = React.lazy(() => import('./pages/AddCompetitor'))
+const Settings = React.lazy(() => import('./pages/Settings'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
 
 // Loading component
@@ -80,6 +81,14 @@ function App() {
             element={
               <Suspense fallback={<LoadingFallback />}>
                 <AddCompetitor />
+              </Suspense>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <Settings />
               </Suspense>
             }
           />

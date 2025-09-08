@@ -36,7 +36,8 @@ frontend/
 │   │   ├── SourcesList.tsx
 │   │   ├── DedupAlert.tsx
 │   │   ├── Toast.tsx
-│   │   └── GlobalSearchModal.tsx
+│   │   ├── GlobalSearchModal.tsx
+│   │   └── UserMenu.tsx
 │   ├── pages/            # Page components
 │   │   ├── Overview.tsx
 │   │   ├── CompaniesIndex.tsx
@@ -45,18 +46,25 @@ frontend/
 │   │   ├── AddCompetitor.tsx
 │   │   ├── SignalsPage.tsx
 │   │   ├── ReleasesPage.tsx
+│   │   ├── Settings.tsx
 │   │   └── NotFound.tsx
 │   ├── layouts/          # Layout components
 │   │   └── AppLayout.tsx
 │   ├── lib/              # API client and utilities
 │   │   ├── api.ts
-│   │   └── mockData.ts
+│   │   ├── mockData.ts
+│   │   ├── date.ts
+│   │   └── avatar.ts
 │   ├── utils/            # Utility functions
 │   │   ├── urlValidation.ts
 │   │   └── __tests__/
 │   ├── types/            # TypeScript type definitions
+│   │   └── user.ts
 │   ├── hooks/            # Custom React hooks
-│   │   └── useGlobalSearch.ts
+│   │   ├── useGlobalSearch.ts
+│   │   └── useDateFormat.ts
+│   ├── contexts/         # React Context providers
+│   │   └── UserContext.tsx
 │   ├── App.tsx           # Main application component
 │   ├── main.tsx          # Application entry point
 │   └── index.css         # Global styles
@@ -200,6 +208,60 @@ The Global Search provides a comprehensive command palette style search experien
 - **Type Safety**: Full TypeScript integration with proper interfaces
 - **Accessibility**: Focus management, ARIA semantics, keyboard navigation
 - **Performance**: Efficient rendering with result limits (5 per category)
+
+## 👤 User Session & Settings Feature
+
+### Overview
+A comprehensive mock user session system with persistent preferences and a dedicated settings page. This feature provides a foundation for future authentication integration while offering immediate value through customizable user preferences.
+
+### Key Components
+
+- **UserContext**: React Context for global user state management
+- **UserMenu**: Header dropdown with avatar, name, and navigation options
+- **Settings Page**: Dedicated page for profile and preferences management
+- **Date Formatting**: Global date/time formatting with user preferences
+- **Avatar Generation**: Automatic initials and color generation from user names
+
+### User Session Features ✅
+
+- **Mock Authentication**: Sign in/out functionality with localStorage persistence
+- **User Profile**: Read-only display of user information (name, email, joined date, ID)
+- **Avatar System**: Generated initials with consistent color coding
+- **Session Persistence**: Automatic save/restore of user session across browser sessions
+
+### Settings & Preferences ✅
+
+- **Profile Section**: Display user information (read-only)
+- **Preferences Section**: Editable user preferences
+  - **Timezone**: Select from common timezones with browser detection
+  - **Date Format**: Choose between "MMM d, yyyy" and "yyyy-MM-dd" formats
+  - **Experimental Features**: Toggle for beta functionality
+- **Auto-save**: Preferences automatically saved on change
+- **Reset Functionality**: Restore default preferences
+- **Success Feedback**: Visual confirmation when settings are saved
+
+### Global Date Formatting ✅
+
+- **Consistent Formatting**: All date displays use user preferences
+- **Timezone Support**: Proper timezone handling with Intl API
+- **Format Options**: Multiple date format choices
+- **Applied Everywhere**: Overview, Signals, Releases, Company pages, and Source drawer
+
+### Technical Implementation
+
+- **TypeScript Types**: Comprehensive interfaces for User, UserPreferences, UserSession
+- **Custom Hooks**: `useDateFormat` hook for consistent date formatting
+- **Local Storage**: Persistent session storage with error handling
+- **Responsive Design**: Works on all screen sizes
+- **Accessibility**: Keyboard navigation, proper focus management
+
+### Usage
+
+1. **Sign In**: Click "Sign In" in header to activate mock user session
+2. **Access Settings**: Click avatar/name → Settings
+3. **Customize Preferences**: Change timezone, date format, experimental features
+4. **Global Application**: All date displays update automatically
+5. **Sign Out**: Use dropdown menu or settings page to clear session
 
 ## 🐳 Planned Docker Configuration
 

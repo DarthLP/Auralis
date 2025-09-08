@@ -3,16 +3,7 @@ import { Link } from 'react-router-dom';
 import { getThisWeekSignals, getRecentReleases, source } from '../lib/mockData';
 import type { Signal, Release, Source as SourceType } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
-
-// Format date to "MMM d, yyyy" format
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
+import { useDateFormat } from '../hooks/useDateFormat';
 
 // Get impact color class
 function getImpactColor(impact: string): string {
@@ -43,6 +34,7 @@ export default function Overview() {
   const [sourceDrawer, setSourceDrawer] = useState<{ isOpen: boolean; source?: SourceType; signalUrl?: string }>({
     isOpen: false
   });
+  const { formatDate } = useDateFormat();
 
   useEffect(() => {
     async function loadData() {

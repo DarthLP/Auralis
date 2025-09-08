@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Source } from '@schema/types';
+import { useDateFormat } from '../hooks/useDateFormat';
 
 interface SourceDrawerProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface SourceDrawerProps {
 
 export default function SourceDrawer({ isOpen, onClose, source, signalUrl }: SourceDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+  const { formatDate } = useDateFormat();
 
   // Focus trap and escape key handling
   useEffect(() => {
@@ -61,17 +63,6 @@ export default function SourceDrawer({ isOpen, onClose, source, signalUrl }: Sou
     }
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Unknown';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const getDomain = (url: string) => {
     try {
@@ -139,7 +130,7 @@ export default function SourceDrawer({ isOpen, onClose, source, signalUrl }: Sou
                 {source.retrieved_at && (
                   <div>
                     <h3 className="text-sm font-medium text-gray-600 mb-2">Retrieved</h3>
-                    <p className="text-gray-900">{formatDate(source.retrieved_at)}</p>
+                    <p className="text-gray-900">{source.retrieved_at ? formatDate(source.retrieved_at) : 'Unknown'}</p>
                   </div>
                 )}
 

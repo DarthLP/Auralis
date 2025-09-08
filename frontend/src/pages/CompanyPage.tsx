@@ -8,6 +8,7 @@ import {
 } from '../lib/mockData';
 import { Company, CompanySummary, Product } from '@schema/types';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import { useDateFormat } from '../hooks/useDateFormat';
 import EmptyState from '../components/EmptyState';
 import Toast from '../components/Toast';
 
@@ -32,6 +33,7 @@ export default function CompanyPage() {
   const location = useLocation();
   const [data, setData] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { formatDate } = useDateFormat();
   const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
@@ -76,15 +78,6 @@ export default function CompanyPage() {
     }
   }, [location.state, navigate, location.pathname]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      timeZone: 'Europe/Berlin',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const handleActivityClick = (item: CompanyData['recentActivity'][0]) => {
     if (item.type === 'signal') {

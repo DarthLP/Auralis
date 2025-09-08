@@ -5,6 +5,7 @@ import { Release, Company, Product, Source as SourceType } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
+import { useDateFormat } from '../hooks/useDateFormat';
 
 interface Facets {
   companies: string[];
@@ -47,6 +48,7 @@ export default function ReleasesPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredReleases, setFilteredReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
+  const { formatDate } = useDateFormat();
   const [, setError] = useState<string | null>(null);
   
   // Source drawer state
@@ -167,14 +169,6 @@ export default function ReleasesPage() {
     facets.page * ITEMS_PER_PAGE
   );
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getProductName = (productId: string) => {
     const product = allProducts.find(p => p.id === productId);
@@ -191,7 +185,7 @@ export default function ReleasesPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Facet Panel */}
         <div className="w-full lg:w-64 flex-shrink-0">
-          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-20">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
             
             <div className="space-y-4">
@@ -225,7 +219,7 @@ export default function ReleasesPage() {
               {/* Date Range */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Since: {facets.since ? new Date(facets.since).toLocaleDateString() : 'All time'}
+                  Since: {facets.since ? formatDate(facets.since) : 'All time'}
                 </label>
                 <div className="space-y-2">
                   <div className="flex gap-2">
