@@ -221,6 +221,136 @@ const mockSpecProfiles = {
         }
       ]
     }
+  },
+  'ai/platform@1': {
+    id: 'ai/platform@1',
+    name: 'AI Platform',
+    version: '1.0',
+    schema: {
+      ai_models: { type: 'array', label: 'AI Models' },
+      processing_power: { type: 'number', unit: 'TOPS', label: 'Processing Power' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'AI Capabilities',
+          fields: ['ai_models', 'processing_power']
+        }
+      ]
+    }
+  },
+  'robotics/general@1': {
+    id: 'robotics/general@1',
+    name: 'General Robotics',
+    version: '1.0',
+    schema: {
+      payload: { type: 'number', unit: 'kg', label: 'Payload Capacity' },
+      reach: { type: 'number', unit: 'mm', label: 'Reach' },
+      repeatability: { type: 'number', unit: 'mm', label: 'Repeatability' },
+      ip_rating: { type: 'text', label: 'IP Rating' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Performance',
+          fields: ['payload', 'reach', 'repeatability']
+        },
+        {
+          name: 'Protection',
+          fields: ['ip_rating']
+        }
+      ]
+    }
+  },
+  'robotics/mobile_humanoid@1': {
+    id: 'robotics/mobile_humanoid@1',
+    name: 'Mobile Humanoid Robot',
+    version: '1.0',
+    schema: {
+      arm_payload_per_arm_kg: { type: 'number', unit: 'kg', label: 'Arm Payload per Arm' },
+      degrees_of_freedom_total: { type: 'number', label: 'Total Degrees of Freedom' },
+      compute: { type: 'text', label: 'Compute Platform' },
+      battery_hours_typical: { type: 'number', unit: 'hrs', label: 'Typical Battery Life' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Manipulation',
+          fields: ['arm_payload_per_arm_kg', 'degrees_of_freedom_total']
+        },
+        {
+          name: 'System',
+          fields: ['compute', 'battery_hours_typical']
+        }
+      ]
+    }
+  },
+  'robotics/cobot@1': {
+    id: 'robotics/cobot@1',
+    name: 'Collaborative Robot',
+    version: '1.0',
+    schema: {
+      payload_kg: { type: 'number', unit: 'kg', label: 'Payload Capacity' },
+      reach_mm: { type: 'number', unit: 'mm', label: 'Reach' },
+      repeatability_mm: { type: 'number', unit: 'mm', label: 'Repeatability' },
+      ip_rating: { type: 'text', label: 'IP Rating' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Performance',
+          fields: ['payload_kg', 'reach_mm', 'repeatability_mm']
+        },
+        {
+          name: 'Protection',
+          fields: ['ip_rating']
+        }
+      ]
+    }
+  },
+  'robotics/humanoid_upper@1': {
+    id: 'robotics/humanoid_upper@1',
+    name: 'Humanoid Upper Body',
+    version: '1.0',
+    schema: {
+      height_cm: { type: 'text', label: 'Height Range' },
+      weight_kg: { type: 'number', unit: 'kg', label: 'Weight' },
+      payload_per_arm_kg: { type: 'number', unit: 'kg', label: 'Payload per Arm' },
+      sdk: { type: 'text', label: 'SDK' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Physical',
+          fields: ['height_cm', 'weight_kg']
+        },
+        {
+          name: 'Capabilities',
+          fields: ['payload_per_arm_kg', 'sdk']
+        }
+      ]
+    }
+  },
+  'robotics/service_robot@1': {
+    id: 'robotics/service_robot@1',
+    name: 'Service Robot',
+    version: '1.0',
+    schema: {
+      obstacle_detection_front_deg: { type: 'number', unit: 'deg', label: 'Front Detection Angle' },
+      trays: { type: 'number', label: 'Number of Trays' }
+    },
+    ui: {
+      groups: [
+        {
+          name: 'Navigation',
+          fields: ['obstacle_detection_front_deg']
+        },
+        {
+          name: 'Capacity',
+          fields: ['trays']
+        }
+      ]
+    }
   }
 };
 

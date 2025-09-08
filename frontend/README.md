@@ -109,6 +109,7 @@ frontend/
 - **Logo Support**: Company logo display with fallback to colored initials
 - **Full Profile Access**: Complete company page with products, capabilities, and activity tracking
 - **Centralized Data**: All "Your Company" data stored in `/data/seed.json` alongside competitor data
+- **PAL Robotics Integration**: Realistic company profile based on PAL Robotics with comprehensive product portfolio
 
 ### Competitor Analysis ✅
 

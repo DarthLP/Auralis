@@ -1,559 +1,2364 @@
 {
-    "companies": [
-      {
-        "id": "cmp_self",
-        "name": "Auralis Robotics",
-        "aliases": [],
-        "hq_country": "Germany",
-        "website": "https://auralis.com",
-        "status": "active",
-        "tags": ["ai", "robotics", "automation", "tech"],
-        "logoUrl": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=center",
-        "isSelf": true
-      },
-      {
-        "id": "cmp_pal",
-        "name": "PAL Robotics",
-        "aliases": ["PAL", "PAL-Robotics"],
-        "hq_country": "Spain",
-        "website": "https://pal-robotics.com/",
-        "status": "active",
-        "tags": ["humanoid", "mobile-manipulation", "retail", "research"]
-      }
-    ],
-    "company_summaries": [
-      {
-        "company_id": "cmp_self",
-        "one_liner": "Leading provider of AI-powered robotics solutions for industrial automation.",
-        "founded_year": 2020,
-        "hq_city": "San Francisco",
-        "employees": "≈50",
-        "footprint": "Serving customers across North America and Europe",
-        "sites": ["San Francisco (HQ)", "Austin (R&D)"],
-        "sources": ["src_company_profile"]
-      },
-      {
-        "company_id": "cmp_pal",
-        "one_liner": "Barcelona-based maker of humanoid, social, and mobile robots used by research institutions and industry.",
-        "founded_year": 2004,
-        "hq_city": "Barcelona",
-        "employees": "≈100",
-        "footprint": "Robots deployed in 30+ countries",
-        "sites": ["Toulouse (France)", "Bari (Italy)"],
-        "sources": ["src_home", "src_about"]
-      }
-    ],
-    "products": [
-      {
-        "id": "prd_self_platform",
-        "company_id": "cmp_self",
-        "name": "Auralis Platform",
-        "category": "AI Platform",
-        "stage": "ga",
-        "markets": ["Industrial", "Manufacturing"],
-        "tags": ["ai", "automation", "analytics"],
-        "short_desc": "Comprehensive AI platform for robotics intelligence and automation.",
-        "product_url": "https://yourcompany.com/platform",
-        "docs_url": "https://docs.yourcompany.com",
-        "spec_profile": "ai/platform@1",
-        "specs": {
-          "ai_models": { "type": "array", "value": [{ "type": "text", "value": "Computer Vision" }, { "type": "text", "value": "NLP" }] },
-          "processing_power": { "type": "number", "value": 100, "unit": "TOPS" }
+  "companies": [
+    {
+      "id": "cmp_self",
+      "name": "PAL Robotics",
+      "aliases": [],
+      "hq_country": "Spain",
+      "website": "https://pal-robotics.com/",
+      "status": "active",
+      "tags": [
+        "humanoid",
+        "mobile-manipulation",
+        "retail",
+        "research"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=center",
+      "isSelf": true
+    },
+    {
+      "id": "cmp_rainbow_robotics",
+      "name": "Rainbow Robotics",
+      "aliases": [
+        "rainbow-robotics"
+      ],
+      "hq_country": "South Korea",
+      "website": "https://www.rainbow-robotics.com/",
+      "status": "active",
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_dexmate",
+      "name": "Dexmate",
+      "aliases": [
+        "dexmate"
+      ],
+      "hq_country": "United States",
+      "website": "https://www.dexmate.ai/",
+      "status": "active",
+      "tags": [
+        "dexterous hands",
+        "mobile manipulation",
+        "AGX Orin edge compute"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_pollen_robotics",
+      "name": "Pollen Robotics",
+      "aliases": [
+        "pollen-robotics"
+      ],
+      "hq_country": "France",
+      "website": "https://www.pollen-robotics.com/",
+      "status": "active",
+      "tags": [
+        "ROS2",
+        "teleoperation VR",
+        "stereo vision",
+        "open\u2011source SDKs"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_pudu_robotics",
+      "name": "Pudu Robotics",
+      "aliases": [
+        "pudu-robotics"
+      ],
+      "hq_country": "China",
+      "website": "https://www.pudurobotics.com/",
+      "status": "active",
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_hello_robot",
+      "name": "Hello Robot",
+      "aliases": [
+        "hello-robot"
+      ],
+      "hq_country": "United States",
+      "website": "https://hello-robot.com/",
+      "status": "active",
+      "tags": [
+        "mobile manipulation",
+        "teleoperation",
+        "open SDKs"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_elephant_robotics",
+      "name": "Elephant Robotics",
+      "aliases": [
+        "elephant-robotics"
+      ],
+      "hq_country": "China",
+      "website": "https://www.elephantrobotics.com/",
+      "status": "active",
+      "tags": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&crop=center"
+    },
+    {
+      "id": "cmp_neura_robotics",
+      "name": "NEURA Robotics",
+      "aliases": [
+        "neura-robotics"
+      ],
+      "hq_country": "Germany",
+      "website": "https://neura-robotics.com/",
+      "status": "active",
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "logoUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=center"
+    }
+  ],
+  "company_summaries": [
+    {
+      "company_id": "cmp_self",
+      "one_liner": "Barcelona-based maker of humanoid, social, and mobile robots used by research institutions and industry.",
+      "founded_year": 2004,
+      "hq_city": "Barcelona",
+      "employees": "\u2248100",
+      "footprint": "Robots deployed in 30+ countries",
+      "sites": [
+        "San Francisco (HQ)",
+        "Austin (R&D)"
+      ],
+      "sources": [
+        "src_company_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_self",
+      "one_liner": "Barcelona-based maker of humanoid, social, and mobile robots used by research institutions and industry.",
+      "founded_year": 2004,
+      "hq_city": "Barcelona",
+      "employees": "\u2248100",
+      "footprint": "Robots deployed in 30+ countries",
+      "sites": [
+        "Toulouse (France)",
+        "Bari (Italy)"
+      ],
+      "sources": [
+        "src_home",
+        "src_about"
+      ]
+    },
+    {
+      "company_id": "cmp_rainbow_robotics",
+      "one_liner": "Korean robotics company originating from KAIST\u2019s HUBO Lab. Builds collaborative robot arms (RB-serie...",
+      "founded_year": 2011,
+      "hq_city": "Daejeon",
+      "employees": "\u2248117",
+      "footprint": "Operating in manufacturing, food & beverage, logistics, research",
+      "sites": [
+        "Daejeon"
+      ],
+      "sources": [
+        "src_rainbow-robotics_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_dexmate",
+      "one_liner": "Early-stage startup focused on dexterous hands and a general\u2011purpose mobile humanoid\u2011type robot (Veg...",
+      "founded_year": 2024,
+      "hq_city": "Santa Clara",
+      "employees": "\u224810",
+      "footprint": "Operating in R&D, light industrial, labs, education",
+      "sites": [
+        "Santa Clara"
+      ],
+      "sources": [
+        "src_dexmate_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_pollen_robotics",
+      "one_liner": "Open\u2011source robotics company behind Reachy / Reachy 2 humanoid platforms for embodied AI, HRI and te...",
+      "founded_year": 2016,
+      "hq_city": "Bordeaux",
+      "employees": "\u224820",
+      "footprint": "Operating in research, education, embodied AI",
+      "sites": [
+        "Bordeaux"
+      ],
+      "sources": [
+        "src_pollen-robotics_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_pudu_robotics",
+      "one_liner": "Global service robotics maker focused on food delivery, reception/marketing, and commercial cleaning...",
+      "founded_year": 2016,
+      "hq_city": "Shenzhen",
+      "employees": "\u2248500",
+      "footprint": "Operating in hospitality, retail, healthcare, facilities",
+      "sites": [
+        "Shenzhen"
+      ],
+      "sources": [
+        "src_pudu-robotics_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_hello_robot",
+      "one_liner": "US startup making lightweight, developer\u2011friendly mobile manipulators (Stretch). Focus on assistive ...",
+      "founded_year": 2017,
+      "hq_city": "Martinez",
+      "employees": "\u224813",
+      "footprint": "Operating in assistive tech, research & education, embodied AI",
+      "sites": [
+        "Martinez"
+      ],
+      "sources": [
+        "src_hello-robot_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_elephant_robotics",
+      "one_liner": "Maker of affordable desktop and entry\u2011level collaborative arms (myCobot, mechArm), mobile base (myAG...",
+      "founded_year": 2016,
+      "hq_city": "Shenzhen",
+      "employees": "\u2248200",
+      "footprint": "Operating in STEM education, research, light automation, hobbyist",
+      "sites": [
+        "Shenzhen"
+      ],
+      "sources": [
+        "src_elephant-robotics_profile"
+      ]
+    },
+    {
+      "company_id": "cmp_neura_robotics",
+      "one_liner": "German \u2018cognitive robotics\u2019 company building cobots (LARA), cognitive robots (MAiRA), AMRs (MAV), se...",
+      "founded_year": 2019,
+      "hq_city": "Metzingen",
+      "employees": "\u2248600",
+      "footprint": "Operating in industrial automation, logistics, service, consumer (emerging)",
+      "sites": [
+        "Metzingen"
+      ],
+      "sources": [
+        "src_neura-robotics_profile"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "prd_self_platform",
+      "company_id": "cmp_self",
+      "name": "Auralis Platform",
+      "category": "AI Platform",
+      "stage": "ga",
+      "markets": [
+        "Industrial",
+        "Manufacturing"
+      ],
+      "tags": [
+        "ai",
+        "automation",
+        "analytics"
+      ],
+      "short_desc": "Comprehensive AI platform for robotics intelligence and automation.",
+      "product_url": "https://yourcompany.com/platform",
+      "docs_url": "https://docs.yourcompany.com",
+      "spec_profile": "ai/platform@1",
+      "specs": {
+        "ai_models": {
+          "type": "array",
+          "value": [
+            {
+              "type": "text",
+              "value": "Computer Vision"
+            },
+            {
+              "type": "text",
+              "value": "NLP"
+            }
+          ]
+        },
+        "processing_power": {
+          "type": "number",
+          "value": 100,
+          "unit": "TOPS"
         }
-      },
-      {
-        "id": "prd_self_robot",
-        "company_id": "cmp_self",
-        "name": "Auralis Robot",
-        "category": "Mobile Robot",
-        "stage": "beta",
-        "markets": ["Warehouse", "Logistics"],
-        "tags": ["mobile", "navigation", "autonomous"],
-        "short_desc": "Autonomous mobile robot for warehouse and logistics operations.",
-        "product_url": "https://yourcompany.com/robot",
-        "docs_url": "https://docs.yourcompany.com/robot",
-        "spec_profile": "robotics/amr@1",
-        "specs": {
-          "sensors": { "type": "array", "value": [{ "type": "text", "value": "Lidar" }, { "type": "text", "value": "Camera" }] },
-          "runtime": { "type": "range", "min": 8, "max": 12, "unit": "hrs" }
-        }
-      },
-      {
-        "id": "prd_tiago",
-        "company_id": "cmp_pal",
-        "name": "TIAGo",
-        "category": "Mobile Manipulator",
-        "stage": "ga",
-        "markets": ["Research"],
-        "tags": ["ROS", "HRI", "Navigation"],
-        "short_desc": "Modular research robot combining perception, navigation, manipulation, and HRI.",
-        "product_url": "https://pal-robotics.com/robot/tiago/",
-        "docs_url": "https://docs.pal-robotics.com/edge/tiago",
-        "spec_profile": "robotics/mobile_manipulator@1",
-        "specs": {
-          "payload": { "type": "number", "value": 3, "unit": "kg" },
-          "dof": { "type": "number", "value": 7 },
-          "max_speed": { "type": "number", "value": 1.0, "unit": "m/s" },
-          "sensors": {
-            "type": "array",
-            "value": [{ "type": "text", "value": "Lidar" }, { "type": "text", "value": "RGB-D" }]
-          },
-          "runtime": { "type": "range", "min": 4, "max": 8, "unit": "hrs" }
-        }
-      },
-      {
-        "id": "prd_tiago_pro",
-        "company_id": "cmp_pal",
-        "name": "TIAGo Pro",
-        "category": "Mobile Manipulator",
-        "stage": "ga",
-        "markets": ["Manufacturing", "Research"],
-        "tags": ["Collaborative", "Manipulation", "Navigation"],
-        "short_desc": "Next-gen mobile manipulator with enhanced arms for agile manufacturing.",
-        "product_url": "https://pal-robotics.com/robot/tiago-pro/",
-        "spec_profile": "robotics/mobile_manipulator@1",
-        "specs": {
-          "payload": { "type": "number", "value": 6, "unit": "kg" },
-          "dof": { "type": "number", "value": 7 },
-          "safety": { "type": "text", "value": "Designed for human-centric collaboration" }
-        }
-      },
-      {
-        "id": "prd_ari",
-        "company_id": "cmp_pal",
-        "name": "ARI",
-        "category": "Social Robot",
-        "stage": "ga",
-        "markets": ["Research", "Retail"],
-        "tags": ["HRI", "Speech", "Multimodal"],
-        "short_desc": "Interactive social robot with advanced HRI and multi-language speech.",
-        "product_url": "https://pal-robotics.com/robot/ari/",
-        "docs_url": "https://docs.pal-robotics.com/edge/ari.html"
-      },
-      {
-        "id": "prd_stockbot",
-        "company_id": "cmp_pal",
-        "name": "StockBot",
-        "category": "AMR",
-        "stage": "ga",
-        "markets": ["Retail", "Intralogistics"],
-        "tags": ["RFID", "Inventory", "Navigation"],
-        "short_desc": "Autonomous RFID inventory-tracking AMR for stores and warehouses.",
-        "product_url": "https://pal-robotics.com/robot/stockbot/",
-        "docs_url": "https://pal-robotics.com/wp-content/uploads/2025/07/RFID-Autonomous-Solution-StockBot-brochure.pdf",
-        "spec_profile": "robotics/amr@1",
-        "specs": {
-          "sensors": {
-            "type": "array",
-            "value": [{ "type": "text", "value": "RFID UHF" }, { "type": "text", "value": "Lidar" }]
-          },
-          "runtime": { "type": "range", "min": 8, "max": 10, "unit": "hrs" }
+      }
+    },
+    {
+      "id": "prd_self_robot",
+      "company_id": "cmp_self",
+      "name": "Auralis Robot",
+      "category": "Mobile Robot",
+      "stage": "beta",
+      "markets": [
+        "Warehouse",
+        "Logistics"
+      ],
+      "tags": [
+        "mobile",
+        "navigation",
+        "autonomous"
+      ],
+      "short_desc": "Autonomous mobile robot for warehouse and logistics operations.",
+      "product_url": "https://yourcompany.com/robot",
+      "docs_url": "https://docs.yourcompany.com/robot",
+      "spec_profile": "robotics/amr@1",
+      "specs": {
+        "sensors": {
+          "type": "array",
+          "value": [
+            {
+              "type": "text",
+              "value": "Lidar"
+            },
+            {
+              "type": "text",
+              "value": "Camera"
+            }
+          ]
+        },
+        "runtime": {
+          "type": "range",
+          "min": 8,
+          "max": 12,
+          "unit": "hrs"
         }
       }
-    ],
-    "capabilities": [
-      { "id": "cap_nav", "name": "Navigation/Autonomy", "definition": "Indoor localization, mapping, path planning", "tags": ["SLAM"] },
-      { "id": "cap_manip", "name": "Manipulation", "definition": "Arm/gripper control & compliance", "tags": [] },
-      { "id": "cap_hri", "name": "HRI", "definition": "Speech, gesture, face interaction", "tags": [] },
-      { "id": "cap_rfid", "name": "RFID Inventory", "definition": "Automated RFID stock counting/localization", "tags": [] }
-    ],
-    "product_capabilities": [
-      {
-        "id": "pc_tiago_nav",
-        "product_id": "prd_tiago",
-        "capability_id": "cap_nav",
-        "maturity": "ga",
-        "details": "Indoor navigation & mapping for research scenarios.",
-        "source_id": "src_tiago_pg"
-      },
-      {
-        "id": "pc_tiago_manip",
-        "product_id": "prd_tiago",
-        "capability_id": "cap_manip",
-        "maturity": "ga",
-        "details": "Mobile manipulation with configurable arms/grippers.",
-        "source_id": "src_tiago_pg"
-      },
-      {
-        "id": "pc_tiago_pro_manip",
-        "product_id": "prd_tiago_pro",
-        "capability_id": "cap_manip",
-        "maturity": "ga",
-        "details": "Enhanced arm accuracy and compliance; teach by guiding.",
-        "source_id": "src_tiagopro_pg"
-      },
-      {
-        "id": "pc_ari_hri",
-        "product_id": "prd_ari",
-        "capability_id": "cap_hri",
-        "maturity": "ga",
-        "details": "Social HRI, gestures, touchscreen; 30+ languages.",
-        "source_id": "src_ari_pg"
-      },
-      {
-        "id": "pc_stockbot_rfid",
-        "product_id": "prd_stockbot",
-        "capability_id": "cap_rfid",
-        "maturity": "ga",
-        "details": "Autonomous RFID stock counting and localization.",
-        "source_id": "src_stockbot_pg"
+    },
+    {
+      "id": "prd_tiago",
+      "company_id": "cmp_self",
+      "name": "TIAGo",
+      "category": "Mobile Manipulator",
+      "stage": "ga",
+      "markets": [
+        "Research"
+      ],
+      "tags": [
+        "ROS",
+        "HRI",
+        "Navigation"
+      ],
+      "short_desc": "Modular research robot combining perception, navigation, manipulation, and HRI.",
+      "product_url": "https://pal-robotics.com/robot/tiago/",
+      "docs_url": "https://docs.pal-robotics.com/edge/tiago",
+      "spec_profile": "robotics/mobile_manipulator@1",
+      "specs": {
+        "payload": {
+          "type": "number",
+          "value": 3,
+          "unit": "kg"
+        },
+        "dof": {
+          "type": "number",
+          "value": 7
+        },
+        "max_speed": {
+          "type": "number",
+          "value": 1.0,
+          "unit": "m/s"
+        },
+        "sensors": {
+          "type": "array",
+          "value": [
+            {
+              "type": "text",
+              "value": "Lidar"
+            },
+            {
+              "type": "text",
+              "value": "RGB-D"
+            }
+          ]
+        },
+        "runtime": {
+          "type": "range",
+          "min": 4,
+          "max": 8,
+          "unit": "hrs"
+        }
       }
-    ],
-    "signals": [
-      {
-        "id": "sig_self_1",
-        "type": "release",
-        "headline": "Auralis Platform 2.0 Released with Enhanced AI Capabilities",
-        "summary": "Major update includes improved computer vision models and real-time analytics dashboard.",
-        "published_at": "2024-01-15T10:00:00Z",
-        "url": "https://yourcompany.com/news/platform-2-0",
-        "company_ids": ["cmp_self"],
-        "product_ids": ["prd_self_platform"],
-        "capability_ids": [],
-        "impact": "2",
-        "source_id": "src_company_blog"
-      },
-      {
-        "id": "sig_self_2",
-        "type": "news",
-        "headline": "Partnership with Major Manufacturing Company Announced",
-        "summary": "Strategic partnership to deploy Auralis robots in 50+ manufacturing facilities.",
-        "published_at": "2024-01-10T14:30:00Z",
-        "url": "https://yourcompany.com/news/manufacturing-partnership",
-        "company_ids": ["cmp_self"],
-        "product_ids": ["prd_self_robot"],
-        "capability_ids": [],
-        "impact": "1",
-        "source_id": "src_company_blog"
-      },
-      {
-        "id": "sig_auto25",
-        "type": "news",
-        "headline": "PAL Robotics showcases embodied AI at automatica 2025",
-        "summary": "Exhibited embodied AI; demos across platforms.",
-        "published_at": "2025-09-05",
-        "url": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago", "prd_ari"],
-        "capability_ids": ["cap_nav", "cap_hri"],
-        "impact": 2,
-        "source_id": "src_auto25_post"
-      },
-      {
-        "id": "sig_nrf25",
-        "type": "news",
-        "headline": "StockBot demos RFID at NRF 2025",
-        "summary": "RFID automation in retail; booth presence Jan 12–14.",
-        "published_at": "2025-09-03",
-        "url": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_stockbot"],
-        "capability_ids": ["cap_rfid"],
-        "impact": 1,
-        "source_id": "src_nrf25_blog"
-      },
-      {
-        "id": "sig_tiago_research",
-        "type": "paper",
-        "headline": "TIAGo robot enables breakthrough in human-robot collaboration research",
-        "summary": "University study demonstrates improved task completion rates with TIAGo in collaborative scenarios.",
-        "published_at": "2025-08-28",
-        "url": "https://example.com/tiago-research-paper",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago"],
-        "capability_ids": ["cap_manip", "cap_hri"],
-        "impact": 2,
-        "source_id": "src_research_paper"
-      },
-      {
-        "id": "sig_ari_deployment",
-        "type": "news",
-        "headline": "ARI social robot deployed in Barcelona retail stores",
-        "summary": "Pilot program shows 40% increase in customer engagement and satisfaction scores.",
-        "published_at": "2025-08-20",
-        "url": "https://example.com/ari-retail-deployment",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_ari"],
-        "capability_ids": ["cap_hri"],
-        "impact": 1,
-        "source_id": "src_ari_deployment"
-      },
-      {
-        "id": "sig_funding_round",
-        "type": "funding",
-        "headline": "PAL Robotics secures €15M Series B funding for international expansion",
-        "summary": "Funding will support R&D initiatives and expansion into Asian markets.",
-        "published_at": "2025-08-15",
-        "url": "https://example.com/pal-funding-news",
-        "company_ids": ["cmp_pal"],
-        "product_ids": [],
-        "capability_ids": [],
-        "impact": 2,
-        "source_id": "src_funding_news"
-      },
-      {
-        "id": "sig_tiago_pro_job",
-        "type": "job",
-        "headline": "PAL Robotics hiring robotics engineers for TIAGo Pro development",
-        "summary": "Multiple positions open for mobile manipulation and HRI specialists.",
-        "published_at": "2025-08-10",
-        "url": "https://example.com/pal-jobs",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago_pro"],
-        "capability_ids": ["cap_manip"],
-        "impact": 0,
-        "source_id": "src_job_posting"
-      },
-      {
-        "id": "sig_stockbot_partnership",
-        "type": "news",
-        "headline": "StockBot partners with major retail chain for inventory automation",
-        "summary": "Multi-year agreement to deploy RFID robots across 50+ store locations.",
-        "published_at": "2025-08-05",
-        "url": "https://example.com/stockbot-partnership",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_stockbot"],
-        "capability_ids": ["cap_rfid", "cap_nav"],
-        "impact": 2,
-        "source_id": "src_partnership_news"
-      },
-      {
-        "id": "sig_social_media",
-        "type": "social",
-        "headline": "TIAGo robot goes viral on social media for dance performance",
-        "summary": "Video of TIAGo performing synchronized dance routine reaches 2M+ views.",
-        "published_at": "2025-07-30",
-        "url": "https://example.com/tiago-dance-viral",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago"],
-        "capability_ids": ["cap_hri"],
-        "impact": 1,
-        "source_id": "src_social_media"
-      },
-      {
-        "id": "sig_ari_research",
-        "type": "paper",
-        "headline": "ARI robot demonstrates improved language learning in children",
-        "summary": "Study shows 25% faster vocabulary acquisition when children interact with ARI.",
-        "published_at": "2025-07-25",
-        "url": "https://example.com/ari-language-study",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_ari"],
-        "capability_ids": ["cap_hri"],
-        "impact": 1,
-        "source_id": "src_ari_research"
-      },
-      {
-        "id": "sig_manufacturing_job",
-        "type": "job",
-        "headline": "Manufacturing company seeks TIAGo Pro integration specialists",
-        "summary": "Contract position for implementing mobile manipulation in automotive assembly line.",
-        "published_at": "2025-07-20",
-        "url": "https://example.com/manufacturing-job",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago_pro"],
-        "capability_ids": ["cap_manip"],
-        "impact": 0,
-        "source_id": "src_manufacturing_job"
-      },
-      {
-        "id": "sig_stockbot_competition",
-        "type": "news",
-        "headline": "StockBot wins Best Innovation Award at Retail Technology Summit",
-        "summary": "Recognized for breakthrough in autonomous inventory management solutions.",
-        "published_at": "2025-07-15",
-        "url": "https://example.com/stockbot-award",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_stockbot"],
-        "capability_ids": ["cap_rfid"],
-        "impact": 1,
-        "source_id": "src_award_news"
-      },
-      {
-        "id": "sig_tiago_software",
-        "type": "release",
-        "headline": "TIAGo software stack updated with enhanced navigation algorithms",
-        "summary": "New SLAM improvements provide 30% better accuracy in dynamic environments.",
-        "published_at": "2025-07-10",
-        "url": "https://example.com/tiago-software-update",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago"],
-        "capability_ids": ["cap_nav"],
-        "impact": 1,
-        "source_id": "src_software_release"
-      },
-      {
-        "id": "sig_ari_healthcare",
-        "type": "news",
-        "headline": "ARI robot assists in elderly care facility pilot program",
-        "summary": "Pilot shows reduced loneliness and improved medication adherence among residents.",
-        "published_at": "2025-07-05",
-        "url": "https://example.com/ari-healthcare-pilot",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_ari"],
-        "capability_ids": ["cap_hri"],
-        "impact": 2,
-        "source_id": "src_healthcare_news"
-      },
-      {
-        "id": "sig_negative_review",
-        "type": "social",
-        "headline": "User reports navigation issues with TIAGo in crowded environments",
-        "summary": "Customer feedback highlights challenges with obstacle avoidance in busy spaces.",
-        "published_at": "2025-06-28",
-        "url": "https://example.com/tiago-negative-feedback",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago"],
-        "capability_ids": ["cap_nav"],
-        "impact": -1,
-        "source_id": "src_negative_feedback"
-      },
-      {
-        "id": "sig_stockbot_technical",
-        "type": "paper",
-        "headline": "Technical analysis of RFID accuracy improvements in StockBot",
-        "summary": "Research paper details 15% improvement in tag detection rates through algorithm optimization.",
-        "published_at": "2025-06-20",
-        "url": "https://example.com/stockbot-technical-paper",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_stockbot"],
-        "capability_ids": ["cap_rfid"],
-        "impact": 1,
-        "source_id": "src_technical_paper"
-      },
-      {
-        "id": "sig_ari_competition",
-        "type": "news",
-        "headline": "ARI robot competes in international HRI challenge",
-        "summary": "PAL Robotics team places 3rd in human-robot interaction competition.",
-        "published_at": "2025-06-15",
-        "url": "https://example.com/ari-competition",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_ari"],
-        "capability_ids": ["cap_hri"],
-        "impact": 0,
-        "source_id": "src_competition_news"
-      },
-      {
-        "id": "sig_tiago_pro_manufacturing",
-        "type": "news",
-        "headline": "TIAGo Pro deployed in precision manufacturing facility",
-        "summary": "Automotive supplier reports 20% reduction in assembly time with TIAGo Pro integration.",
-        "published_at": "2025-06-10",
-        "url": "https://example.com/tiago-pro-manufacturing",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_tiago_pro"],
-        "capability_ids": ["cap_manip"],
-        "impact": 2,
-        "source_id": "src_manufacturing_deployment"
-      },
-      {
-        "id": "sig_funding_concern",
-        "type": "news",
-        "headline": "Analyst raises concerns about PAL Robotics market expansion timeline",
-        "summary": "Investment firm questions feasibility of rapid international growth strategy.",
-        "published_at": "2025-06-05",
-        "url": "https://example.com/pal-analyst-concern",
-        "company_ids": ["cmp_pal"],
-        "product_ids": [],
-        "capability_ids": [],
-        "impact": -2,
-        "source_id": "src_analyst_concern"
-      },
-      {
-        "id": "sig_stockbot_research",
-        "type": "paper",
-        "headline": "StockBot demonstrates 99.2% inventory accuracy in warehouse study",
-        "summary": "Academic research validates RFID robot performance in real-world logistics environment.",
-        "published_at": "2025-05-30",
-        "url": "https://example.com/stockbot-accuracy-study",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_stockbot"],
-        "capability_ids": ["cap_rfid"],
-        "impact": 2,
-        "source_id": "src_accuracy_study"
-      },
-      {
-        "id": "sig_ari_education",
-        "type": "news",
-        "headline": "ARI robot enhances STEM education in Barcelona schools",
-        "summary": "Educational program shows increased student engagement in robotics and programming.",
-        "published_at": "2025-05-25",
-        "url": "https://example.com/ari-education-program",
-        "company_ids": ["cmp_pal"],
-        "product_ids": ["prd_ari"],
-        "capability_ids": ["cap_hri"],
-        "impact": 1,
-        "source_id": "src_education_news"
+    },
+    {
+      "id": "prd_tiago_pro",
+      "company_id": "cmp_self",
+      "name": "TIAGo Pro",
+      "category": "Mobile Manipulator",
+      "stage": "ga",
+      "markets": [
+        "Manufacturing",
+        "Research"
+      ],
+      "tags": [
+        "Collaborative",
+        "Manipulation",
+        "Navigation"
+      ],
+      "short_desc": "Next-gen mobile manipulator with enhanced arms for agile manufacturing.",
+      "product_url": "https://pal-robotics.com/robot/tiago-pro/",
+      "spec_profile": "robotics/mobile_manipulator@1",
+      "specs": {
+        "payload": {
+          "type": "number",
+          "value": 6,
+          "unit": "kg"
+        },
+        "dof": {
+          "type": "number",
+          "value": 7
+        },
+        "safety": {
+          "type": "text",
+          "value": "Designed for human-centric collaboration"
+        }
       }
-    ],
-    "releases": [
-      {
-        "id": "rel_self_1",
-        "company_id": "cmp_self",
-        "product_id": "prd_self_platform",
-        "version": "2.0.0",
-        "notes": "Enhanced AI models, improved analytics dashboard, and new API endpoints.",
-        "released_at": "2024-01-15T10:00:00Z",
-        "source_id": "src_company_blog"
-      },
-      {
-        "id": "rel_self_2",
-        "company_id": "cmp_self",
-        "product_id": "prd_self_robot",
-        "version": "1.2.0",
-        "notes": "Improved navigation algorithms and extended battery life.",
-        "released_at": "2024-01-08T16:00:00Z",
-        "source_id": "src_company_blog"
-      },
-      {
-        "id": "rel_tiagopro_intro",
-        "company_id": "cmp_pal",
-        "product_id": "prd_tiago_pro",
-        "version": "Intro",
-        "notes": "TIAGo Pro introduced with torque-controllable arms & HRI upgrades.",
-        "released_at": "2025-08-15",
-        "source_id": "src_tiagopro_blog"
-      },
-      {
-        "id": "rel_tiago_ui",
-        "company_id": "cmp_pal",
-        "product_id": "prd_tiago",
-        "version": "Web UI packages",
-        "notes": "Web-based Animation & Visual Programming; updated Advanced Navigation.",
-        "released_at": "2025-07-20",
-        "source_id": "src_tiago_ui_blog"
+    },
+    {
+      "id": "prd_ari",
+      "company_id": "cmp_self",
+      "name": "ARI",
+      "category": "Social Robot",
+      "stage": "ga",
+      "markets": [
+        "Research",
+        "Retail"
+      ],
+      "tags": [
+        "HRI",
+        "Speech",
+        "Multimodal"
+      ],
+      "short_desc": "Interactive social robot with advanced HRI and multi-language speech.",
+      "product_url": "https://pal-robotics.com/robot/ari/",
+      "docs_url": "https://docs.pal-robotics.com/edge/ari.html"
+    },
+    {
+      "id": "prd_stockbot",
+      "company_id": "cmp_self",
+      "name": "StockBot",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "Retail",
+        "Intralogistics"
+      ],
+      "tags": [
+        "RFID",
+        "Inventory",
+        "Navigation"
+      ],
+      "short_desc": "Autonomous RFID inventory-tracking AMR for stores and warehouses.",
+      "product_url": "https://pal-robotics.com/robot/stockbot/",
+      "docs_url": "https://pal-robotics.com/wp-content/uploads/2025/07/RFID-Autonomous-Solution-StockBot-brochure.pdf",
+      "spec_profile": "robotics/amr@1",
+      "specs": {
+        "sensors": {
+          "type": "array",
+          "value": [
+            {
+              "type": "text",
+              "value": "RFID UHF"
+            },
+            {
+              "type": "text",
+              "value": "Lidar"
+            }
+          ]
+        },
+        "runtime": {
+          "type": "range",
+          "min": 8,
+          "max": 10,
+          "unit": "hrs"
+        }
       }
-    ],
-    "sources": [
-      { "id": "src_home", "origin": "https://pal-robotics.com/", "author": "PAL Robotics", "retrieved_at": "2025-09-07", "credibility": "high" },
-      { "id": "src_about", "origin": "https://pal-robotics.com/who-we-are/", "author": "PAL Robotics", "retrieved_at": "2025-09-07", "credibility": "high" },
-      { "id": "src_tiago_pg", "origin": "https://pal-robotics.com/robot/tiago/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_tiagopro_pg", "origin": "https://pal-robotics.com/robot/tiago-pro/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_ari_pg", "origin": "https://pal-robotics.com/robot/ari/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_stockbot_pg", "origin": "https://pal-robotics.com/robot/stockbot/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_auto25_post", "origin": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_nrf25_blog", "origin": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_tiagopro_blog", "origin": "https://pal-robotics.com/blog/new-robot-concept-in-mobile-manipulation/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_tiago_ui_blog", "origin": "https://pal-robotics.com/blog/tiago-web-user-interface-packages/", "author": "PAL Robotics", "retrieved_at": "2025-09-07" },
-      { "id": "src_research_paper", "origin": "https://example.com/tiago-research-paper", "author": "University Research Team", "retrieved_at": "2025-08-28", "credibility": "high" },
-      { "id": "src_ari_deployment", "origin": "https://example.com/ari-retail-deployment", "author": "Retail Technology News", "retrieved_at": "2025-08-20", "credibility": "medium" },
-      { "id": "src_funding_news", "origin": "https://example.com/pal-funding-news", "author": "TechCrunch", "retrieved_at": "2025-08-15", "credibility": "high" },
-      { "id": "src_job_posting", "origin": "https://example.com/pal-jobs", "author": "PAL Robotics", "retrieved_at": "2025-08-10", "credibility": "high" },
-      { "id": "src_partnership_news", "origin": "https://example.com/stockbot-partnership", "author": "Retail Automation Weekly", "retrieved_at": "2025-08-05", "credibility": "medium" },
-      { "id": "src_social_media", "origin": "https://example.com/tiago-dance-viral", "author": "Social Media Platform", "retrieved_at": "2025-07-30", "credibility": "low" },
-      { "id": "src_ari_research", "origin": "https://example.com/ari-language-study", "author": "Educational Research Journal", "retrieved_at": "2025-07-25", "credibility": "high" },
-      { "id": "src_manufacturing_job", "origin": "https://example.com/manufacturing-job", "author": "Manufacturing Company", "retrieved_at": "2025-07-20", "credibility": "medium" },
-      { "id": "src_award_news", "origin": "https://example.com/stockbot-award", "author": "Retail Technology Summit", "retrieved_at": "2025-07-15", "credibility": "high" },
-      { "id": "src_software_release", "origin": "https://example.com/tiago-software-update", "author": "PAL Robotics", "retrieved_at": "2025-07-10", "credibility": "high" },
-      { "id": "src_healthcare_news", "origin": "https://example.com/ari-healthcare-pilot", "author": "Healthcare Technology Review", "retrieved_at": "2025-07-05", "credibility": "medium" },
-      { "id": "src_negative_feedback", "origin": "https://example.com/tiago-negative-feedback", "author": "User Forum", "retrieved_at": "2025-06-28", "credibility": "low" },
-      { "id": "src_technical_paper", "origin": "https://example.com/stockbot-technical-paper", "author": "IEEE Robotics Journal", "retrieved_at": "2025-06-20", "credibility": "high" },
-      { "id": "src_competition_news", "origin": "https://example.com/ari-competition", "author": "HRI Conference", "retrieved_at": "2025-06-15", "credibility": "medium" },
-      { "id": "src_manufacturing_deployment", "origin": "https://example.com/tiago-pro-manufacturing", "author": "Manufacturing Today", "retrieved_at": "2025-06-10", "credibility": "medium" },
-      { "id": "src_analyst_concern", "origin": "https://example.com/pal-analyst-concern", "author": "Investment Analysis Firm", "retrieved_at": "2025-06-05", "credibility": "medium" },
-      { "id": "src_accuracy_study", "origin": "https://example.com/stockbot-accuracy-study", "author": "Logistics Research Institute", "retrieved_at": "2025-05-30", "credibility": "high" },
-      { "id": "src_education_news", "origin": "https://example.com/ari-education-program", "author": "Education Technology Weekly", "retrieved_at": "2025-05-25", "credibility": "medium" }
-    ]
-  }
-  
+    },
+    {
+      "id": "prd_rainbow_robotics_rb3_730",
+      "company_id": "cmp_rainbow_robotics",
+      "name": "RB3-730",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics"
+      ],
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "short_desc": "3 kg payload, 730 mm reach, \u00b10.05 mm repeatability.",
+      "product_url": "https://www.rainbow-robotics.com/en_rb",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "payload_kg": {
+          "type": "number",
+          "value": 3
+        },
+        "reach_mm": {
+          "type": "number",
+          "value": 730
+        },
+        "repeatability_mm": {
+          "type": "number",
+          "value": 0.05
+        },
+        "ip_rating": {
+          "type": "text",
+          "value": "IP54"
+        }
+      }
+    },
+    {
+      "id": "prd_rainbow_robotics_rb3_1200",
+      "company_id": "cmp_rainbow_robotics",
+      "name": "RB3-1200",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics"
+      ],
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "short_desc": "3 kg payload, 1200 mm reach with IP66 option.",
+      "product_url": "https://www.rainbow-robotics.com/en_rb",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "payload_kg": {
+          "type": "number",
+          "value": 3
+        },
+        "reach_mm": {
+          "type": "number",
+          "value": 1200
+        },
+        "repeatability_mm": {
+          "type": "number",
+          "value": 0.05
+        },
+        "ip_rating": {
+          "type": "text",
+          "value": "IP66"
+        }
+      }
+    },
+    {
+      "id": "prd_rainbow_robotics_rb5_850",
+      "company_id": "cmp_rainbow_robotics",
+      "name": "RB5-850",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics"
+      ],
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "short_desc": "5 kg payload, ~928 mm reach, \u00b10.05 mm repeatability; widely distributed.",
+      "product_url": "https://www.rainbow-robotics.com/en_rb",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "payload_kg": {
+          "type": "number",
+          "value": 5
+        },
+        "reach_mm": {
+          "type": "number",
+          "value": 928
+        },
+        "repeatability_mm": {
+          "type": "number",
+          "value": 0.05
+        }
+      }
+    },
+    {
+      "id": "prd_rainbow_robotics_rb10_1300",
+      "company_id": "cmp_rainbow_robotics",
+      "name": "RB10-1300",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics"
+      ],
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "short_desc": "10 kg payload, 1300 mm reach\u2014the longest in RB series.",
+      "product_url": "https://www.rainbow-robotics.eu/rb10-1300",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "payload_kg": {
+          "type": "number",
+          "value": 10
+        },
+        "reach_mm": {
+          "type": "number",
+          "value": 1300
+        }
+      }
+    },
+    {
+      "id": "prd_rainbow_robotics_rb_n_series_nsf",
+      "company_id": "cmp_rainbow_robotics",
+      "name": "RB-N Series (NSF)",
+      "category": "Robot",
+      "stage": "ga",
+      "markets": [
+        "manufacturing",
+        "food & beverage",
+        "logistics"
+      ],
+      "tags": [
+        "cobots",
+        "dual-arm mobile manipulation",
+        "drive & control",
+        "vision"
+      ],
+      "short_desc": "NSF-certified variants of RB series for F&B environments (steam/oil).",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "models": {
+          "type": "array",
+          "value": [
+            {
+              "type": "text",
+              "value": "RB5-850N"
+            },
+            {
+              "type": "text",
+              "value": "RB3-1200N"
+            },
+            {
+              "type": "text",
+              "value": "RB10-1300N"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "prd_dexmate_vega",
+      "company_id": "cmp_dexmate",
+      "name": "Vega",
+      "category": "Mobile Humanoid",
+      "stage": "beta",
+      "markets": [
+        "R&D",
+        "light industrial",
+        "labs"
+      ],
+      "tags": [
+        "dexterous hands",
+        "mobile manipulation",
+        "AGX Orin edge compute"
+      ],
+      "short_desc": "Dual\u2011arm mobile robot with dexterous hands, foldable torso/arms (up to ~2.2m reach), omni base, >10h operation.",
+      "product_url": "https://www.dexmate.ai/vega",
+      "docs_url": "",
+      "spec_profile": "robotics/mobile_humanoid@1",
+      "specs": {
+        "arm_payload_per_arm_kg": {
+          "type": "number",
+          "value": 7.0
+        },
+        "degrees_of_freedom_total": {
+          "type": "number",
+          "value": 36
+        },
+        "compute": {
+          "type": "text",
+          "value": "NVIDIA Jetson AGX Orin (32/64GB)"
+        },
+        "battery_hours_typical": {
+          "type": "number",
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "prd_pollen_robotics_reachy_2",
+      "company_id": "cmp_pollen_robotics",
+      "name": "Reachy 2",
+      "category": "Mobile Humanoid",
+      "stage": "ga",
+      "markets": [
+        "research",
+        "education",
+        "embodied AI"
+      ],
+      "tags": [
+        "ROS2",
+        "teleoperation VR",
+        "stereo vision",
+        "open\u2011source SDKs"
+      ],
+      "short_desc": "Fully open\u2011source humanoid for embodied AI with 7\u2011DoF arms (~3kg/arm), VR teleop, stereo vision; available on mobile base.",
+      "product_url": "https://www.pollen-robotics.com/reachy/",
+      "docs_url": "https://docs.pollen-robotics.com/",
+      "spec_profile": "robotics/humanoid_upper@1",
+      "specs": {
+        "height_cm": {
+          "type": "text",
+          "value": "136\u2013166"
+        },
+        "weight_kg": {
+          "type": "number",
+          "value": 50
+        },
+        "payload_per_arm_kg": {
+          "type": "number",
+          "value": 3
+        },
+        "sdk": {
+          "type": "text",
+          "value": "Python SDK + ROS2"
+        }
+      }
+    },
+    {
+      "id": "prd_pollen_robotics_reachy_2021",
+      "company_id": "cmp_pollen_robotics",
+      "name": "Reachy (2021)",
+      "category": "Humanoid Robot",
+      "stage": "deprecated",
+      "markets": [
+        "research",
+        "education",
+        "embodied AI"
+      ],
+      "tags": [
+        "ROS2",
+        "teleoperation VR",
+        "stereo vision",
+        "open\u2011source SDKs"
+      ],
+      "short_desc": "First\u2011gen open robotic torso/head platform with teleop and Python SDK.",
+      "product_url": "",
+      "docs_url": "https://pollen-robotics.github.io/reachy-2021-docs/",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_pudu_robotics_bellabot",
+      "company_id": "cmp_pudu_robotics",
+      "name": "BellaBot",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Iconic tray\u2011delivery robot with multi\u2011modal HRI, 3D obstacle avoidance, and modular chassis.",
+      "product_url": "https://www.pudurobotics.com/product/detail/bellabot",
+      "docs_url": "",
+      "spec_profile": "robotics/service_robot@1",
+      "specs": {
+        "trays": {
+          "type": "number",
+          "value": 4
+        },
+        "obstacle_detection_front_deg": {
+          "type": "number",
+          "value": 192.64
+        }
+      }
+    },
+    {
+      "id": "prd_pudu_robotics_pudubot_2",
+      "company_id": "cmp_pudu_robotics",
+      "name": "PuduBot 2",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Upgraded PuduBot with higher performance and adaptability for all\u2011scenario deliveries.",
+      "product_url": "https://www.pudurobotics.com/product/detail/pudubot2",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_pudu_robotics_kettybot_kettybot_pro",
+      "company_id": "cmp_pudu_robotics",
+      "name": "KettyBot / KettyBot Pro",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Reception/delivery robot with built\u2011in advertising display and navigation for guiding customers.",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_pudu_robotics_swiftbot",
+      "company_id": "cmp_pudu_robotics",
+      "name": "SwiftBot",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Secure delivery with advanced maneuverability for crowded environments.",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_pudu_robotics_holabot",
+      "company_id": "cmp_pudu_robotics",
+      "name": "HolaBot",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Autonomous dish\u2011busser / collection robot used in hospitality/healthcare.",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_pudu_robotics_pudu_cc1_cc1_pro",
+      "company_id": "cmp_pudu_robotics",
+      "name": "PUDU CC1 / CC1 Pro",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "hospitality",
+        "retail",
+        "healthcare"
+      ],
+      "tags": [
+        "AMR navigation",
+        "3D obstacle avoidance",
+        "advertising displays",
+        "autonomous cleaning"
+      ],
+      "short_desc": "Four\u2011in\u2011one cleaning (sweep/scrub/vacuum/mop), with Pro variant using AI for enhanced autonomy.",
+      "product_url": "https://www.pudurobotics.com/product/detail/puduCC1",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_hello_robot_stretch_3",
+      "company_id": "cmp_hello_robot",
+      "name": "Stretch 3",
+      "category": "Mobile Manipulator",
+      "stage": "ga",
+      "markets": [
+        "assistive tech",
+        "research & education",
+        "embodied AI"
+      ],
+      "tags": [
+        "mobile manipulation",
+        "teleoperation",
+        "open SDKs"
+      ],
+      "short_desc": "Fully\u2011integrated mobile manipulator with dexterous wrist, gripper camera, dual head cameras; 24.5 kg.",
+      "product_url": "https://hello-robot.com/stretch-3-product",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_hello_robot_stretch_2_legacy",
+      "company_id": "cmp_hello_robot",
+      "name": "Stretch 2 (legacy)",
+      "category": "Mobile Manipulator",
+      "stage": "deprecated",
+      "markets": [
+        "assistive tech",
+        "research & education",
+        "embodied AI"
+      ],
+      "tags": [
+        "mobile manipulation",
+        "teleoperation",
+        "open SDKs"
+      ],
+      "short_desc": "Earlier model widely used in research; upgrade kit available to near\u2011Stretch\u20113 capability.",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_elephant_robotics_mycobot_280",
+      "company_id": "cmp_elephant_robotics",
+      "name": "myCobot 280",
+      "category": "Desktop Robot",
+      "stage": "ga",
+      "markets": [
+        "STEM education",
+        "research",
+        "light automation"
+      ],
+      "tags": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "short_desc": "World\u2019s smallest 6\u2011axis cobot (sub\u20111 kg), up to 250 g payload; variants: M5, Pi, Arduino, Jetson Nano.",
+      "product_url": "https://www.elephantrobotics.com/en/mycobot-en/",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_elephant_robotics_mycobot_320_pro",
+      "company_id": "cmp_elephant_robotics",
+      "name": "myCobot 320 (Pro)",
+      "category": "Desktop Robot",
+      "stage": "ga",
+      "markets": [
+        "STEM education",
+        "research",
+        "light automation"
+      ],
+      "tags": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "short_desc": "",
+      "product_url": "https://shop.elephantrobotics.com/products/commercial-and-economic-six-axis-collaborative-robot",
+      "docs_url": "",
+      "spec_profile": "robotics/cobot@1",
+      "specs": {
+        "reach_mm": {
+          "type": "number",
+          "value": 350
+        },
+        "payload_kg": {
+          "type": "number",
+          "value": 1.0
+        },
+        "repeatability_mm": {
+          "type": "number",
+          "value": 1.0
+        }
+      }
+    },
+    {
+      "id": "prd_elephant_robotics_myagv_2023",
+      "company_id": "cmp_elephant_robotics",
+      "name": "myAGV (2023)",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "STEM education",
+        "research",
+        "light automation"
+      ],
+      "tags": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "short_desc": "2D/3D navigation AMR that pairs with myCobot/mechArm/myPalletizer for composite robots.",
+      "product_url": "https://shop.elephantrobotics.com/products/myagv-2d-3d-navigation-mobile-robot",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_elephant_robotics_mecharm_mypalletizer_series",
+      "company_id": "cmp_elephant_robotics",
+      "name": "mechArm / myPalletizer series",
+      "category": "Robot",
+      "stage": "ga",
+      "markets": [
+        "STEM education",
+        "research",
+        "light automation"
+      ],
+      "tags": [
+        "ROS/ROS2",
+        "open SDKs",
+        "AGV navigation"
+      ],
+      "short_desc": "Affordable 6\u2011DoF arms and palletizing variants for labs and classrooms.",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_neura_robotics_maira_sm",
+      "company_id": "cmp_neura_robotics",
+      "name": "MAiRA (S/M)",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service"
+      ],
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "short_desc": "",
+      "product_url": "https://neura-robotics.com/products/maira/",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_neura_robotics_lara",
+      "company_id": "cmp_neura_robotics",
+      "name": "LARA",
+      "category": "Collaborative Robot",
+      "stage": "ga",
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service"
+      ],
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "short_desc": "",
+      "product_url": "https://neura-robotics.com/products/",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_neura_robotics_mav",
+      "company_id": "cmp_neura_robotics",
+      "name": "MAV",
+      "category": "AMR",
+      "stage": "ga",
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service"
+      ],
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "short_desc": "",
+      "product_url": "https://neura-robotics.com/products/mav/",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_neura_robotics_mipa",
+      "company_id": "cmp_neura_robotics",
+      "name": "MiPA",
+      "category": "Service Robot",
+      "stage": "beta",
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service"
+      ],
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "short_desc": "",
+      "product_url": "https://neura-robotics.com/products/mipa/",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    },
+    {
+      "id": "prd_neura_robotics_4ne1_gen\u20113",
+      "company_id": "cmp_neura_robotics",
+      "name": "4NE1 (Gen\u20113)",
+      "category": "Humanoid Robot",
+      "stage": "alpha",
+      "markets": [
+        "industrial automation",
+        "logistics",
+        "service"
+      ],
+      "tags": [
+        "cognitive perception",
+        "sensor fusion (OmniSensor)",
+        "teach & touch interfaces"
+      ],
+      "short_desc": "",
+      "product_url": "",
+      "docs_url": "",
+      "spec_profile": "robotics/general@1"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "cap_nav",
+      "name": "Navigation/Autonomy",
+      "definition": "Indoor localization, mapping, path planning",
+      "tags": [
+        "SLAM"
+      ]
+    },
+    {
+      "id": "cap_manip",
+      "name": "Manipulation",
+      "definition": "Arm/gripper control & compliance",
+      "tags": []
+    },
+    {
+      "id": "cap_hri",
+      "name": "HRI",
+      "definition": "Speech, gesture, face interaction",
+      "tags": []
+    },
+    {
+      "id": "cap_rfid",
+      "name": "RFID Inventory",
+      "definition": "Automated RFID stock counting/localization",
+      "tags": []
+    }
+  ],
+  "product_capabilities": [
+    {
+      "id": "pc_tiago_nav",
+      "product_id": "prd_tiago",
+      "capability_id": "cap_nav",
+      "maturity": "ga",
+      "details": "Indoor navigation & mapping for research scenarios.",
+      "source_id": "src_tiago_pg"
+    },
+    {
+      "id": "pc_tiago_manip",
+      "product_id": "prd_tiago",
+      "capability_id": "cap_manip",
+      "maturity": "ga",
+      "details": "Mobile manipulation with configurable arms/grippers.",
+      "source_id": "src_tiago_pg"
+    },
+    {
+      "id": "pc_tiago_pro_manip",
+      "product_id": "prd_tiago_pro",
+      "capability_id": "cap_manip",
+      "maturity": "ga",
+      "details": "Enhanced arm accuracy and compliance; teach by guiding.",
+      "source_id": "src_tiagopro_pg"
+    },
+    {
+      "id": "pc_ari_hri",
+      "product_id": "prd_ari",
+      "capability_id": "cap_hri",
+      "maturity": "ga",
+      "details": "Social HRI, gestures, touchscreen; 30+ languages.",
+      "source_id": "src_ari_pg"
+    },
+    {
+      "id": "pc_stockbot_rfid",
+      "product_id": "prd_stockbot",
+      "capability_id": "cap_rfid",
+      "maturity": "ga",
+      "details": "Autonomous RFID stock counting and localization.",
+      "source_id": "src_stockbot_pg"
+    }
+  ],
+  "signals": [
+    {
+      "id": "sig_self_1",
+      "type": "release",
+      "headline": "Auralis Platform 2.0 Released with Enhanced AI Capabilities",
+      "summary": "Major update includes improved computer vision models and real-time analytics dashboard.",
+      "published_at": "2024-01-15T10:00:00Z",
+      "url": "https://yourcompany.com/news/platform-2-0",
+      "company_ids": [
+        "cmp_self"
+      ],
+      "product_ids": [
+        "prd_self_platform"
+      ],
+      "capability_ids": [],
+      "impact": "2",
+      "source_id": "src_company_blog"
+    },
+    {
+      "id": "sig_self_2",
+      "type": "news",
+      "headline": "Partnership with Major Manufacturing Company Announced",
+      "summary": "Strategic partnership to deploy Auralis robots in 50+ manufacturing facilities.",
+      "published_at": "2024-01-10T14:30:00Z",
+      "url": "https://yourcompany.com/news/manufacturing-partnership",
+      "company_ids": [
+        "cmp_self"
+      ],
+      "product_ids": [
+        "prd_self_robot"
+      ],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_company_blog"
+    },
+    {
+      "id": "sig_auto25",
+      "type": "news",
+      "headline": "PAL Robotics showcases embodied AI at automatica 2025",
+      "summary": "Exhibited embodied AI; demos across platforms.",
+      "published_at": "2025-09-05",
+      "url": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago",
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_nav",
+        "cap_hri"
+      ],
+      "impact": 2,
+      "source_id": "src_auto25_post"
+    },
+    {
+      "id": "sig_nrf25",
+      "type": "news",
+      "headline": "StockBot demos RFID at NRF 2025",
+      "summary": "RFID automation in retail; booth presence Jan 12\u201314.",
+      "published_at": "2025-09-03",
+      "url": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_stockbot"
+      ],
+      "capability_ids": [
+        "cap_rfid"
+      ],
+      "impact": 1,
+      "source_id": "src_nrf25_blog"
+    },
+    {
+      "id": "sig_tiago_research",
+      "type": "paper",
+      "headline": "TIAGo robot enables breakthrough in human-robot collaboration research",
+      "summary": "University study demonstrates improved task completion rates with TIAGo in collaborative scenarios.",
+      "published_at": "2025-08-28",
+      "url": "https://example.com/tiago-research-paper",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago"
+      ],
+      "capability_ids": [
+        "cap_manip",
+        "cap_hri"
+      ],
+      "impact": 2,
+      "source_id": "src_research_paper"
+    },
+    {
+      "id": "sig_ari_deployment",
+      "type": "news",
+      "headline": "ARI social robot deployed in Barcelona retail stores",
+      "summary": "Pilot program shows 40% increase in customer engagement and satisfaction scores.",
+      "published_at": "2025-08-20",
+      "url": "https://example.com/ari-retail-deployment",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 1,
+      "source_id": "src_ari_deployment"
+    },
+    {
+      "id": "sig_funding_round",
+      "type": "funding",
+      "headline": "PAL Robotics secures \u20ac15M Series B funding for international expansion",
+      "summary": "Funding will support R&D initiatives and expansion into Asian markets.",
+      "published_at": "2025-08-15",
+      "url": "https://example.com/pal-funding-news",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": 2,
+      "source_id": "src_funding_news"
+    },
+    {
+      "id": "sig_tiago_pro_job",
+      "type": "job",
+      "headline": "PAL Robotics hiring robotics engineers for TIAGo Pro development",
+      "summary": "Multiple positions open for mobile manipulation and HRI specialists.",
+      "published_at": "2025-08-10",
+      "url": "https://example.com/pal-jobs",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago_pro"
+      ],
+      "capability_ids": [
+        "cap_manip"
+      ],
+      "impact": 0,
+      "source_id": "src_job_posting"
+    },
+    {
+      "id": "sig_stockbot_partnership",
+      "type": "news",
+      "headline": "StockBot partners with major retail chain for inventory automation",
+      "summary": "Multi-year agreement to deploy RFID robots across 50+ store locations.",
+      "published_at": "2025-08-05",
+      "url": "https://example.com/stockbot-partnership",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_stockbot"
+      ],
+      "capability_ids": [
+        "cap_rfid",
+        "cap_nav"
+      ],
+      "impact": 2,
+      "source_id": "src_partnership_news"
+    },
+    {
+      "id": "sig_social_media",
+      "type": "social",
+      "headline": "TIAGo robot goes viral on social media for dance performance",
+      "summary": "Video of TIAGo performing synchronized dance routine reaches 2M+ views.",
+      "published_at": "2025-07-30",
+      "url": "https://example.com/tiago-dance-viral",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 1,
+      "source_id": "src_social_media"
+    },
+    {
+      "id": "sig_ari_research",
+      "type": "paper",
+      "headline": "ARI robot demonstrates improved language learning in children",
+      "summary": "Study shows 25% faster vocabulary acquisition when children interact with ARI.",
+      "published_at": "2025-07-25",
+      "url": "https://example.com/ari-language-study",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 1,
+      "source_id": "src_ari_research"
+    },
+    {
+      "id": "sig_manufacturing_job",
+      "type": "job",
+      "headline": "Manufacturing company seeks TIAGo Pro integration specialists",
+      "summary": "Contract position for implementing mobile manipulation in automotive assembly line.",
+      "published_at": "2025-07-20",
+      "url": "https://example.com/manufacturing-job",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago_pro"
+      ],
+      "capability_ids": [
+        "cap_manip"
+      ],
+      "impact": 0,
+      "source_id": "src_manufacturing_job"
+    },
+    {
+      "id": "sig_stockbot_competition",
+      "type": "news",
+      "headline": "StockBot wins Best Innovation Award at Retail Technology Summit",
+      "summary": "Recognized for breakthrough in autonomous inventory management solutions.",
+      "published_at": "2025-07-15",
+      "url": "https://example.com/stockbot-award",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_stockbot"
+      ],
+      "capability_ids": [
+        "cap_rfid"
+      ],
+      "impact": 1,
+      "source_id": "src_award_news"
+    },
+    {
+      "id": "sig_tiago_software",
+      "type": "release",
+      "headline": "TIAGo software stack updated with enhanced navigation algorithms",
+      "summary": "New SLAM improvements provide 30% better accuracy in dynamic environments.",
+      "published_at": "2025-07-10",
+      "url": "https://example.com/tiago-software-update",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago"
+      ],
+      "capability_ids": [
+        "cap_nav"
+      ],
+      "impact": 1,
+      "source_id": "src_software_release"
+    },
+    {
+      "id": "sig_ari_healthcare",
+      "type": "news",
+      "headline": "ARI robot assists in elderly care facility pilot program",
+      "summary": "Pilot shows reduced loneliness and improved medication adherence among residents.",
+      "published_at": "2025-07-05",
+      "url": "https://example.com/ari-healthcare-pilot",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 2,
+      "source_id": "src_healthcare_news"
+    },
+    {
+      "id": "sig_negative_review",
+      "type": "social",
+      "headline": "User reports navigation issues with TIAGo in crowded environments",
+      "summary": "Customer feedback highlights challenges with obstacle avoidance in busy spaces.",
+      "published_at": "2025-06-28",
+      "url": "https://example.com/tiago-negative-feedback",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago"
+      ],
+      "capability_ids": [
+        "cap_nav"
+      ],
+      "impact": -1,
+      "source_id": "src_negative_feedback"
+    },
+    {
+      "id": "sig_stockbot_technical",
+      "type": "paper",
+      "headline": "Technical analysis of RFID accuracy improvements in StockBot",
+      "summary": "Research paper details 15% improvement in tag detection rates through algorithm optimization.",
+      "published_at": "2025-06-20",
+      "url": "https://example.com/stockbot-technical-paper",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_stockbot"
+      ],
+      "capability_ids": [
+        "cap_rfid"
+      ],
+      "impact": 1,
+      "source_id": "src_technical_paper"
+    },
+    {
+      "id": "sig_ari_competition",
+      "type": "news",
+      "headline": "ARI robot competes in international HRI challenge",
+      "summary": "PAL Robotics team places 3rd in human-robot interaction competition.",
+      "published_at": "2025-06-15",
+      "url": "https://example.com/ari-competition",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 0,
+      "source_id": "src_competition_news"
+    },
+    {
+      "id": "sig_tiago_pro_manufacturing",
+      "type": "news",
+      "headline": "TIAGo Pro deployed in precision manufacturing facility",
+      "summary": "Automotive supplier reports 20% reduction in assembly time with TIAGo Pro integration.",
+      "published_at": "2025-06-10",
+      "url": "https://example.com/tiago-pro-manufacturing",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_tiago_pro"
+      ],
+      "capability_ids": [
+        "cap_manip"
+      ],
+      "impact": 2,
+      "source_id": "src_manufacturing_deployment"
+    },
+    {
+      "id": "sig_funding_concern",
+      "type": "news",
+      "headline": "Analyst raises concerns about PAL Robotics market expansion timeline",
+      "summary": "Investment firm questions feasibility of rapid international growth strategy.",
+      "published_at": "2025-06-05",
+      "url": "https://example.com/pal-analyst-concern",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": -2,
+      "source_id": "src_analyst_concern"
+    },
+    {
+      "id": "sig_stockbot_research",
+      "type": "paper",
+      "headline": "StockBot demonstrates 99.2% inventory accuracy in warehouse study",
+      "summary": "Academic research validates RFID robot performance in real-world logistics environment.",
+      "published_at": "2025-05-30",
+      "url": "https://example.com/stockbot-accuracy-study",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_stockbot"
+      ],
+      "capability_ids": [
+        "cap_rfid"
+      ],
+      "impact": 2,
+      "source_id": "src_accuracy_study"
+    },
+    {
+      "id": "sig_ari_education",
+      "type": "news",
+      "headline": "ARI robot enhances STEM education in Barcelona schools",
+      "summary": "Educational program shows increased student engagement in robotics and programming.",
+      "published_at": "2025-05-25",
+      "url": "https://example.com/ari-education-program",
+      "company_ids": [
+        "cmp_pal"
+      ],
+      "product_ids": [
+        "prd_ari"
+      ],
+      "capability_ids": [
+        "cap_hri"
+      ],
+      "impact": 1,
+      "source_id": "src_education_news"
+    },
+    {
+      "id": "sig_rainbow_robotics_samsung_becomes_largest_shareholder_~$181m",
+      "type": "funding",
+      "headline": "Samsung becomes largest shareholder (~$181M)",
+      "summary": "Samsung becomes largest shareholder (~$181M)",
+      "published_at": "2024-12-30",
+      "url": "https://www.reuters.com/technology/samsung-electronics-becomes-largest-shareholder-south-koreas-rainbow-robotics-2024-12-30/",
+      "company_ids": [
+        "cmp_rainbow_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_rainbow-robotics_signal"
+    },
+    {
+      "id": "sig_rainbow_robotics_unveils_rb_y1_dual\u2011arm_robot_and_omniwheel_kit",
+      "type": "release",
+      "headline": "Unveils RB-Y1 dual\u2011arm robot and omniwheel kit",
+      "summary": "Unveils RB-Y1 dual\u2011arm robot and omniwheel kit",
+      "published_at": "2025-05-21",
+      "url": "https://www.therobotreport.com/rainbow-robotics-unveils-omnidirectional-wheels-development-kit-dual-arm-robot/",
+      "company_ids": [
+        "cmp_rainbow_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_rainbow-robotics_signal"
+    },
+    {
+      "id": "sig_dexmate_vega_foldable_torso/arms_overview",
+      "type": "news",
+      "headline": "Vega foldable torso/arms overview",
+      "summary": "Vega foldable torso/arms overview",
+      "published_at": "2025-03-04",
+      "url": "https://www.roboticgizmos.com/dexmates-vega/",
+      "company_ids": [
+        "cmp_dexmate"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_dexmate_signal"
+    },
+    {
+      "id": "sig_dexmate_pre\u2011orders_open_for_vega",
+      "type": "news",
+      "headline": "Pre\u2011orders open for Vega",
+      "summary": "Pre\u2011orders open for Vega",
+      "published_at": "2025-03-07",
+      "url": "https://mikekalil.com/blog/dexmate-vega/",
+      "company_ids": [
+        "cmp_dexmate"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_dexmate_signal"
+    },
+    {
+      "id": "sig_dexmate_featured_in_nvidia_robotics_developer_roundup",
+      "type": "news",
+      "headline": "Featured in NVIDIA robotics developer roundup",
+      "summary": "Featured in NVIDIA robotics developer roundup",
+      "published_at": "2025-08-18",
+      "url": "https://blogs.nvidia.com/blog/2-million-robotics-developers/",
+      "company_ids": [
+        "cmp_dexmate"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_dexmate_signal"
+    },
+    {
+      "id": "sig_pollen_robotics_hugging_face_acquires_pollen_robotics",
+      "type": "news",
+      "headline": "Hugging Face acquires Pollen Robotics",
+      "summary": "Hugging Face acquires Pollen Robotics",
+      "published_at": "2025-04-14",
+      "url": "https://www.wired.com/story/hugging-face-acquires-open-source-robot-startup",
+      "company_ids": [
+        "cmp_pollen_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pollen-robotics_signal"
+    },
+    {
+      "id": "sig_pollen_robotics_reachy_2_full_ros2_dev_stack_open\u2011sourced",
+      "type": "news",
+      "headline": "Reachy 2 full ROS2 dev stack open\u2011sourced",
+      "summary": "Reachy 2 full ROS2 dev stack open\u2011sourced",
+      "published_at": "2025-04-23",
+      "url": "https://discourse.openrobotics.org/t/reachy-2-humanoid-full-ros-2-dev-stack-now-open-source-one-line-docker-sim-python-sdk/43362",
+      "company_ids": [
+        "cmp_pollen_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pollen-robotics_signal"
+    },
+    {
+      "id": "sig_pollen_robotics_\u2018desktop\u2019_mini_robot_pre\u2011orders_start_at_$299",
+      "type": "release",
+      "headline": "\u2018Desktop\u2019 mini robot pre\u2011orders start at $299",
+      "summary": "\u2018Desktop\u2019 mini robot pre\u2011orders start at $299",
+      "published_at": "2025-07-09",
+      "url": "https://www.automate.org/industry-insights/hugging-faces-open-source-desktop-pollen-robot-starts-at-299",
+      "company_ids": [
+        "cmp_pollen_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pollen-robotics_signal"
+    },
+    {
+      "id": "sig_pudu_robotics_ships_100,000th_robot",
+      "type": "news",
+      "headline": "Ships 100,000th robot",
+      "summary": "Ships 100,000th robot",
+      "published_at": "2025-06-10",
+      "url": "https://www.pudurobotics.com/en/news/1115",
+      "company_ids": [
+        "cmp_pudu_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pudu-robotics_signal"
+    },
+    {
+      "id": "sig_pudu_robotics_opens_us_hq_in_santa_clara,_ca",
+      "type": "news",
+      "headline": "Opens US HQ in Santa Clara, CA",
+      "summary": "Opens US HQ in Santa Clara, CA",
+      "published_at": "2025-03-20",
+      "url": "https://www.pudurobotics.com/en/news/1059",
+      "company_ids": [
+        "cmp_pudu_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pudu-robotics_signal"
+    },
+    {
+      "id": "sig_pudu_robotics_pudu_mt1_wins_red_dot_product_design_2025",
+      "type": "news",
+      "headline": "PUDU MT1 wins Red Dot Product Design 2025",
+      "summary": "PUDU MT1 wins Red Dot Product Design 2025",
+      "published_at": "2025-04-11",
+      "url": "https://www.prnewswire.com/news-releases/pudu-robotics-pudu-mt1-wins-prestigious-2025-red-dot-award-for-product-design-302426466.html",
+      "company_ids": [
+        "cmp_pudu_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_pudu-robotics_signal"
+    },
+    {
+      "id": "sig_hello_robot_partners_with_als_association;_$400k_project_with_pitt_researchers",
+      "type": "news",
+      "headline": "Partners with ALS Association; $400k project with Pitt researchers",
+      "summary": "Partners with ALS Association; $400k project with Pitt researchers",
+      "published_at": "2024-12-12",
+      "url": "https://hello-robot.com/press-release-als-2024",
+      "company_ids": [
+        "cmp_hello_robot"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_hello-robot_signal"
+    },
+    {
+      "id": "sig_hello_robot_stretch_3_price_list_and_accessories",
+      "type": "release",
+      "headline": "Stretch 3 price list and accessories",
+      "summary": "Stretch 3 price list and accessories",
+      "published_at": "2025-01-01",
+      "url": "https://hello-robot.com/purchase",
+      "company_ids": [
+        "cmp_hello_robot"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_hello-robot_signal"
+    },
+    {
+      "id": "sig_elephant_robotics_plans_ces_2025_exhibit;_debuts_ai_bionic_pets",
+      "type": "news",
+      "headline": "Plans CES 2025 exhibit; debuts AI bionic pets",
+      "summary": "Plans CES 2025 exhibit; debuts AI bionic pets",
+      "published_at": "2024-12-20",
+      "url": "https://shop.elephantrobotics.com/blogs/news/ces2025",
+      "company_ids": [
+        "cmp_elephant_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_elephant-robotics_signal"
+    },
+    {
+      "id": "sig_elephant_robotics_ces_2025_showcase_of_ai_bionic_companion_robots",
+      "type": "news",
+      "headline": "CES 2025 showcase of AI bionic companion robots",
+      "summary": "CES 2025 showcase of AI bionic companion robots",
+      "published_at": "2025-01-07",
+      "url": "https://www.prnewswire.com/news-releases/elephant-robotics-to-exhibit-at-ces-2025-featuring-cutting-edge-innovative-robotics-solutions-and-ai-bionic-robots-debut-302336834.html",
+      "company_ids": [
+        "cmp_elephant_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_elephant-robotics_signal"
+    },
+    {
+      "id": "sig_neura_robotics_raises_\u20ac120m_series_b",
+      "type": "funding",
+      "headline": "Raises \u20ac120M Series B",
+      "summary": "Raises \u20ac120M Series B",
+      "published_at": "2025-01-15",
+      "url": "https://neura-robotics.com/neura-robotics-secures-euro-120-million-series-b/",
+      "company_ids": [
+        "cmp_neura_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_neura-robotics_signal"
+    },
+    {
+      "id": "sig_neura_robotics_automatica_2025:_4ne1_gen\u20113_world_premiere;_mipa_market_launch;_neuraverse",
+      "type": "news",
+      "headline": "Automatica 2025: 4NE1 Gen\u20113 world premiere; MiPA market launch; Neuraverse",
+      "summary": "Automatica 2025: 4NE1 Gen\u20113 world premiere; MiPA market launch; Neuraverse",
+      "published_at": "2025-06-24",
+      "url": "https://neura-robotics.com/neura-robotics-launches-technological-revolution/",
+      "company_ids": [
+        "cmp_neura_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_neura-robotics_signal"
+    },
+    {
+      "id": "sig_neura_robotics_gft_x_neura_partnership_for_physical_ai_software",
+      "type": "news",
+      "headline": "GFT x NEURA partnership for Physical AI software",
+      "summary": "GFT x NEURA partnership for Physical AI software",
+      "published_at": "2025-06-30",
+      "url": "https://www.gft.com/us/en/about-us/newsroom/press-and-news/2025/press-releases/gft-neura-strategic-partnership",
+      "company_ids": [
+        "cmp_neura_robotics"
+      ],
+      "product_ids": [],
+      "capability_ids": [],
+      "impact": "1",
+      "source_id": "src_neura-robotics_signal"
+    }
+  ],
+  "releases": [
+    {
+      "id": "rel_self_1",
+      "company_id": "cmp_self",
+      "product_id": "prd_self_platform",
+      "version": "2.0.0",
+      "notes": "Enhanced AI models, improved analytics dashboard, and new API endpoints.",
+      "released_at": "2024-01-15T10:00:00Z",
+      "source_id": "src_company_blog"
+    },
+    {
+      "id": "rel_self_2",
+      "company_id": "cmp_self",
+      "product_id": "prd_self_robot",
+      "version": "1.2.0",
+      "notes": "Improved navigation algorithms and extended battery life.",
+      "released_at": "2024-01-08T16:00:00Z",
+      "source_id": "src_company_blog"
+    },
+    {
+      "id": "rel_tiagopro_intro",
+      "company_id": "cmp_self",
+      "product_id": "prd_tiago_pro",
+      "version": "Intro",
+      "notes": "TIAGo Pro introduced with torque-controllable arms & HRI upgrades.",
+      "released_at": "2025-08-15",
+      "source_id": "src_tiagopro_blog"
+    },
+    {
+      "id": "rel_tiago_ui",
+      "company_id": "cmp_self",
+      "product_id": "prd_tiago",
+      "version": "Web UI packages",
+      "notes": "Web-based Animation & Visual Programming; updated Advanced Navigation.",
+      "released_at": "2025-07-20",
+      "source_id": "src_tiago_ui_blog"
+    },
+    {
+      "id": "rel_rainbow_robotics_post\u2011ipo_funding_/_stake_increase_by_samsung",
+      "company_id": "cmp_rainbow_robotics",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Samsung\u2019s additional 267B KRW stake to accelerate robotics expansion.",
+      "released_at": "2025-01-01",
+      "source_id": "src_rainbow-robotics_release"
+    },
+    {
+      "id": "rel_dexmate_dexmate_vision_on_dexterous_hands",
+      "company_id": "cmp_dexmate",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Investor blog highlights mission to advance dexterous manipulation.",
+      "released_at": "2024-12-03",
+      "source_id": "src_dexmate_release"
+    },
+    {
+      "id": "rel_pollen_robotics_reachy_2_datasheet_dual_arms_+_mobile_base",
+      "company_id": "cmp_pollen_robotics",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Published dimensions, payload, and sensor suite.",
+      "released_at": "2025-02-01",
+      "source_id": "src_pollen-robotics_release"
+    },
+    {
+      "id": "rel_pudu_robotics_cc1_pro_launch",
+      "company_id": "cmp_pudu_robotics",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "AI\u2011powered upgrade to CC1 autonomous cleaning robot.",
+      "released_at": "2025-01-15",
+      "source_id": "src_pudu-robotics_release"
+    },
+    {
+      "id": "rel_hello_robot_als_association_collaboration_press_release",
+      "company_id": "cmp_hello_robot",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Two\u2011year effort to adapt Stretch for people living with ALS.",
+      "released_at": "2024-12-12",
+      "source_id": "src_hello-robot_release"
+    },
+    {
+      "id": "rel_elephant_robotics_metacat_ai_/_metadog_ai_/_metapanda_ai",
+      "company_id": "cmp_elephant_robotics",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Announced bionic companion robot pets at CES 2025.",
+      "released_at": "2025-01-07",
+      "source_id": "src_elephant-robotics_release"
+    },
+    {
+      "id": "rel_neura_robotics_neuraverse_ecosystem_&_product_updates_at_automatica",
+      "company_id": "cmp_neura_robotics",
+      "product_id": "",
+      "version": "1.0.0",
+      "notes": "Launch announcements for 4NE1 Gen\u20113 humanoid, MiPA, and open robotics ecosystem.",
+      "released_at": "2025-06-24",
+      "source_id": "src_neura-robotics_release"
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_home",
+      "origin": "https://pal-robotics.com/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07",
+      "credibility": "high"
+    },
+    {
+      "id": "src_about",
+      "origin": "https://pal-robotics.com/who-we-are/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07",
+      "credibility": "high"
+    },
+    {
+      "id": "src_tiago_pg",
+      "origin": "https://pal-robotics.com/robot/tiago/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_tiagopro_pg",
+      "origin": "https://pal-robotics.com/robot/tiago-pro/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_ari_pg",
+      "origin": "https://pal-robotics.com/robot/ari/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_stockbot_pg",
+      "origin": "https://pal-robotics.com/robot/stockbot/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_auto25_post",
+      "origin": "https://pal-robotics.com/news/the-rise-of-embodied-ai-robots-that-learn-by-doing/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_nrf25_blog",
+      "origin": "https://pal-robotics.com/blog/nrf-2025-how-robotics-and-rfid-are-driving-retail-sustainability/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_tiagopro_blog",
+      "origin": "https://pal-robotics.com/blog/new-robot-concept-in-mobile-manipulation/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_tiago_ui_blog",
+      "origin": "https://pal-robotics.com/blog/tiago-web-user-interface-packages/",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-09-07"
+    },
+    {
+      "id": "src_research_paper",
+      "origin": "https://example.com/tiago-research-paper",
+      "author": "University Research Team",
+      "retrieved_at": "2025-08-28",
+      "credibility": "high"
+    },
+    {
+      "id": "src_ari_deployment",
+      "origin": "https://example.com/ari-retail-deployment",
+      "author": "Retail Technology News",
+      "retrieved_at": "2025-08-20",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_funding_news",
+      "origin": "https://example.com/pal-funding-news",
+      "author": "TechCrunch",
+      "retrieved_at": "2025-08-15",
+      "credibility": "high"
+    },
+    {
+      "id": "src_job_posting",
+      "origin": "https://example.com/pal-jobs",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-08-10",
+      "credibility": "high"
+    },
+    {
+      "id": "src_partnership_news",
+      "origin": "https://example.com/stockbot-partnership",
+      "author": "Retail Automation Weekly",
+      "retrieved_at": "2025-08-05",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_social_media",
+      "origin": "https://example.com/tiago-dance-viral",
+      "author": "Social Media Platform",
+      "retrieved_at": "2025-07-30",
+      "credibility": "low"
+    },
+    {
+      "id": "src_ari_research",
+      "origin": "https://example.com/ari-language-study",
+      "author": "Educational Research Journal",
+      "retrieved_at": "2025-07-25",
+      "credibility": "high"
+    },
+    {
+      "id": "src_manufacturing_job",
+      "origin": "https://example.com/manufacturing-job",
+      "author": "Manufacturing Company",
+      "retrieved_at": "2025-07-20",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_award_news",
+      "origin": "https://example.com/stockbot-award",
+      "author": "Retail Technology Summit",
+      "retrieved_at": "2025-07-15",
+      "credibility": "high"
+    },
+    {
+      "id": "src_software_release",
+      "origin": "https://example.com/tiago-software-update",
+      "author": "PAL Robotics",
+      "retrieved_at": "2025-07-10",
+      "credibility": "high"
+    },
+    {
+      "id": "src_healthcare_news",
+      "origin": "https://example.com/ari-healthcare-pilot",
+      "author": "Healthcare Technology Review",
+      "retrieved_at": "2025-07-05",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_negative_feedback",
+      "origin": "https://example.com/tiago-negative-feedback",
+      "author": "User Forum",
+      "retrieved_at": "2025-06-28",
+      "credibility": "low"
+    },
+    {
+      "id": "src_technical_paper",
+      "origin": "https://example.com/stockbot-technical-paper",
+      "author": "IEEE Robotics Journal",
+      "retrieved_at": "2025-06-20",
+      "credibility": "high"
+    },
+    {
+      "id": "src_competition_news",
+      "origin": "https://example.com/ari-competition",
+      "author": "HRI Conference",
+      "retrieved_at": "2025-06-15",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_manufacturing_deployment",
+      "origin": "https://example.com/tiago-pro-manufacturing",
+      "author": "Manufacturing Today",
+      "retrieved_at": "2025-06-10",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_analyst_concern",
+      "origin": "https://example.com/pal-analyst-concern",
+      "author": "Investment Analysis Firm",
+      "retrieved_at": "2025-06-05",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_accuracy_study",
+      "origin": "https://example.com/stockbot-accuracy-study",
+      "author": "Logistics Research Institute",
+      "retrieved_at": "2025-05-30",
+      "credibility": "high"
+    },
+    {
+      "id": "src_education_news",
+      "origin": "https://example.com/ari-education-program",
+      "author": "Education Technology Weekly",
+      "retrieved_at": "2025-05-25",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_rainbow-robotics_profile",
+      "origin": "https://www.rainbow-robotics.com/",
+      "author": "Rainbow Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_rainbow-robotics_signal",
+      "origin": "https://www.reuters.com/technology/samsung-electronics-becomes-largest-shareholder-south-koreas-rainbow-robotics-2024-12-30/",
+      "author": "Rainbow Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_rainbow-robotics_release",
+      "origin": "https://www.reuters.com/technology/samsung-electronics-becomes-largest-shareholder-south-koreas-rainbow-robotics-2024-12-30/",
+      "author": "Rainbow Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_dexmate_profile",
+      "origin": "https://www.dexmate.ai/",
+      "author": "Dexmate",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_dexmate_signal",
+      "origin": "https://www.roboticgizmos.com/dexmates-vega/",
+      "author": "Dexmate",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_dexmate_release",
+      "origin": "https://www.tsvcap.com/post/dexmate-revolutionizing-robotics-with-dexterous-hands",
+      "author": "Dexmate",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_pollen-robotics_profile",
+      "origin": "https://www.pollen-robotics.com/",
+      "author": "Pollen Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_pollen-robotics_signal",
+      "origin": "https://www.wired.com/story/hugging-face-acquires-open-source-robot-startup",
+      "author": "Pollen Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_pollen-robotics_release",
+      "origin": "https://www.pollen-robotics.com/wp-content/uploads/2025/02/Reachy2-Dual-arms-with-mobile-base-Datasheet-1.pdf",
+      "author": "Pollen Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_pudu-robotics_profile",
+      "origin": "https://www.pudurobotics.com/",
+      "author": "Pudu Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_pudu-robotics_signal",
+      "origin": "https://www.pudurobotics.com/en/news/1115",
+      "author": "Pudu Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_pudu-robotics_release",
+      "origin": "https://www.pudurobotics.com/",
+      "author": "Pudu Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_hello-robot_profile",
+      "origin": "https://hello-robot.com/",
+      "author": "Hello Robot",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_hello-robot_signal",
+      "origin": "https://hello-robot.com/press-release-als-2024",
+      "author": "Hello Robot",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_hello-robot_release",
+      "origin": "https://hello-robot.com/press-release-als-2024",
+      "author": "Hello Robot",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_elephant-robotics_profile",
+      "origin": "https://www.elephantrobotics.com/",
+      "author": "Elephant Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_elephant-robotics_signal",
+      "origin": "https://shop.elephantrobotics.com/blogs/news/ces2025",
+      "author": "Elephant Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_elephant-robotics_release",
+      "origin": "https://www.prnewswire.com/news-releases/elephant-robotics-to-exhibit-at-ces-2025-featuring-cutting-edge-innovative-robotics-solutions-and-ai-bionic-robots-debut-302336834.html",
+      "author": "Elephant Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_neura-robotics_profile",
+      "origin": "https://neura-robotics.com/",
+      "author": "NEURA Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    },
+    {
+      "id": "src_neura-robotics_signal",
+      "origin": "https://neura-robotics.com/neura-robotics-secures-euro-120-million-series-b/",
+      "author": "NEURA Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "medium"
+    },
+    {
+      "id": "src_neura-robotics_release",
+      "origin": "https://www.therobotreport.com/neura-robotics-launches-latest-cognitive-robots-neuraverse-ecosystem/",
+      "author": "NEURA Robotics",
+      "retrieved_at": "2025-09-08",
+      "credibility": "high"
+    }
+  ]
+}
