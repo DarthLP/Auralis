@@ -541,3 +541,290 @@ export async function saveCompetitor(data: ScraperResult): Promise<{ company_id:
   
   return { company_id: companyId };
 }
+
+// Search API functions for global search
+
+export interface SearchResult {
+  id: string;
+  type: 'company' | 'product' | 'signal' | 'release';
+  title: string;
+  subtitle?: string;
+  description?: string;
+  companyId?: string;
+  productId?: string;
+  signalId?: string;
+  releaseId?: string;
+  date?: string;
+  tags?: string[];
+  score: number;
+}
+
+/**
+ * Search companies with ranking
+ */
+export async function searchCompanies(query: string): Promise<SearchResult[]> {
+  await delay(100);
+  
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return [];
+  
+  const results: SearchResult[] = [];
+  
+  for (const company of parsedSeed.companies) {
+    let score = 0;
+    const searchableText = [
+      company.name,
+      ...company.aliases,
+      ...company.tags
+    ].join(' ').toLowerCase();
+    
+    // Exact name match (highest priority)
+    if (company.name.toLowerCase() === normalizedQuery) {
+      score = 100;
+    }
+    // Name starts with query
+    else if (company.name.toLowerCase().startsWith(normalizedQuery)) {
+      score = 80;
+    }
+    // Name contains query
+    else if (company.name.toLowerCase().includes(normalizedQuery)) {
+      score = 60;
+    }
+    // Aliases or tags contain query
+    else if (searchableText.includes(normalizedQuery)) {
+      score = 40;
+    }
+    
+    if (score > 0) {
+      // Get company summary for description
+      const summary = parsedSeed.company_summaries.find(cs => cs.company_id === company.id);
+      
+      results.push({
+        id: company.id,
+        type: 'company',
+        title: company.name,
+        subtitle: company.website ? new URL(company.website).hostname : undefined,
+        description: summary?.one_liner,
+        companyId: company.id,
+        tags: company.tags,
+        score
+      });
+    }
+  }
+  
+  return results.sort((a, b) => b.score - a.score).slice(0, 5);
+}
+
+/**
+ * Search products with ranking
+ */
+export async function searchProducts(query: string): Promise<SearchResult[]> {
+  await delay(100);
+  
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return [];
+  
+  const results: SearchResult[] = [];
+  
+  for (const product of parsedSeed.products) {
+    let score = 0;
+    const searchableText = [
+      product.name,
+      product.short_desc || '',
+      ...product.tags
+    ].join(' ').toLowerCase();
+    
+    // Exact name match (highest priority)
+    if (product.name.toLowerCase() === normalizedQuery) {
+      score = 100;
+    }
+    // Name starts with query
+    else if (product.name.toLowerCase().startsWith(normalizedQuery)) {
+      score = 80;
+    }
+    // Name contains query
+    else if (product.name.toLowerCase().includes(normalizedQuery)) {
+      score = 60;
+    }
+    // Description or tags contain query
+    else if (searchableText.includes(normalizedQuery)) {
+      score = 40;
+    }
+    
+    if (score > 0) {
+      // Get company name
+      const company = parsedSeed.companies.find(c => c.id === product.company_id);
+      
+      results.push({
+        id: product.id,
+        type: 'product',
+        title: product.name,
+        subtitle: company?.name,
+        description: product.short_desc,
+        companyId: product.company_id,
+        productId: product.id,
+        tags: product.tags,
+        score
+      });
+    }
+  }
+  
+  return results.sort((a, b) => b.score - a.score).slice(0, 5);
+}
+
+/**
+ * Search signals with ranking
+ */
+export async function searchSignals(query: string): Promise<SearchResult[]> {
+  await delay(100);
+  
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return [];
+  
+  const results: SearchResult[] = [];
+  
+  for (const signal of parsedSeed.signals) {
+    let score = 0;
+    
+    // Headline starts with query
+    if (signal.headline.toLowerCase().startsWith(normalizedQuery)) {
+      score = 80;
+    }
+    // Headline contains query
+    else if (signal.headline.toLowerCase().includes(normalizedQuery)) {
+      score = 60;
+    }
+    // Summary contains query
+    else if (signal.summary && signal.summary.toLowerCase().includes(normalizedQuery)) {
+      score = 40;
+    }
+    
+    if (score > 0) {
+      // Get company names
+      const companies = parsedSeed.companies.filter(c => signal.company_ids.includes(c.id));
+      const companyNames = companies.map(c => c.name).slice(0, 2);
+      
+      results.push({
+        id: signal.id,
+        type: 'signal',
+        title: signal.headline,
+        subtitle: companyNames.join(', '),
+        description: signal.summary,
+        signalId: signal.id,
+        date: signal.published_at,
+        score
+      });
+    }
+  }
+  
+  return results.sort((a, b) => b.score - a.score).slice(0, 5);
+}
+
+/**
+ * Search releases with ranking
+ */
+export async function searchReleases(query: string): Promise<SearchResult[]> {
+  await delay(100);
+  
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return [];
+  
+  const results: SearchResult[] = [];
+  
+  for (const release of parsedSeed.releases) {
+    let score = 0;
+    
+    // Get product name for search
+    const product = parsedSeed.products.find(p => p.id === release.product_id);
+    const productName = product?.name || '';
+    const searchableText = [
+      productName,
+      release.version || '',
+      release.notes || ''
+    ].join(' ').toLowerCase();
+    
+    // Product name starts with query
+    if (productName.toLowerCase().startsWith(normalizedQuery)) {
+      score = 80;
+    }
+    // Product name contains query
+    else if (productName.toLowerCase().includes(normalizedQuery)) {
+      score = 60;
+    }
+    // Version or notes contain query
+    else if (searchableText.includes(normalizedQuery)) {
+      score = 40;
+    }
+    
+    if (score > 0) {
+      // Get company name
+      const company = parsedSeed.companies.find(c => c.id === release.company_id);
+      
+      const title = release.version 
+        ? `${productName} — ${release.version}`
+        : productName;
+      
+      results.push({
+        id: release.id,
+        type: 'release',
+        title,
+        subtitle: company?.name,
+        description: release.notes,
+        companyId: release.company_id,
+        productId: release.product_id,
+        releaseId: release.id,
+        date: release.released_at,
+        score
+      });
+    }
+  }
+  
+  return results.sort((a, b) => b.score - a.score).slice(0, 5);
+}
+
+/**
+ * Global search function that searches all categories
+ */
+export async function globalSearch(query: string): Promise<{
+  companies: SearchResult[];
+  products: SearchResult[];
+  signals: SearchResult[];
+  releases: SearchResult[];
+}> {
+  // Check for search operators
+  const lowerQuery = query.toLowerCase().trim();
+  
+  if (lowerQuery.startsWith('company:')) {
+    const searchTerm = query.substring(8).trim();
+    const companies = await searchCompanies(searchTerm);
+    return { companies, products: [], signals: [], releases: [] };
+  }
+  
+  if (lowerQuery.startsWith('product:')) {
+    const searchTerm = query.substring(8).trim();
+    const products = await searchProducts(searchTerm);
+    return { companies: [], products, signals: [], releases: [] };
+  }
+  
+  if (lowerQuery.startsWith('signal:')) {
+    const searchTerm = query.substring(7).trim();
+    const signals = await searchSignals(searchTerm);
+    return { companies: [], products: [], signals, releases: [] };
+  }
+  
+  if (lowerQuery.startsWith('release:')) {
+    const searchTerm = query.substring(8).trim();
+    const releases = await searchReleases(searchTerm);
+    return { companies: [], products: [], signals: [], releases };
+  }
+  
+  // Search all categories
+  const [companies, products, signals, releases] = await Promise.all([
+    searchCompanies(query),
+    searchProducts(query),
+    searchSignals(query),
+    searchReleases(query)
+  ]);
+  
+  return { companies, products, signals, releases };
+}

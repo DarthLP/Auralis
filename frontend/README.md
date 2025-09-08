@@ -35,7 +35,8 @@ frontend/
 │   │   ├── ProductsEditor.tsx
 │   │   ├── SourcesList.tsx
 │   │   ├── DedupAlert.tsx
-│   │   └── Toast.tsx
+│   │   ├── Toast.tsx
+│   │   └── GlobalSearchModal.tsx
 │   ├── pages/            # Page components
 │   │   ├── Overview.tsx
 │   │   ├── CompaniesIndex.tsx
@@ -55,6 +56,7 @@ frontend/
 │   │   └── __tests__/
 │   ├── types/            # TypeScript type definitions
 │   ├── hooks/            # Custom React hooks
+│   │   └── useGlobalSearch.ts
 │   ├── App.tsx           # Main application component
 │   ├── main.tsx          # Application entry point
 │   └── index.css         # Global styles
@@ -78,6 +80,7 @@ frontend/
 - **Add Competitor**: URL-based competitor ingestion with smart validation and deduplication
 - **Signals Analysis**: Advanced filtering and analysis of industry signals and news
 - **Releases Tracking**: Product release monitoring with company and date filtering
+- **Global Search**: Command palette style search across companies, products, signals, and releases
 
 ### User Interface ✅
 
@@ -156,6 +159,47 @@ The Add Competitor functionality provides a comprehensive URL-based competitor i
 - **Type Safety**: Full TypeScript integration
 - **Error Handling**: Graceful error states with helpful messages
 - **Mock Integration**: Seamless integration with existing mock data system
+
+## 🔍 Global Search Feature
+
+The Global Search provides a comprehensive command palette style search experience across all data types in Auralis:
+
+### Key Components
+
+- **GlobalSearchModal**: Full-screen search modal with keyboard navigation
+- **useGlobalSearch**: Custom hook for managing search state and keyboard shortcuts
+- **Search API Functions**: `searchCompanies()`, `searchProducts()`, `searchSignals()`, `searchReleases()`, `globalSearch()`
+
+### Search Features
+
+- **Multi-category Search**: Search across companies, products, signals, and releases simultaneously
+- **Smart Ranking**: Prioritizes exact matches, then prefix matches, then substring matches
+- **Search Operators**: Use `company:`, `product:`, `signal:`, `release:` to narrow results
+- **Keyboard Navigation**: Arrow keys to navigate, Enter to select, Esc to close
+- **Recent Searches**: Stores last 5 searches in localStorage
+- **Text Highlighting**: Highlights matching text in search results
+- **Grouped Results**: Results organized by category with counts and "View all" links
+
+### Access Methods
+
+- **⌘K/Ctrl+K**: Global keyboard shortcut from anywhere in the app
+- **Search Button**: Interactive search button in header (desktop)
+- **Search Icon**: Mobile search icon in header
+
+### Navigation Targets
+
+- **Companies** → `/companies/:companyId`
+- **Products** → `/companies/:companyId/products/:productId`
+- **Signals** → `/signals?highlight=<signalId>`
+- **Releases** → `/companies/:companyId/products/:productId`
+
+### Technical Implementation
+
+- **Debounced Search**: 250ms debounce for smooth real-time search
+- **Mock Data Integration**: Uses existing mock data system with realistic delays
+- **Type Safety**: Full TypeScript integration with proper interfaces
+- **Accessibility**: Focus management, ARIA semantics, keyboard navigation
+- **Performance**: Efficient rendering with result limits (5 per category)
 
 ## 🐳 Planned Docker Configuration
 
@@ -290,6 +334,15 @@ The frontend will communicate with the backend API:
 - [x] Error handling and user feedback
 - [x] Toast notifications for success/error states
 - [x] Comprehensive documentation
+
+### Phase 6: Global Search ✅
+- [x] Command palette style search modal with keyboard navigation
+- [x] Search across companies, products, signals, and releases
+- [x] Smart ranking system with exact match prioritization
+- [x] Search operators (company:, product:, signal:, release:)
+- [x] Recent searches with localStorage persistence
+- [x] Interactive search button in header with ⌘K/Ctrl+K shortcut
+- [x] Text highlighting and grouped results display
 
 ## 🎯 Performance Goals
 

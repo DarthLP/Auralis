@@ -7,7 +7,7 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 ### 🏗️ Architecture
 
 - **Backend**: FastAPI-based REST API with Python 3.11+
-- **Frontend**: Next.js application with dashboard and drill-down views
+- **Frontend**: React application with dashboard, drill-down views, and global search
 - **Database**: PostgreSQL with structured data models
 - **Scraping**: Requests + BeautifulSoup (extensible to Playwright)
 - **AI Layer**: Theta EdgeCloud integration with local fallback
@@ -157,6 +157,7 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - **Mock Data System**: Comprehensive seed data with PAL Robotics example
 - **Overview Dashboard**: Real-time signals and releases tracking
 - **Loading States**: Comprehensive loading indicators and skeleton screens
+- **Global Search**: Command palette style search across companies, products, signals, and releases
 - **Empty States**: Friendly empty state components for better UX
 - **Error Handling**: 404 pages and graceful error handling
 
