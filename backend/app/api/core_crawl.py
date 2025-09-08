@@ -92,10 +92,10 @@ async def get_session_fingerprints(
     """
     from app.models.core_crawl import FingerprintSession, PageFingerprint
     
-    # Find fingerprint session
+    # Find the most recent fingerprint session for this crawl session
     fingerprint_session = db.query(FingerprintSession).filter(
         FingerprintSession.crawl_session_id == session_id
-    ).first()
+    ).order_by(FingerprintSession.id.desc()).first()
     
     if not fingerprint_session:
         raise HTTPException(
@@ -126,6 +126,7 @@ async def get_session_fingerprints(
                 "page_type": fp.page_type,
                 "content_hash": fp.content_hash,
                 "normalized_text_len": fp.normalized_text_len,
+                "extracted_text": fp.extracted_text,
                 "low_text_pdf": fp.low_text_pdf,
                 "needs_render": fp.needs_render,
                 "meta": {

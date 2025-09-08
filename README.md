@@ -14,6 +14,25 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 - **Infrastructure**: Docker Compose for local development and deployment
 - **Authentication**: Single-tenant prototype (no auth required)
 
+## 🔮 Future Enhancements
+
+### Performance Optimizations
+- **Smart Caching**: HTTP conditional requests (If-Modified-Since, ETags) to reduce bandwidth by 50-80%
+- **Binary Hash Pre-check**: Quick change detection before full content download
+- **Incremental Processing**: Only process changed pages between fingerprinting sessions
+
+### Enhanced Content Analysis  
+- **OCR Integration**: Text extraction from images using Tesseract (product specs, infographics)
+- **Office Document Support**: Excel (.xlsx/.xls), Word (.docx), PowerPoint (.pptx) text extraction
+- **Advanced File Processing**: Enhanced PDF handling with table/structure preservation
+
+### Scalability & Production
+- **Distributed Processing**: Multi-worker fingerprinting with job queues
+- **Rate Limiting**: Intelligent request throttling per domain
+- **Monitoring & Alerts**: Content change notifications and system health monitoring
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -192,9 +211,18 @@ The backend provides a RESTful API built with FastAPI for competitor analysis wi
 ### 🚀 Website Discovery & Fingerprinting API
 
 **`POST /api/crawl/discover`** - Advanced website crawling and page discovery
-**`POST /api/crawl/fingerprint`** - 3-step fingerprinting pipeline for content analysis
+**`POST /api/crawl/fingerprint`** - 3-step fingerprinting pipeline for content analysis with text extraction
 **`GET /api/crawl/sessions`** - List crawl sessions with metadata
-**`GET /api/crawl/sessions/{id}/fingerprints`** - Get fingerprint results for a session
+**`GET /api/crawl/sessions/{id}/fingerprints`** - Get fingerprint results with extracted text content
+
+#### 🎯 3-Step Fingerprinting Pipeline
+
+1. **Filter**: Score threshold (≥0.5), URL canonicalization, deduplication, caps (100/domain, 100/category)
+2. **Fetch**: Async HTTP with content type detection, 15MB size limit, 5s/20s timeouts
+3. **Fingerprint**: Stable content hashing with text extraction:
+   - **HTML** → trafilatura text extraction → cleaned, normalized hash
+   - **PDF** → pdfminer text extraction → normalized hash (with low_text_pdf flag)
+   - **Images/Videos** → direct byte hashing (no text extraction)
 
 **Features:**
 - **JavaScript-Enabled Crawling**: Full browser automation with Playwright for modern websites

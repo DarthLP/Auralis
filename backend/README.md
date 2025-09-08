@@ -1,5 +1,24 @@
 # Backend Service
 
+## 🔮 Performance & Enhancement Opportunities
+
+### Caching & Optimization
+- **HTTP Conditional Requests**: Implement If-Modified-Since/ETag headers to reduce bandwidth usage by 50-80%
+- **Smart Change Detection**: Binary hash pre-checks before full content download
+- **Session-Based Caching**: Only re-process pages that have changed since last fingerprinting
+
+### Enhanced Text Extraction
+- **OCR Integration**: Add Tesseract for image text extraction (product specifications, charts)
+- **Office Document Support**: Excel, Word, PowerPoint text extraction with pandas/python-docx
+- **Improved PDF Processing**: Better table and structure preservation
+
+### Production Readiness
+- **Rate Limiting**: Per-domain request throttling and retry logic
+- **Async Optimization**: Batch processing improvements and connection pooling
+- **Monitoring**: Content change alerts and processing metrics
+
+---
+
 ## 🚀 Overview
 
 The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.11+ and designed as a single-tenant prototype.

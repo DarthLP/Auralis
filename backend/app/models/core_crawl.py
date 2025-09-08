@@ -52,6 +52,7 @@ class PageFingerprint(Base):
     page_type = Column(String, nullable=False, index=True)  # mapped from primary_category
     content_hash = Column(String, nullable=False, index=True)  # stable text-based hash
     normalized_text_len = Column(Integer, nullable=False)
+    extracted_text = Column(Text, nullable=True)  # Store the actual extracted text
     
     # Content processing flags
     low_text_pdf = Column(Boolean, default=False)
@@ -104,6 +105,7 @@ class FingerprintResult(BaseModel):
     page_type: str  # mapped from primary_category
     content_hash: str
     normalized_text_len: int
+    extracted_text: Optional[str] = None
     low_text_pdf: bool = False
     needs_render: bool = False
     meta: FetchMeta

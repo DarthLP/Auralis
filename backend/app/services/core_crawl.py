@@ -134,7 +134,7 @@ class CoreCrawlService:
         
         logger.info(f"After deduplication: {len(deduped)} pages")
         
-        # Apply caps: max 30 per domain, max 10 per category
+        # Apply caps: max 100 per domain, max 100 per category
         domain_counts = {}
         category_counts = {}
         capped = []
@@ -146,12 +146,12 @@ class CoreCrawlService:
             domain_count = domain_counts.get(domain, 0)
             category_count = category_counts.get(category, 0)
             
-            if domain_count < 30 and category_count < 10:
+            if domain_count < 100 and category_count < 100:
                 capped.append(page)
                 domain_counts[domain] = domain_count + 1
                 category_counts[category] = category_count + 1
         
-        logger.info(f"After caps (30/domain, 10/category): {len(capped)} pages")
+        logger.info(f"After caps (100/domain, 100/category): {len(capped)} pages")
         return capped
     
     async def _process_batch(self, batch: List[CrawledPage], fingerprint_session_id: int) -> Tuple[List[FingerprintResult], int]:
@@ -215,12 +215,14 @@ class CoreCrawlService:
                 )
                 
                 # Create fingerprint result
+                extracted_text = self._get_extracted_text(content_bytes, content_type)
                 result = FingerprintResult(
                     url=page.url,
                     key_url=key_url,
                     page_type=page.primary_category,
                     content_hash=content_hash,
                     normalized_text_len=normalized_text_len,
+                    extracted_text=extracted_text,
                     low_text_pdf=low_text_pdf,
                     needs_render=needs_render,
                     meta=fetch_meta
@@ -235,6 +237,7 @@ class CoreCrawlService:
                     page_type=page.primary_category,
                     content_hash=content_hash,
                     normalized_text_len=normalized_text_len,
+                    extracted_text=extracted_text,  # Store the actual text
                     low_text_pdf=low_text_pdf,
                     needs_render=needs_render,
                     fetch_status=fetch_status,
@@ -438,6 +441,45 @@ class CoreCrawlService:
             return urlparse(url).netloc.lower()
         except Exception:
             return "unknown"
+    
+    def _get_extracted_text(self, content_bytes: Optional[bytes], content_type: Optional[str]) -> Optional[str]:
+        """Extract and clean text content for AI analysis."""
+        if not content_bytes:
+            return None
+        
+        try:
+            if content_type and 'text/html' in content_type:
+                html_text = content_bytes.decode('utf-8', errors='ignore')
+                extracted_text = trafilatura.extract(html_text)
+                if extracted_text and len(extracted_text.strip()) >= 50:
+                    return self._clean_extracted_text(extracted_text)
+            elif content_type and 'application/pdf' in content_type:
+                from io import BytesIO
+                pdf_text = extract_pdf_text(BytesIO(content_bytes))
+                if pdf_text and len(pdf_text.strip()) >= 100:
+                    return self._clean_extracted_text(pdf_text)
+        except Exception as e:
+            logger.warning(f"Text extraction failed: {e}")
+        
+        return None
+    
+    def _clean_extracted_text(self, text: str) -> str:
+        """Clean extracted text for optimal LLM consumption."""
+        # Remove excessive whitespace but preserve some structure
+        text = re.sub(r'\n\s*\n\s*\n+', '\n\n', text)  # Max 2 consecutive newlines
+        text = re.sub(r'[ \t]+', ' ', text)  # Multiple spaces/tabs to single space
+        text = re.sub(r'\n ', '\n', text)  # Remove spaces after newlines
+        text = re.sub(r' \n', '\n', text)  # Remove spaces before newlines
+        
+        # Remove common web artifacts
+        text = re.sub(r'(Cookie|Cookies?)\s+(Policy|Einstellungen|Settings)', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'(Alle\s+)?Cookies?\s+(akzeptieren|erlauben)', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'Browser\s+not\s+compatible', '', text, flags=re.IGNORECASE)
+        
+        # Clean up repeated navigation elements
+        text = re.sub(r'(Return\s+)?Produkte\s+Branchenlösungen\s+Fallstudien\s+Ressourcen\s+News\s+Blogs', 'Navigation:', text)
+        
+        return text.strip()
     
     def _batch(self, items: List[Any], batch_size: int) -> List[List[Any]]:
         """Split items into batches."""
