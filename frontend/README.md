@@ -82,6 +82,7 @@ frontend/
 ### Core Features ✅
 
 - **Overview Dashboard**: Real-time signals and releases tracking with impact scoring
+- **Your Company Profile**: Special "Your Company" profile with dedicated dashboard section and comparison capabilities
 - **Companies Management**: Comprehensive company listing with search and filtering
 - **Company Detail Views**: Drill-down into specific competitor information with products and recent activity
 - **Product Analysis**: View competitor products, capabilities, and maturity tracking
@@ -97,6 +98,17 @@ frontend/
 - **Loading States**: Comprehensive loading indicators and skeleton screens
 - **Empty States**: Friendly empty state components with actionable CTAs
 - **Error Handling**: Graceful error states with user-friendly messages
+
+### Your Company Profile ✅
+
+- **Special Company Type**: Dedicated "Your Company" profile with `isSelf: true` flag stored in seed data
+- **Dashboard Integration**: Prominent "Your Company" section on Overview page with key metrics
+- **Company Statistics**: Display of products count, capabilities count, and recent signals (60 days)
+- **Visual Distinction**: Special "Your Company" badge and logo support for easy identification
+- **Priority Sorting**: Always appears first in company listings and search results
+- **Logo Support**: Company logo display with fallback to colored initials
+- **Full Profile Access**: Complete company page with products, capabilities, and activity tracking
+- **Centralized Data**: All "Your Company" data stored in `/data/seed.json` alongside competitor data
 
 ### Competitor Analysis ✅
 

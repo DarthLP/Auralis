@@ -1,6 +1,17 @@
 {
     "companies": [
       {
+        "id": "cmp_self",
+        "name": "Auralis Robotics",
+        "aliases": [],
+        "hq_country": "Germany",
+        "website": "https://auralis.com",
+        "status": "active",
+        "tags": ["ai", "robotics", "automation", "tech"],
+        "logoUrl": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=center",
+        "isSelf": true
+      },
+      {
         "id": "cmp_pal",
         "name": "PAL Robotics",
         "aliases": ["PAL", "PAL-Robotics"],
@@ -11,6 +22,16 @@
       }
     ],
     "company_summaries": [
+      {
+        "company_id": "cmp_self",
+        "one_liner": "Leading provider of AI-powered robotics solutions for industrial automation.",
+        "founded_year": 2020,
+        "hq_city": "San Francisco",
+        "employees": "≈50",
+        "footprint": "Serving customers across North America and Europe",
+        "sites": ["San Francisco (HQ)", "Austin (R&D)"],
+        "sources": ["src_company_profile"]
+      },
       {
         "company_id": "cmp_pal",
         "one_liner": "Barcelona-based maker of humanoid, social, and mobile robots used by research institutions and industry.",
@@ -23,6 +44,40 @@
       }
     ],
     "products": [
+      {
+        "id": "prd_self_platform",
+        "company_id": "cmp_self",
+        "name": "Auralis Platform",
+        "category": "AI Platform",
+        "stage": "ga",
+        "markets": ["Industrial", "Manufacturing"],
+        "tags": ["ai", "automation", "analytics"],
+        "short_desc": "Comprehensive AI platform for robotics intelligence and automation.",
+        "product_url": "https://yourcompany.com/platform",
+        "docs_url": "https://docs.yourcompany.com",
+        "spec_profile": "ai/platform@1",
+        "specs": {
+          "ai_models": { "type": "array", "value": [{ "type": "text", "value": "Computer Vision" }, { "type": "text", "value": "NLP" }] },
+          "processing_power": { "type": "number", "value": 100, "unit": "TOPS" }
+        }
+      },
+      {
+        "id": "prd_self_robot",
+        "company_id": "cmp_self",
+        "name": "Auralis Robot",
+        "category": "Mobile Robot",
+        "stage": "beta",
+        "markets": ["Warehouse", "Logistics"],
+        "tags": ["mobile", "navigation", "autonomous"],
+        "short_desc": "Autonomous mobile robot for warehouse and logistics operations.",
+        "product_url": "https://yourcompany.com/robot",
+        "docs_url": "https://docs.yourcompany.com/robot",
+        "spec_profile": "robotics/amr@1",
+        "specs": {
+          "sensors": { "type": "array", "value": [{ "type": "text", "value": "Lidar" }, { "type": "text", "value": "Camera" }] },
+          "runtime": { "type": "range", "min": 8, "max": 12, "unit": "hrs" }
+        }
+      },
       {
         "id": "prd_tiago",
         "company_id": "cmp_pal",
@@ -145,6 +200,32 @@
       }
     ],
     "signals": [
+      {
+        "id": "sig_self_1",
+        "type": "release",
+        "headline": "Auralis Platform 2.0 Released with Enhanced AI Capabilities",
+        "summary": "Major update includes improved computer vision models and real-time analytics dashboard.",
+        "published_at": "2024-01-15T10:00:00Z",
+        "url": "https://yourcompany.com/news/platform-2-0",
+        "company_ids": ["cmp_self"],
+        "product_ids": ["prd_self_platform"],
+        "capability_ids": [],
+        "impact": "2",
+        "source_id": "src_company_blog"
+      },
+      {
+        "id": "sig_self_2",
+        "type": "news",
+        "headline": "Partnership with Major Manufacturing Company Announced",
+        "summary": "Strategic partnership to deploy Auralis robots in 50+ manufacturing facilities.",
+        "published_at": "2024-01-10T14:30:00Z",
+        "url": "https://yourcompany.com/news/manufacturing-partnership",
+        "company_ids": ["cmp_self"],
+        "product_ids": ["prd_self_robot"],
+        "capability_ids": [],
+        "impact": "1",
+        "source_id": "src_company_blog"
+      },
       {
         "id": "sig_auto25",
         "type": "news",
@@ -407,6 +488,24 @@
       }
     ],
     "releases": [
+      {
+        "id": "rel_self_1",
+        "company_id": "cmp_self",
+        "product_id": "prd_self_platform",
+        "version": "2.0.0",
+        "notes": "Enhanced AI models, improved analytics dashboard, and new API endpoints.",
+        "released_at": "2024-01-15T10:00:00Z",
+        "source_id": "src_company_blog"
+      },
+      {
+        "id": "rel_self_2",
+        "company_id": "cmp_self",
+        "product_id": "prd_self_robot",
+        "version": "1.2.0",
+        "notes": "Improved navigation algorithms and extended battery life.",
+        "released_at": "2024-01-08T16:00:00Z",
+        "source_id": "src_company_blog"
+      },
       {
         "id": "rel_tiagopro_intro",
         "company_id": "cmp_pal",

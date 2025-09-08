@@ -91,6 +91,15 @@ export default function CompanyPage() {
     navigate(`/companies/${companyId}/products/${productId}`);
   };
 
+  const getCompanyInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (loading) {
     return (
       <div className="container">
@@ -165,29 +174,56 @@ export default function CompanyPage() {
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {companyData.name}
-            </h1>
-            
-            {summary?.one_liner && (
-              <p className="text-lg text-gray-700 mb-4">
-                {summary.one_liner}
-              </p>
-            )}
+            <div className="flex items-start space-x-4 mb-4">
+              {/* Company Logo */}
+              <div className="flex-shrink-0">
+                {companyData.logoUrl ? (
+                  <img
+                    src={companyData.logoUrl}
+                    alt={`${companyData.name} logo`}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xl">
+                    {getCompanyInitials(companyData.name)}
+                  </div>
+                )}
+              </div>
+              
+              {/* Company Name and Badge */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-3 mb-2">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {companyData.name}
+                  </h1>
+                  {companyData.isSelf && (
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full font-medium">
+                      Your Company
+                    </span>
+                  )}
+                </div>
+                
+                {summary?.one_liner && (
+                  <p className="text-lg text-gray-700 mb-4">
+                    {summary.one_liner}
+                  </p>
+                )}
 
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              {summary?.founded_year && (
-                <span>Founded {summary.founded_year}</span>
-              )}
-              {summary?.hq_city && companyData.hq_country && (
-                <span>HQ: {summary.hq_city}, {companyData.hq_country}</span>
-              )}
-              {!summary?.hq_city && companyData.hq_country && (
-                <span>HQ: {companyData.hq_country}</span>
-              )}
-              {summary?.employees && (
-                <span>{summary.employees} employees</span>
-              )}
+                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                  {summary?.founded_year && (
+                    <span>Founded {summary.founded_year}</span>
+                  )}
+                  {summary?.hq_city && companyData.hq_country && (
+                    <span>HQ: {summary.hq_city}, {companyData.hq_country}</span>
+                  )}
+                  {!summary?.hq_city && companyData.hq_country && (
+                    <span>HQ: {companyData.hq_country}</span>
+                  )}
+                  {summary?.employees && (
+                    <span>{summary.employees} employees</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

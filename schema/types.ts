@@ -9,6 +9,8 @@ export interface Company {
   website?: string;
   status: 'active' | 'dormant';
   tags: string[];
+  logoUrl?: string;
+  isSelf?: boolean; // true if "Your Company"
 }
 
 export interface CompanySummary {

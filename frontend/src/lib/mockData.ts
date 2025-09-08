@@ -64,6 +64,31 @@ const parsedSeed = {
   sources: seedData.sources as unknown as Source[],
 };
 
+
+// Add logos to some existing companies for demonstration
+const companiesWithLogos = [
+  {
+    id: "cmp_pal",
+    logoUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=center"
+  },
+  {
+    id: "cmp_agility",
+    logoUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=64&h=64&fit=crop&crop=center"
+  },
+  {
+    id: "cmp_boston",
+    logoUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=64&h=64&fit=crop&crop=center"
+  }
+];
+
+// Update existing companies with logos
+companiesWithLogos.forEach(companyUpdate => {
+  const company = parsedSeed.companies.find(c => c.id === companyUpdate.id);
+  if (company) {
+    company.logoUrl = companyUpdate.logoUrl;
+  }
+});
+
 /**
  * Generic mock fetch function with artificial delay
  */
@@ -100,7 +125,13 @@ function getReleasesFromLastDays(days: number): Release[] {
 
 // Mock API functions - same interface as real api.ts
 export async function companies(): Promise<Company[]> {
-  return mockFetch(parsedSeed.companies);
+  const companies = await mockFetch(parsedSeed.companies);
+  // Sort "Your Company" to the top, then alphabetically by name
+  return companies.sort((a, b) => {
+    if (a.isSelf && !b.isSelf) return -1;
+    if (!a.isSelf && b.isSelf) return 1;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export async function company(id: string): Promise<Company> {
@@ -201,11 +232,49 @@ export async function specProfile(id: string): Promise<any> {
 }
 
 // Specialized functions for Overview page
+export async function getYourCompany(): Promise<Company | null> {
+  await delay(100);
+  const yourCompany = parsedSeed.companies.find(c => c.isSelf === true);
+  return yourCompany || null;
+}
+
+export async function getYourCompanyStats(): Promise<{
+  products: number;
+  capabilities: number;
+  recentSignals: number;
+}> {
+  await delay(100);
+  const yourCompany = parsedSeed.companies.find(c => c.isSelf === true);
+  if (!yourCompany) {
+    return { products: 0, capabilities: 0, recentSignals: 0 };
+  }
+
+  const products = parsedSeed.products.filter(p => p.company_id === yourCompany.id).length;
+  const capabilities = parsedSeed.product_capabilities.filter(pc => 
+    parsedSeed.products.some(p => p.id === pc.product_id && p.company_id === yourCompany.id)
+  ).length;
+  
+  // Get signals from last 60 days
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - 60);
+  const recentSignals = parsedSeed.signals.filter(signal => {
+    const signalDate = new Date(signal.published_at);
+    return signal.company_ids.includes(yourCompany.id) && signalDate >= cutoffDate;
+  }).length;
+
+  return { products, capabilities, recentSignals };
+}
+
 export async function getThisWeekSignals(): Promise<Signal[]> {
   const thisWeekSignals = getSignalsFromLastDays(7);
   
+  // Filter out "Your Company" signals since they have their own dedicated section
+  const filteredSignals = thisWeekSignals.filter(signal => 
+    !signal.company_ids.includes('cmp_self')
+  );
+  
   // Sort by impact desc (2..-2), then published_at desc
-  const sorted = thisWeekSignals.sort((a, b) => {
+  const sorted = filteredSignals.sort((a, b) => {
     const impactA = parseInt(a.impact);
     const impactB = parseInt(b.impact);
     
@@ -223,8 +292,13 @@ export async function getThisWeekSignals(): Promise<Signal[]> {
 export async function getRecentReleases(): Promise<Release[]> {
   const recentReleases = getReleasesFromLastDays(90);
   
+  // Filter out "Your Company" releases since they have their own dedicated section
+  const filteredReleases = recentReleases.filter(release => 
+    release.company_id !== 'cmp_self'
+  );
+  
   // Sort by released_at desc (newest first)
-  const sorted = recentReleases.sort((a, b) => {
+  const sorted = filteredReleases.sort((a, b) => {
     return new Date(b.released_at).getTime() - new Date(a.released_at).getTime();
   });
   

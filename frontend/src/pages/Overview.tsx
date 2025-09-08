@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getThisWeekSignals, getRecentReleases, source } from '../lib/mockData';
-import type { Signal, Release, Source as SourceType } from '@schema/types';
+import { getThisWeekSignals, getRecentReleases, source, getYourCompany, getYourCompanyStats } from '../lib/mockData';
+import type { Signal, Release, Source as SourceType, Company } from '@schema/types';
 import SourceDrawer from '../components/SourceDrawer';
 import { useDateFormat } from '../hooks/useDateFormat';
 
@@ -29,6 +29,8 @@ export default function Overview() {
   console.log('Overview: Component rendering...');
   const [signals, setSignals] = useState<Signal[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
+  const [yourCompany, setYourCompany] = useState<Company | null>(null);
+  const [yourCompanyStats, setYourCompanyStats] = useState<{ products: number; capabilities: number; recentSignals: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sourceDrawer, setSourceDrawer] = useState<{ isOpen: boolean; source?: SourceType; signalUrl?: string }>({
@@ -41,13 +43,22 @@ export default function Overview() {
       try {
         console.log('Overview: Starting data load...');
         setLoading(true);
-        const [signalsData, releasesData] = await Promise.all([
+        const [signalsData, releasesData, yourCompanyData, yourCompanyStatsData] = await Promise.all([
           getThisWeekSignals(),
-          getRecentReleases()
+          getRecentReleases(),
+          getYourCompany(),
+          getYourCompanyStats()
         ]);
-        console.log('Overview: Data loaded successfully', { signals: signalsData.length, releases: releasesData.length });
+        console.log('Overview: Data loaded successfully', { 
+          signals: signalsData.length, 
+          releases: releasesData.length,
+          yourCompany: yourCompanyData?.name,
+          yourCompanyStats: yourCompanyStatsData
+        });
         setSignals(signalsData);
         setReleases(releasesData);
+        setYourCompany(yourCompanyData);
+        setYourCompanyStats(yourCompanyStatsData);
       } catch (err) {
         console.error('Overview: Error loading data', err);
         setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -111,6 +122,73 @@ export default function Overview() {
 
   return (
     <div className="container">
+      {/* Your Company Section */}
+      {yourCompany && yourCompanyStats && (
+        <div className="mb-8">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-4">
+                {/* Company Logo */}
+                <div className="flex-shrink-0">
+                  {yourCompany.logoUrl ? (
+                    <img
+                      src={yourCompany.logoUrl}
+                      alt={`${yourCompany.name} logo`}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-xl">
+                      {yourCompany.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Company Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900">{yourCompany.name}</h3>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                      Your Company
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-4">
+                    Leading provider of AI-powered robotics solutions for industrial automation.
+                  </p>
+                  
+                  {/* Stats */}
+                  <div className="flex space-x-6 text-sm">
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium text-gray-900">{yourCompanyStats.products}</span>
+                      <span className="text-gray-600">products</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium text-gray-900">{yourCompanyStats.capabilities}</span>
+                      <span className="text-gray-600">capabilities</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium text-gray-900">{yourCompanyStats.recentSignals}</span>
+                      <span className="text-gray-600">recent signals (60d)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* View Profile Button */}
+              <Link
+                to={`/companies/${yourCompany.id}`}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                View profile
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-8 lg:grid-cols-2">
         {/* This Week Signals */}
         <div>
