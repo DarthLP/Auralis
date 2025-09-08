@@ -2,6 +2,8 @@
 
 This directory contains the core data models and validation schemas for the Auralis platform. The schemas define the structure for tech industry intelligence data including companies, products, capabilities, signals, and more.
 
+The schema system provides a **single source of truth** with automatic conversion from TypeScript/Zod schemas to JSON Schema for backend validation, ensuring type safety across the entire stack.
+
 ## 📁 File Structure
 
 - **`enums.ts`** - Core enumeration types
@@ -9,6 +11,13 @@ This directory contains the core data models and validation schemas for the Aura
 - **`types.ts`** - TypeScript interface definitions
 - **`zod.ts`** - Runtime validation schemas using Zod
 - **`index.ts`** - Re-exports all types and schemas
+- **`build-json-schema.ts`** - Build script for JSON Schema generation
+- **`package.json`** - NPM package configuration
+- **`tsconfig.json`** - TypeScript configuration
+
+### Generated Files
+
+- **`../backend/app/schema/json/*.schema.json`** - Auto-generated JSON Schema files for backend validation
 
 ## 🏗️ Data Model Overview
 
@@ -163,7 +172,7 @@ import { Company, Product, Signal } from './schema';
 import type { Company, Product, Signal } from './schema';
 ```
 
-### Runtime Validation
+### Runtime Validation (Frontend)
 ```typescript
 import { zCompany, zProduct, zSignal } from './schema';
 
@@ -173,11 +182,58 @@ const product = zProduct.parse(rawProductData);
 const signal = zSignal.parse(rawSignalData);
 ```
 
+### Backend Validation (Python)
+```python
+from app.services.validate import validate_company, validate_product, validate_signal
+
+# Validate data against JSON Schema
+validate_company(company_data)
+validate_product(product_data)
+validate_signal(signal_data)
+```
+
 ### Complete Schema Import
 ```typescript
 import * as Schema from './schema';
 // Access all types and schemas via Schema.*
 ```
+
+## 🔧 Schema Build System
+
+The schema system includes an automated build pipeline that converts TypeScript/Zod schemas to JSON Schema for backend validation.
+
+### Building Schemas
+
+```bash
+# Install dependencies
+npm install
+
+# Generate JSON schemas for backend
+npm run build
+
+# Watch for changes and rebuild automatically
+npm run build:watch
+```
+
+### Build Process
+
+1. **Source**: Zod schemas in `zod.ts` serve as the single source of truth
+2. **Conversion**: `build-json-schema.ts` converts Zod schemas to JSON Schema using `zod-to-json-schema`
+3. **Output**: JSON Schema files are generated in `../backend/app/schema/json/`
+4. **Validation**: Backend uses `jsonschema` library to validate data against these schemas
+
+### Available JSON Schemas
+
+After building, the following JSON Schema files are available for backend validation:
+
+- `Company.schema.json` - Company validation
+- `Product.schema.json` - Product validation  
+- `Capability.schema.json` - Capability validation
+- `Signal.schema.json` - Signal validation
+- `Release.schema.json` - Release validation
+- `Source.schema.json` - Source validation
+- `SpecValue.schema.json` - Specification value validation
+- `Seed.schema.json` - Complete dataset validation
 
 ## 🔍 Key Design Principles
 

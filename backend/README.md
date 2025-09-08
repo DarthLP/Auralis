@@ -1,5 +1,24 @@
 # Backend Service
 
+## 🔮 Performance & Enhancement Opportunities
+
+### Caching & Optimization
+- **HTTP Conditional Requests**: Implement If-Modified-Since/ETag headers to reduce bandwidth usage by 50-80%
+- **Smart Change Detection**: Binary hash pre-checks before full content download
+- **Session-Based Caching**: Only re-process pages that have changed since last fingerprinting
+
+### Enhanced Text Extraction
+- **OCR Integration**: Add Tesseract for image text extraction (product specifications, charts)
+- **Office Document Support**: Excel, Word, PowerPoint text extraction with pandas/python-docx
+- **Improved PDF Processing**: Better table and structure preservation
+
+### Production Readiness
+- **Rate Limiting**: Per-domain request throttling and retry logic
+- **Async Optimization**: Batch processing improvements and connection pooling
+- **Monitoring**: Content change alerts and processing metrics
+
+---
+
 ## 🚀 Overview
 
 The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.11+ and designed as a single-tenant prototype.
@@ -18,10 +37,24 @@ The Auralis backend is a FastAPI-based REST API service that provides the core f
 ```
 backend/
 ├── app/                    # Application source code
+│   ├── core/              # Core configuration and database
+│   │   ├── config.py      # Application settings
+│   │   └── db.py          # Database configuration
+│   ├── services/          # Business logic services
+│   │   ├── fetch.py       # JavaScript-enabled fetching with Playwright
+│   │   ├── scrape.py      # Intelligent page discovery and classification
+│   │   └── validate.py    # Schema validation service
+│   ├── schema/            # Generated JSON schemas
+│   │   └── json/          # JSON Schema files (auto-generated)
+│   ├── api/               # API endpoints
+│   │   └── crawl.py       # Website discovery and crawling API
+│   ├── models/            # Database models
+│   │   └── crawl.py       # CrawlSession and CrawledPage models
 │   └── main.py            # FastAPI application entry point
+├── logs/                  # Crawl session logs and JSON data files
 ├── Dockerfile.backend     # Docker container configuration
 ├── requirements.txt       # Python dependencies
-├── .env                  # Environment variables
+├── .env.example          # Environment variables template
 └── README.md             # This file
 ```
 
@@ -35,6 +68,216 @@ backend/
 | `GET` | `/health` | Health check endpoint | `{"status": "ok"}` |
 | `GET` | `/docs` | Interactive API documentation | Swagger UI HTML |
 
+### Discovery & Fingerprinting API
+
+The core crawling API provides both discovery and fingerprinting capabilities with database-first architecture.
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `POST` | `/api/crawl/discover` | Discover and classify pages from a website | JSON with categorized pages |
+| `POST` | `/api/crawl/fingerprint` | Process crawl session through 3-step pipeline | JSON with fingerprint results |
+| `GET` | `/api/crawl/sessions` | List crawl sessions with metadata | JSON array of sessions |
+| `GET` | `/api/crawl/sessions/{id}/fingerprints` | Get fingerprint results for a session | JSON with fingerprint data |
+
+#### POST /api/crawl/discover
+
+Crawls a competitor website starting from the provided URL and discovers pages that might be interesting for competitive analysis. Pages are classified into categories and scored by relevance.
+
+**Request Body:**
+```json
+{
+  "url": "https://competitor.example.com"
+}
+```
+
+**Response (truncated example):**
+```json
+{
+  "input_url": "https://competitor.example.com",
+  "base_domain": "https://competitor.example.com",
+  "limits": {
+    "max_pages": 30,
+    "max_depth": 3,
+    "timeout": 10,
+    "rate_sleep": 0.5,
+    "user_agent": "AuralisBot/0.1 (+contact)"
+  },
+  "pages": [
+    {
+      "url": "https://competitor.example.com/products/widget-x",
+      "status": 200,
+      "primary_category": "product",
+      "secondary_categories": [],
+      "score": 0.95,
+      "signals": ["product_url", "product_title"],
+      "content_hash": "abc123...",
+      "size_bytes": 15420,
+      "depth": 1
+    }
+  ],
+  "top_by_category": {
+    "product": ["https://competitor.example.com/products/widget-x"],
+    "docs": ["https://competitor.example.com/docs/api"],
+    "pricing": ["https://competitor.example.com/pricing"],
+    "releases": [],
+    "datasheet": [],
+    "news": []
+  },
+  "warnings": []
+}
+```
+
+**Categories:**
+- `product`: Product pages, solutions, hardware specifications
+- `datasheet`: Documentation, datasheets, PDFs, technical guides  
+- `docs`: General documentation and developer resources
+- `releases`: Release notes, updates, changelogs, firmware
+- `pricing`: Pricing pages and subscription plans
+- `news`: News, blog posts, press releases
+- `other`: Other interesting pages
+
+**Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.
+
+#### POST /api/crawl/fingerprint
+
+Processes pages from a crawl session through the 3-step fingerprinting pipeline for stable content analysis.
+
+**Request Body:**
+```json
+{
+  "crawl_session_id": 1,
+  "competitor": "competitor-name"
+}
+```
+
+**Response:**
+```json
+{
+  "fingerprint_session_id": 1,
+  "crawl_session_id": 1,
+  "competitor": "competitor-name",
+  "started_at": "2025-09-08T07:58:36.922300",
+  "completed_at": "2025-09-08T07:58:36.929679",
+  "total_processed": 24,
+  "total_errors": 0,
+  "fingerprints": [
+    {
+      "url": "https://example.com/product",
+      "key_url": "https://example.com/product",
+      "page_type": "product",
+      "content_hash": "a1b2c3d4e5f6...",
+      "normalized_text_len": 2048,
+      "low_text_pdf": false,
+      "needs_render": false,
+      "meta": {
+        "status": 200,
+        "content_type": "text/html",
+        "content_length": 15420,
+        "elapsed_ms": 250,
+        "notes": null
+      }
+    }
+  ]
+}
+```
+
+**3-Step Pipeline:**
+1. **Filter** - Score threshold (≥0.5), URL canonicalization, deduplication, caps (30/domain, 10/category)
+2. **Fetch** - Async HTTP with httpx, content type detection, 15MB size limit, configurable timeouts
+3. **Fingerprint** - Stable content hashing:
+   - HTML → trafilatura text extraction → normalized hash
+   - PDF → pdfminer text extraction → normalized hash (with low_text_pdf flag)
+   - Images/Videos → direct byte hashing
+
+#### GET /api/crawl/sessions
+
+Lists recent crawl sessions with pagination support.
+
+**Query Parameters:**
+- `limit` (default: 50) - Maximum sessions to return
+- `offset` (default: 0) - Number of sessions to skip
+
+**Response:**
+```json
+{
+  "sessions": [
+    {
+      "id": 1,
+      "target_url": "https://example.com",
+      "base_domain": "https://example.com",
+      "started_at": "2025-09-08T07:54:18.373900",
+      "completed_at": "2025-09-08T07:54:18.373901",
+      "total_pages": 45,
+      "warnings": []
+    }
+  ],
+  "total": 1,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+#### GET /api/crawl/sessions/{id}/fingerprints
+
+Retrieves fingerprint results for a specific crawl session.
+
+**Response:** Complete fingerprint session data with all processed pages and their content hashes.
+
+#### Download Threshold Configuration
+
+The discovery API identifies pages worth downloading for detailed analysis based on their relevance scores:
+
+**Default Download Threshold: ≥ 0.5**
+- **Rationale**: Captures all high-value content while filtering out noise
+- **Typical Coverage**: ~70% of discovered pages (all products, docs, pricing)
+- **Filtered Out**: Low-value pages (about, contact, legal, careers)
+
+**Configuration:**
+```env
+SCRAPER_DOWNLOAD_THRESHOLD=0.5    # Minimum score for download consideration
+SCRAPER_DOWNLOAD_MAX_PAGES=100    # Maximum pages to download per session
+```
+
+**Score Ranges:**
+- **1.0**: Primary products/homepage
+- **0.9**: Direct product pages, solutions
+- **0.8**: Secondary products (depth 1)
+- **0.7**: Tertiary products (depth 2)
+- **0.6**: Deep products (depth 3)
+- **< 0.5**: Filtered out (about, contact, legal pages)
+
+#### Anti-Scraping Protection
+
+The crawler includes several measures to avoid bot detection and respect website policies:
+
+**🛡️ Bot Detection Evasion:**
+- **Realistic Browser Headers**: Mimics real browser requests with proper Accept, Accept-Language, DNT, and Sec-Fetch headers
+- **User Agent Rotation**: Randomly selects from pool of real browser user agents (Chrome, Firefox, Safari)
+- **Session Management**: Uses persistent sessions for better connection handling
+
+**⏱️ Rate Limiting & Delays:**
+- **Smart Delays**: Random delays between 0.3x-1.5x base rate (default 0.8s)
+- **Exponential Backoff**: Automatic retry with increasing delays on failures
+- **429 Handling**: Special handling for rate limit responses with longer delays
+
+**🔄 Retry Logic:**
+- **Automatic Retries**: Up to 3 attempts for failed requests
+- **Error Recovery**: Handles timeouts, connection errors, and server errors
+- **Graceful Degradation**: Returns partial results with warnings on failures
+
+**🤖 Respectful Crawling:**
+- **Robots.txt Compliance**: Checks and respects robots.txt disallow rules
+- **Same Domain Only**: Restricts crawling to same registrable domain + subdomains
+- **Configurable Limits**: Respects page count, depth, and timeout limits
+
+**Configuration:**
+```bash
+SCRAPER_TIMEOUT=15              # Request timeout (increased from 10s)
+SCRAPER_RATE_SLEEP=0.8          # Base delay between requests (increased from 0.5s)
+SCRAPER_MAX_RETRIES=3           # Maximum retry attempts
+SCRAPER_USE_REALISTIC_HEADERS=true  # Enable realistic browser headers
+```
+
 ### API Documentation
 
 FastAPI automatically generates interactive API documentation:
@@ -42,12 +285,70 @@ FastAPI automatically generates interactive API documentation:
 - **ReDoc**: http://localhost:8000/redoc
 - **OpenAPI Schema**: http://localhost:8000/openapi.json
 
+## 🔍 Schema Validation Service
+
+The backend includes a comprehensive schema validation service that ensures data consistency using JSON Schema files generated from the TypeScript/Zod schemas.
+
+### Features
+
+- **JSON Schema Validation**: Uses `jsonschema` library for robust validation
+- **Error Handling**: Detailed validation error messages with field-level information
+- **Schema Caching**: LRU cache for improved performance
+- **Health Checks**: Monitor schema system status
+- **Convenience Functions**: Pre-configured validators for common entities
+
+### Usage
+
+```python
+from app.services.validate import (
+    validate_company,
+    validate_product,
+    validate_payload,
+    schema_system_health
+)
+
+# Validate specific entities
+validate_company(company_data)
+validate_product(product_data)
+
+# Generic validation
+validate_payload("Signal", signal_data)
+
+# Check system health
+health = schema_system_health()
+print(f"Status: {health['status']}")
+print(f"Available schemas: {health['available_schemas']}")
+```
+
+### Schema Generation
+
+Schemas are generated from the TypeScript/Zod definitions in `/schema`:
+
+```bash
+# From the schema directory
+cd ../schema
+npm install
+npm run build  # Generates JSON schemas in backend/app/schema/json/
+```
+
+### Available Schemas
+
+- `Company` - Company information and metadata
+- `Product` - Product details and specifications
+- `Capability` - Technical capabilities
+- `Signal` - Market signals and events
+- `Source` - Data source tracking
+- `Release` - Product releases
+- And more...
+
 ## 🛠️ Development Setup
 
 ### Prerequisites
 
 - Python 3.11 or higher
 - pip (Python package manager)
+- PostgreSQL 15 (via Docker or local installation)
+- Docker & Docker Compose (recommended)
 
 ### Local Development
 
@@ -63,12 +364,23 @@ FastAPI automatically generates interactive API documentation:
    # Edit .env with your configuration
    ```
 
-3. **Run the development server**
+3. **Set up the database**
+   ```bash
+   # Start PostgreSQL with Docker Compose (from project root)
+   cd ..
+   make up  # or docker compose -f infra/docker-compose.yml up -d db
+   
+   # Run database migrations
+   cd backend
+   alembic upgrade head
+   ```
+
+4. **Run the development server**
    ```bash
    python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-4. **Access the API**
+5. **Access the API**
    - API: http://localhost:8000
    - Health Check: http://localhost:8000/health
    - Documentation: http://localhost:8000/docs
@@ -103,6 +415,11 @@ FastAPI automatically generates interactive API documentation:
 
 - **requests**: HTTP client library for external API calls
 - **beautifulsoup4**: HTML parsing library for web scraping
+- **sqlalchemy**: SQL toolkit and ORM
+- **psycopg[binary]**: PostgreSQL database adapter
+- **alembic**: Database migration tool
+- **pydantic-settings**: Settings management using Pydantic
+- **jsonschema>=4.17.0**: JSON Schema validation library
 
 ### Development Dependencies
 
@@ -118,16 +435,57 @@ The application uses environment variables for configuration. Create a `.env` fi
 # Application Settings
 DEBUG=true
 LOG_LEVEL=info
+ENVIRONMENT=development
 
-# Database (Future)
-DATABASE_URL=postgresql://user:password@localhost:5432/auralis
+# Database Configuration
+DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/auralis
 
-# Security (Future)
-SECRET_KEY=your-secret-key-here
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
-# External APIs (Future)
-# API_KEY=your-api-key
+# Core Crawl Configuration
+CORE_CRAWL_CONCURRENCY=8
+CORE_CRAWL_BATCH_SIZE=20
+CORE_CRAWL_MAX_CONTENT_SIZE=15728640  # 15MB
+CORE_CRAWL_CONNECT_TIMEOUT=5
+CORE_CRAWL_READ_TIMEOUT=20
+
+# Scraper Configuration
+SCRAPER_MAX_PAGES=100
+SCRAPER_MAX_DEPTH=4
+SCRAPER_TIMEOUT=10
+SCRAPER_RATE_SLEEP=0.3
 ```
+
+### Database Setup
+
+The application uses PostgreSQL with Alembic for migrations:
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Initialize database (if needed)
+alembic upgrade head
+
+# Create new migration
+alembic revision --autogenerate -m "Description"
+
+# Apply migrations
+alembic upgrade head
+
+# View migration history
+alembic history
+
+# Downgrade (if needed)
+alembic downgrade -1
+```
+
+**Database Schema:**
+- `crawl_data.crawl_sessions` - Discovery results and metadata
+- `crawl_data.crawled_pages` - Individual discovered pages with scores
+- `crawl_data.fingerprint_sessions` - Fingerprinting operations
+- `crawl_data.page_fingerprints` - Stable content hashes and metadata
 
 ### CORS Configuration
 
@@ -210,19 +568,211 @@ Planned testing setup:
 - [ ] Database migrations and seeding
 - [ ] Change tracking system
 
-### Phase 3: Scraping Engine
-- [ ] Website crawling with Requests + BeautifulSoup
-- [ ] Data extraction for products, features, releases
-- [ ] Clean scraping interface for future Playwright integration
-- [ ] Error handling and retry logic
-- [ ] User session management
-- [ ] Data persistence layer
+### Phase 3: Advanced Scraping Engine ✅
+- [x] JavaScript-enabled website crawling (Playwright + Requests)
+- [x] Hybrid crawling strategy for optimal performance
+- [x] Intelligent page classification and scoring
+- [x] Anti-bot protection and respectful crawling
+- [x] Data extraction for products, features, releases
+- [x] Error handling and retry logic
+- [x] Session-specific logging and data persistence
 
-### Phase 4: Advanced Features (Planned)
+### Phase 4: API Development ✅
+- [x] Website discovery API endpoint
+- [x] JSON response format with categorized pages
+- [x] Comprehensive logging and data export
+- [x] Docker integration with volume mounting
+
+### Phase 5: Progressive Discovery (Future Enhancement)
+- [ ] Multi-stage crawling with resume tokens
+- [ ] Strategy presets (quick/balanced/deep)
+- [ ] Category-specific filtering and quotas
+- [ ] Time-bounded crawling with partial results
+- [ ] Advanced user experience optimizations
+
+### Phase 6: Advanced Features (Planned)
 - [ ] Authentication system
 - [ ] Rate limiting
 - [ ] Caching layer
 - [ ] Background task processing
+
+## 🚀 Future Improvements: Progressive Discovery
+
+### Overview
+The current discovery system crawls websites comprehensively in a single operation. For better user experience and performance, we're planning a **progressive discovery system** that allows users to get quick results first, then optionally dive deeper.
+
+### 🎯 Progressive Discovery Architecture
+
+#### **Multi-Stage Strategy**
+Instead of one long crawl, break discovery into progressive stages:
+
+```javascript
+// Stage 1: Quick Overview (8 seconds)
+POST /api/crawl/discover {
+  "url": "https://competitor.com",
+  "strategy": "quick"  // 8 pages, depth 1, 8s timeout
+}
+
+// Stage 2: Balanced Discovery (15 seconds)  
+POST /api/crawl/discover {
+  "url": "https://competitor.com", 
+  "strategy": "balanced",        // 20 pages, depth 2, 15s timeout
+  "resume_token": {...}          // Continue from Stage 1
+}
+
+// Stage 3: Targeted Deep Dive
+POST /api/crawl/discover {
+  "url": "https://competitor.com",
+  "filters": {"categories": ["product"]},  // Only find more products
+  "resume_token": {...}                    // Continue from Stage 2
+}
+```
+
+#### **Strategy Presets**
+Pre-configured crawling strategies for different use cases:
+
+| Strategy | Pages | Depth | Time | Use Case |
+|----------|-------|-------|------|----------|
+| `quick` | 8 | 1 | 8s | Instant competitor overview |
+| `balanced` | 20 | 2 | 15s | Comprehensive first look |
+| `deep` | 80 | 3 | 40s | Thorough competitive analysis |
+
+#### **Resume Token System**
+Stateless continuation mechanism that remembers:
+- **Frontier**: Pages queued for next crawl
+- **Visited**: Already-crawled URLs (avoid duplicates)
+- **Stats**: Progress tracking and category counts
+
+```json
+{
+  "resume_token": {
+    "frontier": [
+      {"url": "https://site.com/products", "score": 0.9, "depth": 1}
+    ],
+    "visited": ["https://site.com/", "https://site.com/about"],
+    "stats": {"products_found": 3, "docs_found": 1}
+  }
+}
+```
+
+#### **Category Quotas & Filtering**
+Smart resource allocation and targeted discovery:
+
+```json
+{
+  "limits": {
+    "max_per_category": {
+      "product": 10,    // Find up to 10 product pages
+      "docs": 8,        // Up to 8 documentation pages  
+      "releases": 6,    // Up to 6 release pages
+      "pricing": 3,     // Up to 3 pricing pages
+      "news": 5         // Up to 5 news/blog pages
+    }
+  },
+  "filters": {
+    "categories": ["product", "docs"],           // Only these types
+    "path_prefixes": ["/products/", "/api/"],   // Only these URL paths
+    "sitemap_only": true                        // Skip BFS, use sitemap only
+  }
+}
+```
+
+#### **Coverage Confidence**
+Real-time feedback on discovery completeness:
+
+```json
+{
+  "coverage": {
+    "total_seen": 25,
+    "total_emitted": 12,
+    "queued_remaining": 8,
+    "confidence": 0.7,  // 0-1 scale, higher = more complete
+    "category_counts": {"product": 4, "docs": 2, "other": 6}
+  }
+}
+```
+
+### 🔄 Implementation Options
+
+#### **Option 1: Manual Progression (Recommended)**
+User controls each stage through separate API calls:
+- **Pros**: User control, predictable costs, immediate feedback
+- **Cons**: Requires frontend integration for optimal UX
+- **Best for**: Interactive competitor analysis tools
+
+#### **Option 2: Auto-Progression**
+Backend automatically continues based on confidence thresholds:
+- **Pros**: Hands-off operation, simpler API usage
+- **Cons**: Less user control, potentially higher resource usage
+- **Best for**: Batch processing, background analysis
+
+#### **Option 3: Hybrid Approach**
+Support both manual and automatic progression:
+```json
+{
+  "strategy": "quick",
+  "auto_continue": true,      // Auto-progress if confidence < 0.5
+  "max_total_time": 30       // Stop after 30 seconds total
+}
+```
+
+### 🎨 User Experience Flow
+
+```
+User Input: "Analyze competitor.com"
+     ↓
+Stage 1: Quick (8s) → "Found 3 products, 2 solutions. More available?"
+     ↓ (user clicks "Find More")
+Stage 2: Balanced (15s) → "Found 8 products, 4 solutions. Want specific categories?"
+     ↓ (user clicks "More Products")  
+Stage 3: Product Focus (10s) → "Found 12 total products. Analysis complete."
+```
+
+### 🛠️ Technical Implementation
+
+#### **Core Changes Required**
+1. **Refactor `discover_interesting_pages()`** to support resume tokens
+2. **Add strategy presets** to API endpoint with time limits
+3. **Implement max-heap priority queue** for intelligent page ordering
+4. **Add category quotas and filtering** logic
+5. **Create resume token serialization** for stateless continuation
+
+#### **API Enhancements**
+```python
+class CrawlRequest(BaseModel):
+    url: str
+    strategy: Optional[str] = "quick"           # quick/balanced/deep
+    limits: Optional[dict] = None               # Override strategy defaults
+    filters: Optional[dict] = None              # Category/path filtering
+    resume_token: Optional[dict] = None         # Continue previous crawl
+    auto_continue: Optional[bool] = False       # Auto-progression mode
+```
+
+#### **Configuration Updates**
+```env
+# Progressive Discovery Defaults
+SCRAPER_MAX_PAGES=20
+SCRAPER_MAX_DEPTH=2  
+SCRAPER_MAX_TIME=15
+SCRAPER_MAX_PER_CATEGORY={"product":10,"docs":8,"releases":6,"pricing":3,"news":5}
+```
+
+### 📊 Expected Benefits
+
+- **⚡ 3x Faster Initial Response**: Quick results in 8 seconds vs 60+ seconds
+- **💰 Cost Efficiency**: Users pay only for the depth they need
+- **🎯 Better Targeting**: Category filters find specific content faster
+- **♻️ Zero Waste**: Resume tokens eliminate duplicate crawling
+- **📈 Improved UX**: Progressive disclosure keeps users engaged
+
+### 🚀 Implementation Priority
+
+1. **Phase 1**: Core progressive logic with manual progression
+2. **Phase 2**: Strategy presets and category quotas  
+3. **Phase 3**: Advanced filtering and auto-progression
+4. **Phase 4**: Frontend integration and UX optimization
+
+This progressive discovery system would transform the current "all-or-nothing" crawling into a flexible, user-controlled exploration tool that provides immediate value while supporting deep competitive analysis when needed.
 
 ## 🐛 Troubleshooting
 

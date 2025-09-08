@@ -1,0 +1,68 @@
+{
+  "$ref": "#/definitions/ProductCapability",
+  "definitions": {
+    "ProductCapability": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "capability_id": {
+          "type": "string"
+        },
+        "maturity": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "intermediate",
+            "advanced",
+            "expert"
+          ]
+        },
+        "details": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "reported",
+            "inferred"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "product_id",
+        "capability_id",
+        "maturity"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auralis.com/schemas/ProductCapability.schema.json",
+  "title": "ProductCapability Schema",
+  "description": "JSON Schema for ProductCapability validation in Auralis backend",
+  "generated": "2025-09-07T14:50:54.730Z",
+  "version": "1.0.0"
+}

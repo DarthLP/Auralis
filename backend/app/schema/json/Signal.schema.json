@@ -1,0 +1,87 @@
+{
+  "$ref": "#/definitions/Signal",
+  "definitions": {
+    "Signal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "news",
+            "job",
+            "paper",
+            "funding",
+            "release",
+            "social"
+          ]
+        },
+        "headline": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "published_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "company_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "impact": {
+          "type": "string",
+          "enum": [
+            -2,
+            -1,
+            0,
+            1,
+            2
+          ]
+        },
+        "source_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "headline",
+        "published_at",
+        "url",
+        "company_ids",
+        "product_ids",
+        "capability_ids",
+        "impact"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auralis.com/schemas/Signal.schema.json",
+  "title": "Signal Schema",
+  "description": "JSON Schema for Signal validation in Auralis backend",
+  "generated": "2025-09-07T14:50:54.731Z",
+  "version": "1.0.0"
+}

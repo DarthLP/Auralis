@@ -9,9 +9,12 @@ services:
       - ../backend/.env
     environment:
       - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/auralis
     depends_on:
       - db
     restart: unless-stopped
+    volumes:
+      - ../backend/logs:/app/logs
 
   db:
     image: postgres:15

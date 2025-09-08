@@ -1,0 +1,589 @@
+{
+  "$ref": "#/definitions/Seed",
+  "definitions": {
+    "Seed": {
+      "type": "object",
+      "properties": {
+        "companies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "hq_country": {
+                "type": "string"
+              },
+              "website": {
+                "type": "string",
+                "format": "uri"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "dormant"
+                ]
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "aliases",
+              "status",
+              "tags"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "company_summaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company_id": {
+                "type": "string"
+              },
+              "one_liner": {
+                "type": "string"
+              },
+              "founded_year": {
+                "type": "number"
+              },
+              "hq_city": {
+                "type": "string"
+              },
+              "employees": {
+                "type": "string"
+              },
+              "footprint": {
+                "type": "string"
+              },
+              "sites": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "company_id",
+              "one_liner",
+              "sources"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "company_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "stage": {
+                "type": "string",
+                "enum": [
+                  "alpha",
+                  "beta",
+                  "ga",
+                  "discontinued"
+                ]
+              },
+              "markets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "short_desc": {
+                "type": "string"
+              },
+              "product_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "docs_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "media": {
+                "type": "object",
+                "properties": {
+                  "hero": {
+                    "type": "string"
+                  },
+                  "video": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "spec_profile": {
+                "type": "string"
+              },
+              "specs": {
+                "type": "object",
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "text"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "number"
+                        },
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "boolean"
+                        },
+                        "value": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "enum"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "range"
+                        },
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "min",
+                        "max"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "array"
+                        },
+                        "value": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/definitions/Seed/properties/products/items/properties/specs/additionalProperties"
+                          }
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "url"
+                        },
+                        "value": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "released_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "eol_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "compliance": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "company_id",
+              "name",
+              "category",
+              "stage",
+              "markets",
+              "tags"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "definition": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "tags"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "product_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "product_id": {
+                "type": "string"
+              },
+              "capability_id": {
+                "type": "string"
+              },
+              "maturity": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "intermediate",
+                  "advanced",
+                  "expert"
+                ]
+              },
+              "details": {
+                "type": "string"
+              },
+              "metrics": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "string",
+                    "number"
+                  ]
+                }
+              },
+              "observed_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "source_id": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "measured",
+                  "reported",
+                  "inferred"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "product_id",
+              "capability_id",
+              "maturity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "signals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "news",
+                  "job",
+                  "paper",
+                  "funding",
+                  "release",
+                  "social"
+                ]
+              },
+              "headline": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "published_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "company_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "product_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "capability_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "impact": {
+                "type": "string",
+                "enum": [
+                  -2,
+                  -1,
+                  0,
+                  1,
+                  2
+                ]
+              },
+              "source_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "headline",
+              "published_at",
+              "url",
+              "company_ids",
+              "product_ids",
+              "capability_ids",
+              "impact"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "releases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "company_id": {
+                "type": "string"
+              },
+              "product_id": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "string"
+              },
+              "released_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "source_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "company_id",
+              "product_id",
+              "released_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "origin": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "retrieved_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "credibility": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "origin"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "companies",
+        "company_summaries",
+        "products",
+        "capabilities",
+        "product_capabilities",
+        "signals",
+        "releases",
+        "sources"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auralis.com/schemas/Seed.schema.json",
+  "title": "Seed Schema",
+  "description": "JSON Schema for Seed validation in Auralis backend",
+  "generated": "2025-09-07T14:50:54.731Z",
+  "version": "1.0.0"
+}
