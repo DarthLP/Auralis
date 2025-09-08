@@ -1,0 +1,45 @@
+{
+  "$ref": "#/definitions/Release",
+  "definitions": {
+    "Release": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company_id": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "released_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "company_id",
+        "product_id",
+        "released_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auralis.com/schemas/Release.schema.json",
+  "title": "Release Schema",
+  "description": "JSON Schema for Release validation in Auralis backend",
+  "generated": "2025-09-07T14:50:54.731Z",
+  "version": "1.0.0"
+}

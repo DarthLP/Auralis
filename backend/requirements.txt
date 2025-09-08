@@ -4,7 +4,13 @@ pydantic>=2
 python-dotenv
 requests
 beautifulsoup4
+playwright>=1.40.0
 sqlalchemy
 psycopg[binary]
 alembic
 pydantic-settings
+jsonschema>=4.17.0
+httpx[http2]
+trafilatura
+pdfminer.six
+filetype
