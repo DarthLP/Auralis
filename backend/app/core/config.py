@@ -34,6 +34,25 @@ class Settings(BaseSettings):
     THETA_EDGECLOUD_URL: str = ""
     API_KEY_SCHEMA: str = ""  # Deep Seek API for Analysis
     
+    # Theta EdgeCloud Configuration
+    ON_DEMAND_API_ACCESS_TOKEN: str = ""
+    THETA_REQUEST_TIMEOUT: int = 20
+    THETA_MAX_RETRIES: int = 2
+    THETA_JSON_MODE: bool = False
+    THETA_RATE_PER_MIN: int = 20
+    THETA_RATE_BURST: int = 10
+    THETA_SESSION_RATE_PER_MIN: int = 5
+    THETA_SESSION_RATE_BURST: int = 5
+    THETA_MAX_OUTPUT_TOKENS: int = 8000  # Conservative for Qwen 7B
+    
+    # Extraction Configuration
+    SCHEMA_VERSION: str = "v1"
+    EXTRACTOR_PROMPT_VERSION: str = "1.0"
+    EXTRACTOR_MAX_TEXT_CHARS: int = 450000  # ~110k tokens budget
+    EXTRACTOR_FAIL_THRESHOLD: float = 0.3  # 30% failure rate triggers degraded mode
+    EXTRACTOR_MAX_CONCURRENT_SESSIONS: int = 4
+    EXTRACTOR_MAX_PAGES_PER_SESSION: int = 100
+    
     # Scraper Configuration
     SCRAPER_MAX_PAGES: int = 100
     SCRAPER_MAX_DEPTH: int = 4

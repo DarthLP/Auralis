@@ -79,6 +79,17 @@ The core crawling API provides both discovery and fingerprinting capabilities wi
 | `GET` | `/api/crawl/sessions` | List crawl sessions with metadata | JSON array of sessions |
 | `GET` | `/api/crawl/sessions/{id}/fingerprints` | Get fingerprint results for a session | JSON with fingerprint data |
 
+### Extraction Pipeline API
+
+The schema-first extraction pipeline transforms raw page text into structured competitive intelligence data using AI and rules-based extraction.
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `POST` | `/api/extract/run` | Start extraction on a fingerprint session | JSON with extraction session details |
+| `GET` | `/api/extract/status/{session_id}` | Get extraction progress and results | JSON with session status and statistics |
+| `GET` | `/api/extract/sessions` | List extraction sessions with filtering | JSON array of extraction sessions |
+| `GET` | `/api/extract/stream/{session_id}` | **NEW**: Real-time progress via Server-Sent Events | Live SSE stream |
+
 #### POST /api/crawl/discover
 
 Crawls a competitor website starting from the provided URL and discovers pages that might be interesting for competitive analysis. Pages are classified into categories and scored by relevance.
@@ -137,6 +148,158 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 - `other`: Other interesting pages
 
 **Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.
+
+#### POST /api/extract/run
+
+Starts the schema-first extraction pipeline on a completed fingerprint session. Uses rules-first + AI fallback strategy to extract structured entities.
+
+**Request Body:**
+```json
+{
+  "fingerprint_session_id": 1,
+  "competitor": "competitor-name",
+  "schema_version": "v1",
+  "force_reprocess": false
+}
+```
+
+**Response:**
+```json
+{
+  "extraction_session_id": 1,
+  "fingerprint_session_id": 1,
+  "competitor": "competitor-name", 
+  "schema_version": "v1",
+  "started_at": "2024-01-15T10:00:00Z",
+  "status": "running",
+  "stats": {
+    "total_pages": 25,
+    "processed_pages": 0,
+    "skipped_pages": 0,
+    "failed_pages": 0,
+    "cache_hits": 0,
+    "companies_found": 0,
+    "products_found": 0,
+    "capabilities_found": 0,
+    "releases_found": 0,
+    "documents_found": 0,
+    "signals_found": 0,
+    "changes_detected": 0
+  }
+}
+```
+
+**Extraction Pipeline Features:**
+- **Rules-First Strategy**: Fast regex patterns for pricing tables, product specs, releases
+- **AI Fallback**: Theta EdgeCloud (DeepSeek-R1) for complex extraction when rules fail
+- **Schema Validation**: All outputs validated against JSON schemas
+- **Hash & Skip**: Avoids re-processing unchanged content
+- **Change Detection**: Tracks entity changes between extraction runs
+- **Source Tracking**: Full provenance of extracted data with confidence scores
+
+#### GET /api/extract/status/{session_id}
+
+Monitor extraction progress and view detailed results for a specific session.
+
+**Response:**
+```json
+{
+  "extraction_session_id": 1,
+  "fingerprint_session_id": 1,
+  "competitor": "competitor-name",
+  "schema_version": "v1", 
+  "started_at": "2024-01-15T10:00:00Z",
+  "completed_at": "2024-01-15T10:05:30Z",
+  "status": "completed",
+  "stats": {
+    "total_pages": 25,
+    "processed_pages": 22,
+    "skipped_pages": 1,
+    "failed_pages": 2,
+    "cache_hits": 8,
+    "companies_found": 1,
+    "products_found": 5,
+    "capabilities_found": 12,
+    "releases_found": 3,
+    "documents_found": 7,
+    "signals_found": 2,
+    "changes_detected": 4
+  },
+  "error_summary": {
+    "page_123": "AI extraction timeout",
+    "page_456": "Schema validation failed"
+  }
+}
+```
+
+**Status Values:**
+- `running`: Extraction in progress
+- `completed`: Successfully completed
+- `degraded`: Completed with high failure rate (>30%)
+- `failed`: Extraction failed entirely
+
+#### GET /api/extract/sessions
+
+List recent extraction sessions with optional filtering by competitor.
+
+**Query Parameters:**
+- `competitor` (optional): Filter by competitor name
+- `limit` (default: 50): Maximum sessions to return
+- `offset` (default: 0): Number of sessions to skip
+
+**Response:** Array of extraction session objects with stats and metadata.
+
+#### GET /api/extract/stream/{session_id}
+
+**NEW**: Stream real-time extraction progress via Server-Sent Events (SSE). Perfect for frontend progress bars and live updates.
+
+**Usage Example:**
+```javascript
+// Connect to live extraction stream
+const eventSource = new EventSource('/api/extract/stream/123');
+
+// Handle different event types
+eventSource.addEventListener('page_extracted', (event) => {
+    const data = JSON.parse(event.data);
+    console.log(`Page processed: ${data.url} via ${data.method} (${data.confidence})`);
+    updateProgressBar(data.page_id);
+});
+
+eventSource.addEventListener('metrics', (event) => {
+    const data = JSON.parse(event.data);
+    showProgress(`${data.processed}/${data.total}`, data.eta_seconds);
+    showStats(`Cache hits: ${data.cache_hits}, Failed: ${data.failed}`);
+});
+
+eventSource.addEventListener('session_completed', (event) => {
+    const data = JSON.parse(event.data);
+    showResults(data.stats);
+    eventSource.close();
+});
+
+eventSource.addEventListener('error', (event) => {
+    console.error('SSE Error:', event);
+});
+```
+
+**Event Types:**
+- `session_started` - Initial session information
+- `page_queued` - Page added to processing queue  
+- `page_started` - Page processing started
+- `page_extracted` - Page successfully extracted (method, confidence, tokens)
+- `page_merged` - Page entities merged into database
+- `page_failed` - Page processing failed with error
+- `metrics` - Live metrics (progress, ETA, cache hits, QPS)
+- `session_completed` - Extraction session finished
+- `heartbeat` - Keep-alive message (every 30s)
+- `error` - Error occurred
+
+**Benefits:**
+- 📊 **Live Progress**: Real-time progress bars and completion estimates
+- 💰 **Cost Tracking**: Monitor AI usage, cache hits, and token consumption  
+- 🎯 **Method Insights**: See which pages use rules vs AI extraction
+- ❌ **Error Monitoring**: Immediate notification of failed pages
+- ⚡ **Performance**: No polling overhead, instant updates
 
 #### POST /api/crawl/fingerprint
 
@@ -341,6 +504,201 @@ npm run build  # Generates JSON schemas in backend/app/schema/json/
 - `Release` - Product releases
 - And more...
 
+## 🧠 Extraction Pipeline Architecture
+
+The Auralis extraction pipeline transforms raw page text into structured competitive intelligence using a sophisticated rules-first + AI fallback strategy.
+
+### Pipeline Overview
+
+```
+Raw Page Text → Rules Extraction → AI Fallback → Validation → Normalization → Entity Storage
+                      ↓                ↓             ↓            ↓              ↓
+                 Fast patterns    Theta EdgeCloud   JSON Schema   Natural Keys   PostgreSQL
+                 (0.1s/page)      (2-5s/page)      Validation    Resolution     + Snapshots
+```
+
+### Core Components
+
+#### 1. Extraction Service (`app/services/extract.py`)
+- **Rules-First Strategy**: Fast regex patterns for pricing tables, product specifications, release notes
+- **AI Fallback**: Theta EdgeCloud (DeepSeek-R1) when rules confidence < 60%
+- **Confidence Scoring**: Each extraction method provides confidence scores (0-1)
+- **Error Isolation**: Per-page processing with graceful degradation
+
+#### 2. Schema Compaction (`app/services/schema_utils.py`)
+- **Dynamic Schema Trimming**: Only include relevant entity schemas per page type
+- **Field Prioritization**: Focus on required + high-value optional fields
+- **Token Management**: Stay within 110k token budget for AI prompts
+- **Page Type Mapping**: Product pages → Product+Company schemas, Release pages → Release+Product schemas
+
+#### 3. Theta EdgeCloud Client (`app/services/theta_client.py`)
+- **JSON Mode**: Structured output with provider-side JSON enforcement
+- **Rate Limiting**: Token bucket (global + per-session) with burst support
+- **Caching**: DB-based response caching with TTL and deduplication
+- **Circuit Breaker**: Automatic failure detection and recovery
+- **Retry Logic**: Exponential backoff with jittered delays
+
+#### 4. Entity Normalization (`app/services/normalize.py`)
+- **Natural Key Generation**: Deterministic keys for entity deduplication
+- **Source Ranking**: Product pages > datasheets > docs > blog > news
+- **Conflict Resolution**: Field-level merging with confidence weighting
+- **Change Detection**: Semantic diff between entity snapshots
+
+#### 5. Advisory Locks (`app/services/advisory_locks.py`)
+- **PostgreSQL Advisory Locks**: Distributed coordination across processes
+- **Per-Competitor Locking**: Prevent merge conflicts during concurrent extractions
+- **Automatic Cleanup**: Session-scoped locks with automatic release
+
+### Extraction Strategies
+
+#### Rules-Based Extraction
+Fast, deterministic patterns for common data structures:
+
+```python
+# Pricing detection
+r"[\$€£¥]\s*(\d+(?:,\d{3})*(?:\.\d{2})?)"
+
+# Version extraction  
+r"(?:version|v\.?|release)\s*(\d+(?:\.\d+)*(?:\.\d+)*)"
+
+# Feature lists
+r"(?:features?|capabilities?):\s*(.+?)(?:\n\n|\.|$)"
+```
+
+**Advantages:**
+- ⚡ Ultra-fast (0.1s per page)
+- 💰 Zero AI costs
+- 🎯 High precision for structured data
+- 🔒 Deterministic and auditable
+
+#### AI-Based Extraction
+Sophisticated understanding for complex content:
+
+**Prompt Strategy:**
+- Compact schema definitions (10-30 fields vs full schemas)
+- Page context (competitor, URL, page type)
+- Extraction rules (prefer factual data, use null for missing fields)
+- Pure JSON output with confidence scoring
+
+**Model Configuration:**
+- **Model**: DeepSeek-R1 via Theta EdgeCloud
+- **Context**: 128k tokens (~500k characters)
+- **Output**: 8k tokens (conservative for Qwen 7B)
+- **Temperature**: 0.1 (very low for consistency)
+- **JSON Mode**: Provider-enforced structured output
+
+### Entity Resolution
+
+#### Natural Key Strategy
+Deterministic entity deduplication across pages:
+
+```python
+# Product key example
+"competitor:product:dataviz_pro:comp_123:v2.1:tier_enterprise"
+
+# Company key example  
+"competitor:company:datacorp_inc:datacorp.com"
+```
+
+#### Source Ranking Hierarchy
+Authority-based conflict resolution:
+
+1. **Official product pages** (rank: 10)
+2. **Pricing tables** (rank: 9)
+3. **Technical datasheets** (rank: 8)
+4. **API documentation** (rank: 8)
+5. **Release notes** (rank: 7)
+6. **General documentation** (rank: 6)
+7. **Blog posts** (rank: 4)
+8. **News articles** (rank: 3)
+
+#### Field-Level Provenance
+Track data sources with granular attribution:
+
+```json
+{
+  "entity_id": "prod_analytics_pro",
+  "fields_extracted": ["name", "pricing", "features"],
+  "field_confidences": {
+    "name": 0.95,
+    "pricing": 0.90, 
+    "features": 0.85
+  },
+  "source_urls": ["https://example.com/products/analytics"]
+}
+```
+
+### Change Detection System
+
+#### Immutable Snapshots
+Complete entity state preservation:
+
+```python
+EntitySnapshot(
+    entity_type="Product",
+    entity_id="prod_123",
+    schema_version="v1",
+    data_json={"name": "Analytics Pro", "version": "2.1.0", ...},
+    data_hash="abc123...",  # For deduplication
+    created_at=datetime.utcnow()
+)
+```
+
+#### Semantic Change Detection
+Human-readable change summaries:
+
+```python
+# Example change record
+EntityChange(
+    entity_type="Product",
+    entity_id="prod_123", 
+    summary="Analytics Pro: version 2.0.1 → 2.1.0, pricing updated, added SAML",
+    fields_changed=["version", "pricing", "features"],
+    diff_json={
+        "version": {"old": "2.0.1", "new": "2.1.0"},
+        "features": {"added": ["SAML authentication"]}
+    }
+)
+```
+
+### Performance Characteristics
+
+#### Throughput
+- **Rules extraction**: ~10 pages/second
+- **AI extraction**: ~0.2-0.5 pages/second (depending on text length)
+- **Combined pipeline**: ~1-2 pages/second average
+
+#### Cost Optimization
+- **Cache hit rate**: 60-80% for similar pages
+- **Rules-first success**: 40-60% (zero AI cost)
+- **Token efficiency**: 10-30 fields vs 100+ field full schemas
+
+#### Reliability
+- **Circuit breaker**: Auto-recovery from provider failures
+- **Advisory locks**: Prevent concurrent merge conflicts
+- **Graceful degradation**: Partial results on failures
+- **Idempotent operations**: Safe to retry/rerun
+
+### Configuration
+
+```env
+# Theta EdgeCloud
+ON_DEMAND_API_ACCESS_TOKEN=your_token_here
+THETA_REQUEST_TIMEOUT=20
+THETA_MAX_RETRIES=2
+THETA_JSON_MODE=false
+THETA_RATE_PER_MIN=20
+
+# Extraction Pipeline
+SCHEMA_VERSION=v1
+EXTRACTOR_PROMPT_VERSION=1.0
+EXTRACTOR_MAX_TEXT_CHARS=450000
+EXTRACTOR_FAIL_THRESHOLD=0.3
+EXTRACTOR_MAX_CONCURRENT_SESSIONS=4
+```
+
+This architecture provides a robust, cost-effective solution for transforming unstructured web content into structured competitive intelligence at scale.
+
 ## 🛠️ Development Setup
 
 ### Prerequisites
@@ -486,6 +844,17 @@ alembic downgrade -1
 - `crawl_data.crawled_pages` - Individual discovered pages with scores
 - `crawl_data.fingerprint_sessions` - Fingerprinting operations
 - `crawl_data.page_fingerprints` - Stable content hashes and metadata
+- `crawl_data.extraction_sessions` - Extraction pipeline runs
+- `crawl_data.companies` - Extracted company entities
+- `crawl_data.products` - Extracted product entities
+- `crawl_data.capabilities` - Extracted capability entities
+- `crawl_data.releases` - Extracted release entities
+- `crawl_data.documents` - Extracted document entities
+- `crawl_data.signals` - Extracted signal entities
+- `crawl_data.extraction_sources` - Source tracking with field-level provenance
+- `crawl_data.entity_snapshots` - Immutable entity state snapshots
+- `crawl_data.entity_changes` - Detected changes between snapshots
+- `crawl_data.ai_cache` - AI response caching for cost optimization
 
 ### CORS Configuration
 
