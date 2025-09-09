@@ -1264,7 +1264,7 @@ export default function AddCompetitor() {
               <div className="text-center">
                 <div className="text-gray-500">High Value</div>
                 <div className="font-semibold text-green-600">
-                  {processingState.discoveredPages.filter(p => p.score >= 0.7).length}
+                  {processingState.discoveredPages.filter(p => p.score >= 0.5).length}
                 </div>
               </div>
             </div>

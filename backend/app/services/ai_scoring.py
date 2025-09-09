@@ -787,8 +787,9 @@ TASK
 - Use the SCORING criteria to decide the numeric score and categories.
 - Base your judgment ONLY on the provided metadata text. Do not invent extra details.
 
-RULES
-- Output ONLY a raw JSON object (no text, no markdown, no commentary).
+CRITICAL RULES
+- Output must be ONLY a valid JSON object. 
+- Do NOT include any explanations, reasoning outside the JSON, markdown, commentary, or internal thoughts.
 - JSON must begin with {{ and end with }}.
 - All strings must be properly quoted.
 - All fields must be present; use null or [] if not applicable.
@@ -801,9 +802,9 @@ INPUT
 SCORING
   - Score range: 0.0–1.0
     - High Value (0.9–1.0): product specs, pricing, datasheets, launches, strategies
-    - Medium-High (0.7–0.9): product pages, press releases, use cases, partnerships
-    - Medium (0.5–0.7): company info, blogs, product updates, support docs
-    - Low (0.1–0.5): generic info, admin, social, basic marketing
+    - Medium-High (0.7–0.9): product pages and updates, press releases, use cases, partnerships, general company info (what is the company doing)
+    - Medium (0.4–0.7): other company info, blogs, product updates, support docs
+    - Low (0.1–0.3): generic info, admin, social, basic marketing
     - Minimal (0.0–0.1): careers, legal, privacy, contact, cookie notices
 
 OUTPUT FORMAT
