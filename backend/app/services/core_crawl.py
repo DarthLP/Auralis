@@ -119,25 +119,54 @@ class CoreCrawlService:
         """
         Step 1: Filter pages by score >= 0.5, canonicalize URLs, dedupe, apply caps.
         """
+        logger.info(f"=== FINGERPRINTING FILTER DEBUG ===")
+        logger.info(f"Total input pages: {len(crawled_pages)}")
+        
+        # Debug: Show all pages with their scores
+        for i, page in enumerate(crawled_pages):
+            logger.info(f"  Page {i+1}: {page.url} (score: {page.score:.2f})")
+        
         # Filter by score threshold
         filtered = [page for page in crawled_pages if page.score >= 0.5]
         logger.info(f"After score filter (>= 0.5): {len(filtered)} pages")
         
+        # Debug: Show which pages were filtered out by score
+        filtered_out_by_score = [page for page in crawled_pages if page.score < 0.5]
+        if filtered_out_by_score:
+            logger.info(f"Pages filtered out by score threshold:")
+            for page in filtered_out_by_score:
+                logger.info(f"  FILTERED: {page.url} (score: {page.score:.2f})")
+        
         # Deduplicate by canonical URL
         seen_urls = set()
         deduped = []
+        duplicate_mapping = {}  # Track which URLs are considered duplicates
+        
         for page in filtered:
             canonical = self._canonicalize_url(page.url)
+            logger.debug(f"Canonicalization: {page.url} -> {canonical}")
+            
             if canonical not in seen_urls:
                 seen_urls.add(canonical)
                 deduped.append(page)
+                logger.info(f"  KEPT: {page.url} (canonical: {canonical})")
+            else:
+                # Find which page this is a duplicate of
+                original_page = next((p for p in deduped if self._canonicalize_url(p.url) == canonical), None)
+                duplicate_mapping[page.url] = original_page.url if original_page else "unknown"
+                logger.info(f"  DUPLICATE: {page.url} -> duplicate of {duplicate_mapping[page.url]} (canonical: {canonical})")
         
         logger.info(f"After deduplication: {len(deduped)} pages")
+        if duplicate_mapping:
+            logger.info(f"Duplicate pages found: {len(duplicate_mapping)}")
+            for dup_url, orig_url in duplicate_mapping.items():
+                logger.info(f"  {dup_url} is duplicate of {orig_url}")
         
         # Apply caps: max 100 per domain, max 100 per category
         domain_counts = {}
         category_counts = {}
         capped = []
+        capped_pages = []  # Track which pages were capped
         
         for page in deduped:
             domain = self._extract_domain(page.url)
@@ -150,14 +179,36 @@ class CoreCrawlService:
                 capped.append(page)
                 domain_counts[domain] = domain_count + 1
                 category_counts[category] = category_count + 1
+                logger.debug(f"  KEPT (caps): {page.url} (domain: {domain_count+1}/100, category '{category}': {category_count+1}/100)")
+            else:
+                capped_pages.append((page.url, domain, category, domain_count, category_count))
+                logger.info(f"  CAPPED: {page.url} (domain: {domain_count}/100, category '{category}': {category_count}/100)")
         
         logger.info(f"After caps (100/domain, 100/category): {len(capped)} pages")
+        if capped_pages:
+            logger.info(f"Pages filtered by caps: {len(capped_pages)}")
+            for url, domain, category, d_count, c_count in capped_pages:
+                logger.info(f"  {url} - domain {domain}: {d_count}/100, category '{category}': {c_count}/100")
+        
+        # Final summary
+        logger.info(f"=== FILTERING SUMMARY ===")
+        logger.info(f"Input: {len(crawled_pages)} pages")
+        logger.info(f"After score filter: {len(filtered)} pages ({len(crawled_pages) - len(filtered)} filtered)")
+        logger.info(f"After deduplication: {len(deduped)} pages ({len(filtered) - len(deduped)} duplicates)")
+        logger.info(f"Final result: {len(capped)} pages ({len(deduped) - len(capped)} capped)")
+        logger.info(f"=== END FILTER DEBUG ===")
+        
         return capped
     
     async def _process_batch(self, batch: List[CrawledPage], fingerprint_session_id: int) -> Tuple[List[FingerprintResult], int]:
         """
         Process a batch of pages through fetch + fingerprint steps.
         """
+        logger.info(f"=== PROCESSING BATCH DEBUG ===")
+        logger.info(f"Batch size: {len(batch)} pages")
+        for i, page in enumerate(batch):
+            logger.info(f"  Batch page {i+1}: {page.url} (score: {page.score:.2f}, category: {page.primary_category})")
+        
         # Create semaphore for concurrency control
         semaphore = asyncio.Semaphore(self.concurrency)
         
@@ -172,13 +223,24 @@ class CoreCrawlService:
         # Separate successful results from errors
         successful_results = []
         error_count = 0
+        failed_urls = []
         
-        for result in results:
+        for i, result in enumerate(results):
+            page_url = batch[i].url
             if isinstance(result, Exception):
                 error_count += 1
-                logger.warning(f"Page processing failed: {result}")
+                failed_urls.append(page_url)
+                logger.error(f"  FAILED: {page_url} - Error: {result}")
             else:
                 successful_results.append(result)
+                logger.info(f"  SUCCESS: {page_url} - Fingerprint: {result.content_hash[:8]}...")
+        
+        logger.info(f"=== BATCH PROCESSING RESULTS ===")
+        logger.info(f"Successful: {len(successful_results)} pages")
+        logger.info(f"Failed: {error_count} pages")
+        if failed_urls:
+            logger.info(f"Failed URLs: {', '.join(failed_urls)}")
+        logger.info(f"=== END BATCH DEBUG ===")
         
         return successful_results, error_count
     
