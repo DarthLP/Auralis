@@ -27,7 +27,7 @@ def json_serial(obj):
 from sqlalchemy import func
 
 from app.models.extraction import (
-    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, ExtractedDocument, ExtractedSignal,
+    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, Document, ExtractedSignalEntity,
     ExtractionSource, EntitySnapshot, EntityChange, ExtractionSession
 )
 from app.core.config import settings
@@ -135,7 +135,7 @@ class EntityNormalizer:
     
     def generate_natural_key(self, entity_type: str, data: Dict[str, Any], competitor: str) -> str:
         """Generate natural key for entity deduplication."""
-        if entity_type == "Company":
+        if entity_type == "ExtractedCompany":
             # Use normalized name + website domain if available
             name = self.normalize_text(data.get("name", ""))
             website = data.get("website", "")
@@ -147,7 +147,7 @@ class EntityNormalizer:
             
             return f"{competitor}:company:{name}:{domain}"
         
-        elif entity_type == "Product":
+        elif entity_type == "ExtractedProduct":
             name = data.get("name", "")
             base_name, version = self.extract_version(name)
             base_name, tier = self.detect_product_tier(base_name)
@@ -195,7 +195,7 @@ class EntityNormalizer:
             
             return ":".join(key_parts)
         
-        elif entity_type == "Signal":
+        elif entity_type == "ExtractedSignalEntity":
             title = self.normalize_text(data.get("title", ""))
             signal_type = data.get("signal_type", data.get("type", ""))
             date = data.get("date", "")
@@ -207,7 +207,7 @@ class EntityNormalizer:
             
             return ":".join(key_parts)
         
-        elif entity_type == "Capability":
+        elif entity_type == "ExtractedCapability":
             name = self.normalize_text(data.get("name", ""))
             category = data.get("category", "")
             
@@ -699,12 +699,12 @@ class NormalizationService:
     def _find_existing_entity(self, entity_type: str, natural_key: str):
         """Find existing entity by natural key."""
         model_map = {
-            "Company": ExtractedCompany,
-            "Product": ExtractedProduct,
-            "Capability": ExtractedCapability,
-            "Release": ExtractedRelease,
-            "Document": ExtractedDocument,
-            "Signal": ExtractedSignal
+            "ExtractedCompany": ExtractedCompany,
+            "ExtractedProduct": ExtractedProduct,
+            "ExtractedCapability": ExtractedCapability,
+            "ExtractedRelease": ExtractedRelease,
+            "Document": Document,
+            "ExtractedSignalEntity": ExtractedSignalEntity
         }
         
         model = model_map.get(entity_type)
@@ -721,12 +721,12 @@ class NormalizationService:
     def _create_new_entity(self, entity_type: str, entity_data: Dict[str, Any], natural_key: str, competitor: str) -> str:
         """Create new entity in database."""
         model_map = {
-            "Company": ExtractedCompany,
-            "Product": ExtractedProduct,
-            "Capability": ExtractedCapability,
-            "Release": ExtractedRelease,
-            "Document": ExtractedDocument,
-            "Signal": ExtractedSignal
+            "ExtractedCompany": ExtractedCompany,
+            "ExtractedProduct": ExtractedProduct,
+            "ExtractedCapability": ExtractedCapability,
+            "ExtractedRelease": ExtractedRelease,
+            "Document": Document,
+            "ExtractedSignalEntity": ExtractedSignalEntity
         }
         
         model = model_map.get(entity_type)
@@ -752,12 +752,12 @@ class NormalizationService:
     def _update_entity_in_db(self, entity_type: str, entity_id: str, merged_data: Dict[str, Any]):
         """Update existing entity in database."""
         model_map = {
-            "Company": ExtractedCompany,
-            "Product": ExtractedProduct,
-            "Capability": ExtractedCapability,
-            "Release": ExtractedRelease,
-            "Document": ExtractedDocument,
-            "Signal": ExtractedSignal
+            "ExtractedCompany": ExtractedCompany,
+            "ExtractedProduct": ExtractedProduct,
+            "ExtractedCapability": ExtractedCapability,
+            "ExtractedRelease": ExtractedRelease,
+            "Document": Document,
+            "ExtractedSignalEntity": ExtractedSignalEntity
         }
         
         model = model_map.get(entity_type)

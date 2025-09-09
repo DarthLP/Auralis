@@ -67,7 +67,7 @@ All commands are run from the project root using the Makefile:
 If you prefer to run Docker Compose commands directly:
 
 ```bash
-# Start services
+# Start services (first time or after dependency changes)
 docker compose -f infra/docker-compose.yml up --build -d
 
 # Stop services
@@ -78,10 +78,70 @@ docker compose -f infra/docker-compose.yml logs -f
 
 # View logs for specific service
 docker compose -f infra/docker-compose.yml logs -f backend
-
-# Rebuild and restart
-docker compose -f infra/docker-compose.yml up --build --force-recreate -d
 ```
+
+### 🚀 **Optimized Rebuild Procedures**
+
+**For Code Changes Only (Fast - ~30 seconds):**
+```bash
+# Quick restart without rebuilding (code changes only)
+docker compose -f infra/docker-compose.yml restart backend
+
+# Or if you need to rebuild just the code layer
+docker compose -f infra/docker-compose.yml up -d --no-deps backend
+```
+
+**For Requirements Changes (Medium - ~2-3 minutes):**
+```bash
+# Rebuild only the backend service (preserves base layers)
+docker compose -f infra/docker-compose.yml build backend
+docker compose -f infra/docker-compose.yml up -d backend
+```
+
+**For System Dependencies (Slow - ~10+ minutes):**
+```bash
+# Full rebuild (only when Dockerfile changes)
+docker compose -f infra/docker-compose.yml build --no-cache backend
+docker compose -f infra/docker-compose.yml up -d backend
+```
+
+**Complete Clean Rebuild (Nuclear option):**
+```bash
+# Remove everything and rebuild from scratch
+docker compose -f infra/docker-compose.yml down --volumes --remove-orphans
+docker compose -f infra/docker-compose.yml build --no-cache
+docker compose -f infra/docker-compose.yml up -d
+```
+
+### 🏗️ **Docker Layer Caching Strategy**
+
+The Dockerfile is optimized for efficient rebuilds using layer caching:
+
+```dockerfile
+# Layer 1: Base image (rarely changes)
+FROM python:3.12-slim
+
+# Layer 2: System dependencies (changes rarely)
+RUN apt-get update && apt-get install -y ...
+
+# Layer 3: Python dependencies (changes when requirements.txt changes)
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Layer 4: Playwright browsers (changes rarely)
+RUN playwright install chromium
+RUN playwright install-deps chromium
+
+# Layer 5: Application code (changes frequently)
+COPY backend/ .
+COPY data/ /data/
+```
+
+**Why This Works:**
+- **Code changes** only rebuild Layer 5 (~30 seconds)
+- **Requirements changes** rebuild Layers 3-5 (~2-3 minutes)
+- **System changes** rebuild Layers 2-5 (~10+ minutes)
+- **Base image changes** rebuild everything (~15+ minutes)
 
 ## 🔧 Configuration
 

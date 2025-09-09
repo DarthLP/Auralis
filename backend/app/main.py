@@ -19,6 +19,7 @@ from app.api.sources import router as sources_router
 # Import all models to ensure they are registered with SQLAlchemy
 from app.models.crawl import *  # noqa
 from app.models.core_crawl import *  # noqa
+from app.models.extraction import *  # noqa
 from app.models.company import *  # noqa
 from app.models.product import *  # noqa
 from app.models.signal import *  # noqa

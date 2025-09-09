@@ -65,6 +65,15 @@
 - Use environment variables for configuration
 - Document all infrastructure changes
 
+### Docker Container Management
+- **Always rebuild containers when making code changes** - `docker-compose restart` is NOT sufficient for code changes
+- **Use proper rebuild procedure**:
+  1. `docker-compose down` (stops and removes containers)
+  2. `docker-compose up --build -d` (rebuilds and starts containers)
+- **When changes don't appear**: The most common cause is that containers weren't rebuilt after code changes
+- **Test after rebuild**: Always verify changes are working with API calls or health checks
+- **Container state**: Remember that Docker containers run the code that was present when they were built, not the current code
+
 ## 🧪 Testing & Quality Assurance
 
 ### Testing Requirements

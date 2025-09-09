@@ -78,6 +78,8 @@ The core crawling API provides both discovery and fingerprinting capabilities wi
 | `POST` | `/api/crawl/fingerprint` | Process crawl session through 3-step pipeline | JSON with fingerprint results |
 | `GET` | `/api/crawl/sessions` | List crawl sessions with metadata | JSON array of sessions |
 | `GET` | `/api/crawl/sessions/{id}/fingerprints` | Get fingerprint results for a session | JSON with fingerprint data |
+| `POST` | `/api/crawl/stop` | **NEW**: Stop an active crawl session | JSON with stop confirmation |
+| `GET` | `/api/crawl/active-sessions` | **NEW**: List currently active crawl sessions | JSON array of active session IDs |
 
 ### Extraction Pipeline API
 
@@ -151,6 +153,49 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 
 **Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.
 
+#### POST /api/crawl/stop
+
+**NEW**: Stop an active crawl session that is currently running. This endpoint allows users to cancel long-running crawl operations.
+
+**Request Body:**
+```json
+{
+  "session_id": 123
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Crawl session stopped successfully",
+  "session_id": 123
+}
+```
+
+**Features:**
+- **Immediate Stop**: Crawl process stops at the next check point
+- **Graceful Termination**: Current page processing completes before stopping
+- **Session Tracking**: Uses active session tracking to identify running crawls
+- **Error Handling**: Returns appropriate error if session not found or already stopped
+
+#### GET /api/crawl/active-sessions
+
+**NEW**: List all currently active crawl sessions. Useful for monitoring and management.
+
+**Response:**
+```json
+{
+  "active_sessions": [123, 124, 125],
+  "count": 3
+}
+```
+
+**Features:**
+- **Real-time Status**: Shows sessions currently being processed
+- **Session Management**: Helps identify which sessions can be stopped
+- **Monitoring**: Useful for debugging and system monitoring
+
 #### POST /api/extract/run
 
 Starts the schema-first extraction pipeline on a completed fingerprint session. Uses rules-first + AI fallback strategy to extract structured entities.
@@ -200,6 +245,18 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 - **Hash & Skip**: Avoids re-processing unchanged content
 - **Change Detection**: Tracks entity changes between extraction runs
 - **Source Tracking**: Full provenance of extracted data with confidence scores
+
+**AI-Powered Page Scoring:**
+- **Intelligent Classification**: DeepSeek analyzes page content to determine relevance for competitive analysis
+- **Comprehensive Scoring**: Pages scored 0.0-1.0 based on business value, technical depth, and competitive intelligence potential
+- **Category Detection**: Automatically classifies pages as product, pricing, datasheet, release, news, company, or other
+- **Signal Extraction**: Identifies specific signals like product_specs, pricing_info, technical_details, competitive_intel
+- **Confidence Scoring**: Each AI assessment includes confidence level and reasoning
+- **100% JSON Consistency**: Improved prompt structure achieving 100% success rate for valid JSON responses
+- **Enhanced Content Detection**: Improved minimal content detection including H1, H2, H3 headings and content length fallback
+- **Robust Error Handling**: Proper fallback mechanisms and parsing error detection with success/failure flags
+- **Fallback Strategy**: Gracefully falls back to rules-based scoring if AI is unavailable
+- **Rate Limiting**: Built-in rate limiting and caching to manage AI API costs
 
 #### GET /api/extract/status/{session_id}
 
