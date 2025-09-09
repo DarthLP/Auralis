@@ -151,7 +151,7 @@ The built application will be available in the `dist/` directory.
 
 ## 🆕 Add Competitor Feature
 
-The Add Competitor functionality provides a comprehensive URL-based competitor ingestion system:
+The Add Competitor functionality provides a comprehensive URL-based competitor ingestion system with **stop crawling functionality**:
 
 ### Key Components
 
@@ -170,13 +170,16 @@ The Add Competitor functionality provides a comprehensive URL-based competitor i
 3. **Reachability**: Mock reachability testing
 4. **Deduplication**: Check for existing companies by domain/name
 5. **Scraping**: Mock scraper job with status tracking
-6. **Review**: Edit extracted data before saving
-7. **Save**: Add to competitor database with success feedback
+6. **Stop Control**: **NEW** - Stop crawling process during discovery, fingerprinting, or extraction phases
+7. **Review**: Edit extracted data before saving
+8. **Save**: Add to competitor database with success feedback
 
 ### Technical Features
 
 - **URL Validation**: Comprehensive validation with eTLD+1 extraction
 - **Debounced Input**: 250ms debounce for smooth real-time validation
+- **Stop Crawling**: **NEW** - Real-time stop control with backend API integration
+- **Session Management**: Active crawl session tracking and management
 - **Type Safety**: Full TypeScript integration
 - **Error Handling**: Graceful error states with helpful messages
 - **Mock Integration**: Seamless integration with existing mock data system
@@ -327,6 +330,8 @@ The frontend now communicates with the backend API:
 | `GET` | `/api/sources/` | List all data sources |
 | `POST` | `/api/crawl/discover` | Website discovery and crawling |
 | `POST` | `/api/crawl/fingerprint` | Content fingerprinting pipeline |
+| `POST` | `/api/crawl/stop` | **NEW**: Stop active crawl session |
+| `GET` | `/api/crawl/active-sessions` | **NEW**: List active crawl sessions |
 
 ## 🎨 Planned UI Components
 
