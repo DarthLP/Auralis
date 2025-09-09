@@ -14,6 +14,7 @@ from app.models.company import Company, CompanySummary
 from app.models.product import Product
 from app.models.signal import Signal
 from app.models.signal import Release
+from app.models.extraction import ExtractedCompany
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +88,56 @@ async def get_companies(
         
     except Exception as e:
         logger.error(f"Error retrieving companies: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/extracted")
+async def get_extracted_companies(
+    db: Session = Depends(get_db),
+    competitor: Optional[str] = Query(None, description="Filter by competitor name"),
+    limit: int = Query(100, description="Maximum number of extracted companies to return"),
+    offset: int = Query(0, description="Number of companies to skip")
+) -> List[dict]:
+    """
+    Get extracted companies from extraction sessions.
+    """
+    try:
+        query = db.query(ExtractedCompany)
+        
+        # Apply competitor filter
+        if competitor:
+            query = query.filter(ExtractedCompany.competitor == competitor)
+        
+        # Order by creation date (newest first)
+        companies = query.order_by(
+            ExtractedCompany.first_seen.desc()
+        ).offset(offset).limit(limit).all()
+        
+        # Convert to dict format
+        result = []
+        for company in companies:
+            company_dict = {
+                "id": company.id,
+                "name": company.name,
+                "normalized_name": company.normalized_name,
+                "aliases": company.aliases or [],
+                "website": company.website,
+                "hq_country": company.hq_country,
+                "status": company.status,
+                "tags": company.tags or [],
+                "short_desc": company.short_desc,
+                "competitor": company.competitor,
+                "confidence_score": company.confidence_score,
+                "created_at": format_datetime_for_api(company.first_seen),
+                "last_updated": format_datetime_for_api(company.last_updated)
+            }
+            result.append(company_dict)
+        
+        logger.info(f"Retrieved {len(result)} extracted companies")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error retrieving extracted companies: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

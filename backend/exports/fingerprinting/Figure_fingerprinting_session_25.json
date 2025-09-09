@@ -1,0 +1,17 @@
+[
+  {
+    "fingerprint_session_id": 25,
+    "url": "https://figure.ai/",
+    "key_url": "https://figure.ai/",
+    "page_type": "product",
+    "content_hash": "f6c955cbaa918a81731f10d10d12a79aa0c944ce8f7a5f5f91c5d8494cbd476e",
+    "normalized_text_len": 1361,
+    "extracted_text_preview": "Figure is the first-of-its-kind AI robotics company bringing a general purpose humanoid to life.\nFIGURE IS FINALLY BRINGING ROBOTS HOME.\nFIGURE IS PUTTING LEARNING ROBOTS INTO THE GLOBAL WORKFORCE.\nFIGURE IS TAKING AN AI-FIRST APPROACH TO MARKET.\nWe’re engineering the first humanoid that can truly think for itself.\nFigure is poised to solve labor shortages. Up and running for our first commercial customers, it’s learning and performing end-to-end operations safely. Now, in the biggest innovation since the dishwasher, Figure is finally coming home. Expect Figure to do dishes and laundry, unpack groceries, and perform other household tasks 100% autonomously.\nWE’RE GIVING AI A BODY.\nWhy a human form factor?\nWe’ve designed our world for the human form. Hands allow us to open doors and use tools; arms and legs allow us to move efficiently, climb stairs, lift boxes, and more. Figure brings together the dexterity of the human form and cutting edge AI to go beyond single-function robots, lending support at home and across manufacturing, logistics, warehousing, and retail.\nSEE FIGURE IN ACTION.\n- Height\n- 5'6\"\n- Payload\n- 20kg\n- Weight\n- 70kg\n- Runtime\n- 5hr\n- Speed\n- 1.2M/S\n- System\n- Electric\nThe team bringing impossible ideas to life.\nFigure has attracted the world’s leading robotics team with over 100 years of combined AI & Humanoid experience.",
+    "low_text_pdf": false,
+    "needs_render": false,
+    "fetch_status": 200,
+    "content_type": "text/html",
+    "content_length": 152578,
+    "processed_at": "2025-09-09T14:32:29.356140"
+  }
+]

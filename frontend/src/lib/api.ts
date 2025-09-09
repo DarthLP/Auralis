@@ -63,6 +63,16 @@ export async function company(id: string): Promise<Company> {
 }
 
 /**
+ * Fetch extracted companies from extraction sessions
+ * @param competitor - Optional competitor name to filter by
+ * @returns Promise<Company[]> - Array of extracted companies
+ */
+export async function extractedCompanies(competitor?: string): Promise<Company[]> {
+  const params = competitor ? `?competitor=${encodeURIComponent(competitor)}` : '';
+  return fetchAs(`/api/companies/extracted${params}`, z.array(zCompany));
+}
+
+/**
  * Fetch company summaries for a specific company
  * @param companyId - Company ID
  * @returns Promise<CompanySummary[]> - Array of company summaries

@@ -8,7 +8,8 @@ import {
   stopCrawl,
   scorePagesWithAI,
   ExtractionProgressTracker,
-  companies
+  companies,
+  extractedCompanies
 } from '../lib/api';
 import { 
   ValidationResult, 
@@ -48,6 +49,9 @@ interface ProcessingState {
       signals: number;
     };
   };
+  
+  // Extracted companies
+  extractedCompanies: any[];
   
   // Real-time metrics
   metrics: {
@@ -128,6 +132,7 @@ export default function AddCompetitor() {
       skippedPages: 0,
       entitiesFound: { companies: 0, products: 0, capabilities: 0, releases: 0, documents: 0, signals: 0 }
     },
+    extractedCompanies: [],
     metrics: { qps: 0, etaSeconds: null, cacheHits: 0, retries: 0 },
     discoveredPages: [],
     skippedUrls: [],
@@ -200,6 +205,14 @@ export default function AddCompetitor() {
     });
     
     tracker.on('session_completed', async (data: any) => {
+      // Fetch extracted companies for this competitor
+      let extractedCompaniesData: any[] = [];
+      try {
+        extractedCompaniesData = await extractedCompanies(processingState.competitorName || undefined);
+      } catch (error) {
+        console.error('Failed to fetch extracted companies:', error);
+      }
+      
       setProcessingState(prev => ({
         ...prev,
         phase: 'completed',
@@ -214,7 +227,8 @@ export default function AddCompetitor() {
             documents: data.stats?.documents_found || 0,
             signals: data.stats?.signals_found || 0
           }
-        }
+        },
+        extractedCompanies: extractedCompaniesData
       }));
       setIsAnalyzing(false);
     });
@@ -393,7 +407,7 @@ export default function AddCompetitor() {
       
       setProcessingState(prev => ({
         ...prev,
-        phase: 'fingerprinting',
+        phase: 'scoring',  // Keep in scoring phase, don't auto-start fingerprinting
         stepsCompleted: { ...prev.stepsCompleted, scoring: true },
         discoveredPages: scoringResult.pages
       }));
@@ -824,6 +838,37 @@ export default function AddCompetitor() {
                   <div className="text-sm text-gray-600 mb-2">
                     Extracted {processingState.progress.extractedPages} pages
                   </div>
+                  
+                  {/* Show extracted companies if any */}
+                  {processingState.extractedCompanies.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h5 className="text-sm font-medium text-blue-900 mb-2">
+                        Extracted Companies ({processingState.extractedCompanies.length})
+                      </h5>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {processingState.extractedCompanies.map((company, index) => (
+                          <div key={company.id || index} className="text-xs text-blue-800 bg-white p-2 rounded border">
+                            <div className="font-medium">{company.name}</div>
+                            {company.description && (
+                              <div className="text-gray-600 mt-1 line-clamp-2">{company.description}</div>
+                            )}
+                            {company.website && (
+                              <div className="text-blue-600 mt-1">
+                                <a href={company.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                  {company.website}
+                                </a>
+                              </div>
+                            )}
+                            {company.confidence_score && (
+                              <div className="text-gray-500 mt-1">
+                                Confidence: {(company.confidence_score * 100).toFixed(1)}%
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -1001,6 +1046,7 @@ export default function AddCompetitor() {
                           cacheHits: 0,
                           retries: 0
                         },
+                        extractedCompanies: [],
                         discoveredPages: [],
                         skippedUrls: [],
                         sitemapUrls: [],

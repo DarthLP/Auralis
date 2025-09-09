@@ -22,7 +22,6 @@ const PRIVATE_IP_PATTERNS = [
 
 // Placeholder domains to reject
 const PLACEHOLDER_DOMAINS = [
-  'example.com',
   'example.org',
   'example.net',
   'test.com',

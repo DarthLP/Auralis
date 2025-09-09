@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-09-09T14:33:18.772373",
+  "session_id": "20",
+  "stage": "2B",
+  "competitor": "Figure",
+  "url": "consolidated_products_1_pages",
+  "llm_response": {
+    "products": {
+      "Figure Humanoid Robot": {
+        "name": "Figure Humanoid Robot",
+        "category": "AI robotics",
+        "stage": "ga",
+        "markets": null,
+        "tags": [],
+        "short_desc": "Figure is the first-of-its-kind AI robotics company bringing a general purpose humanoid to life.",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {
+          "capabilities": [],
+          "released_at": null,
+          "compliance": null,
+          "sources": [
+            "https://figure.ai/"
+          ]
+        },
+        "notes": [
+          "Figure Humanoid Robot"
+        ]
+      }
+    }
+  },
+  "prompt_length": 4560,
+  "response_size": 441
+}

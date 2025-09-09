@@ -1,0 +1,19 @@
+[
+  {
+    "crawl_session_id": 67,
+    "url": "https://figure.ai/",
+    "canonical_url": "https://figure.ai/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 1.0,
+    "signals": [
+      "product_h1"
+    ],
+    "depth": 0,
+    "size_bytes": 154555,
+    "mime_type": null,
+    "content_hash": "9d3a2317daf783c8df64d660c78fe6b4cf96550979b1486e52c840bcbdf22d31",
+    "crawled_at": "2025-09-09T14:31:36.593827"
+  }
+]
