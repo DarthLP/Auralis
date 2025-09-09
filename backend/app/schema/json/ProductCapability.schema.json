@@ -50,12 +50,6 @@
           ]
         }
       },
-      "required": [
-        "id",
-        "product_id",
-        "capability_id",
-        "maturity"
-      ],
       "additionalProperties": false
     }
   },

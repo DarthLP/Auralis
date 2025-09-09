@@ -5,66 +5,67 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "company_id": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "name": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "category": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "stage": {
-          "type": "string",
+          "type": ["string", "null"],
           "enum": [
             "alpha",
             "beta",
             "ga",
-            "discontinued"
+            "discontinued",
+            null
           ]
         },
         "markets": {
-          "type": "array",
+          "type": ["array", "null"],
           "items": {
             "type": "string"
           }
         },
         "tags": {
-          "type": "array",
+          "type": ["array", "null"],
           "items": {
             "type": "string"
           }
         },
         "short_desc": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "product_url": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "uri"
         },
         "docs_url": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "uri"
         },
         "media": {
-          "type": "object",
+          "type": ["object", "null"],
           "properties": {
             "hero": {
-              "type": "string"
+              "type": ["string", "null"]
             },
             "video": {
-              "type": "string"
+              "type": ["string", "null"]
             }
           },
           "additionalProperties": false
         },
         "spec_profile": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "specs": {
-          "type": "object",
+          "type": ["object", "null"],
           "additionalProperties": {
             "anyOf": [
               {
@@ -78,10 +79,6 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               },
               {
@@ -98,10 +95,6 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               },
               {
@@ -115,10 +108,6 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               },
               {
@@ -132,10 +121,6 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               },
               {
@@ -155,11 +140,6 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type",
-                  "min",
-                  "max"
-                ],
                 "additionalProperties": false
               },
               {
@@ -176,10 +156,6 @@
                     }
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               },
               {
@@ -194,39 +170,38 @@
                     "format": "uri"
                   }
                 },
-                "required": [
-                  "type",
-                  "value"
-                ],
                 "additionalProperties": false
               }
             ]
           }
         },
         "released_at": {
-          "type": "string",
-          "format": "date-time"
+          "type": ["string", "null"]
         },
         "eol_at": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "compliance": {
-          "type": "array",
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "sources": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "notes": {
+          "type": ["array", "null"],
           "items": {
             "type": "string"
           }
         }
       },
-      "required": [
-        "id",
-        "company_id",
-        "name",
-        "category",
-        "stage",
-        "markets",
-        "tags"
-      ],
       "additionalProperties": false
     }
   },

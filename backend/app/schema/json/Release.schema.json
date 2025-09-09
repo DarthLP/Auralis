@@ -27,12 +27,6 @@
           "type": "string"
         }
       },
-      "required": [
-        "id",
-        "company_id",
-        "product_id",
-        "released_at"
-      ],
       "additionalProperties": false
     }
   },

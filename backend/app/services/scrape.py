@@ -115,7 +115,6 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 if normalized:
                     canonical = canonicalize_url(normalized)
                     if canonical not in canonical_urls:
-                        canonical_urls.add(canonical)
                         url_queue.append((normalized, 0))
         
         # BFS crawl

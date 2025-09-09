@@ -58,6 +58,7 @@ def upgrade() -> None:
         sa.Column('hq_country', sa.String(), nullable=True),
         sa.Column('status', sa.String(), nullable=True),
         sa.Column('tags', sa.JSON(), nullable=True),
+        sa.Column('short_desc', sa.Text(), nullable=True),
         sa.Column('first_seen', sa.DateTime(), nullable=False),
         sa.Column('last_updated', sa.DateTime(), nullable=False),
         sa.Column('confidence_score', sa.Float(), nullable=True),

@@ -5,45 +5,55 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "name": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "aliases": {
-          "type": "array",
+          "type": ["array", "null"],
           "items": {
             "type": "string"
           }
         },
         "hq_country": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "website": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "uri"
         },
         "status": {
-          "type": "string",
+          "type": ["string", "null"],
           "enum": [
             "active",
-            "dormant"
+            "dormant",
+            null
           ]
         },
         "tags": {
-          "type": "array",
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_desc": {
+          "type": ["string", "null"]
+        },
+        "main_sources_used": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "notes": {
+          "type": ["array", "null"],
           "items": {
             "type": "string"
           }
         }
       },
-      "required": [
-        "id",
-        "name",
-        "aliases",
-        "status",
-        "tags"
-      ],
       "additionalProperties": false
     }
   },

@@ -68,7 +68,7 @@ class ExtractionSession(Base):
 
 
 # Entity tables - normalized storage for operational queries
-class Company(Base):
+class ExtractedCompany(Base):
     """Extracted company entities."""
     __tablename__ = "companies"
     __table_args__ = (
@@ -89,6 +89,7 @@ class Company(Base):
     hq_country = Column(String, nullable=True)
     status = Column(String, nullable=True)  # active, dormant
     tags = Column(JSON, default=list)
+    short_desc = Column(Text, nullable=True)
     
     # Metadata
     first_seen = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -96,13 +97,13 @@ class Company(Base):
     confidence_score = Column(Float, default=0.0)  # Aggregate confidence
     
     # Relationships
-    products = relationship("Product", back_populates="company", cascade="all, delete-orphan")
+    products = relationship("ExtractedProduct", back_populates="company", cascade="all, delete-orphan")
     snapshots = relationship("EntitySnapshot", 
-                           primaryjoin="and_(Company.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Company')",
+                           primaryjoin="and_(ExtractedCompany.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Company')",
                            cascade="all, delete-orphan")
 
 
-class Product(Base):
+class ExtractedProduct(Base):
     """Extracted product entities."""
     __tablename__ = "products"
     __table_args__ = (
@@ -145,13 +146,13 @@ class Product(Base):
     confidence_score = Column(Float, default=0.0)
     
     # Relationships
-    company = relationship("Company", back_populates="products")
+    company = relationship("ExtractedCompany", back_populates="products")
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Product.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Product')",
+                           primaryjoin="and_(ExtractedProduct.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Product')",
                            cascade="all, delete-orphan")
 
 
-class Capability(Base):
+class ExtractedCapability(Base):
     """Extracted capability entities."""
     __tablename__ = "capabilities"
     __table_args__ = (
@@ -178,11 +179,11 @@ class Capability(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Capability.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Capability')",
+                           primaryjoin="and_(ExtractedCapability.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Capability')",
                            cascade="all, delete-orphan")
 
 
-class Release(Base):
+class ExtractedRelease(Base):
     """Extracted release/version entities."""
     __tablename__ = "releases"
     __table_args__ = (
@@ -214,11 +215,11 @@ class Release(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Release.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Release')",
+                           primaryjoin="and_(ExtractedRelease.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Release')",
                            cascade="all, delete-orphan")
 
 
-class Document(Base):
+class ExtractedDocument(Base):
     """Extracted document entities."""
     __tablename__ = "documents"
     __table_args__ = (
@@ -249,11 +250,11 @@ class Document(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Document.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Document')",
+                           primaryjoin="and_(ExtractedDocument.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Document')",
                            cascade="all, delete-orphan")
 
 
-class Signal(Base):
+class ExtractedSignal(Base):
     """Extracted signal entities (news, events, changes)."""
     __tablename__ = "signals"
     __table_args__ = (
@@ -284,7 +285,7 @@ class Signal(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Signal.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Signal')",
+                           primaryjoin="and_(ExtractedSignal.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Signal')",
                            cascade="all, delete-orphan")
 
 

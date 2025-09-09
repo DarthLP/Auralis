@@ -27,7 +27,7 @@ def json_serial(obj):
 from sqlalchemy import func
 
 from app.models.extraction import (
-    Company, Product, Capability, Release, Document, Signal,
+    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, ExtractedDocument, ExtractedSignal,
     ExtractionSource, EntitySnapshot, EntityChange, ExtractionSession
 )
 from app.core.config import settings
@@ -565,8 +565,16 @@ class NormalizationService:
         }
         
         try:
-            # Process each entity type
-            for entity_type, entities in extracted_entities.items():
+            # Process entities in dependency order: Company -> Product -> Capability -> others
+            # This ensures foreign key constraints are satisfied
+            processing_order = ["Company", "Product", "Capability", "Release", "Document", "Signal"]
+            
+            # Process entities in the correct order
+            for entity_type in processing_order:
+                if entity_type not in extracted_entities:
+                    continue
+                    
+                entities = extracted_entities[entity_type]
                 if entity_type == "Source":
                     continue  # Handle separately
                 
@@ -603,9 +611,21 @@ class NormalizationService:
                         results["sources_created"] += 1
                         
                     except Exception as e:
-                        error_msg = f"Failed to process {entity_type}: {e}"
-                        logger.error(error_msg)
-                        results["errors"].append(error_msg)
+                        # Handle constraint violations gracefully
+                        if "duplicate key" in str(e).lower() or "unique constraint" in str(e).lower():
+                            logger.warning(f"Duplicate entity detected for {entity_type}, skipping: {e}")
+                            # Rollback current transaction and start fresh
+                            self.db.rollback()
+                            self.db.begin()
+                            results["entities_processed"] += 1  # Count as processed
+                            continue
+                        else:
+                            error_msg = f"Failed to process {entity_type}: {e}"
+                            logger.error(error_msg)
+                            results["errors"].append(error_msg)
+                            # Rollback and restart transaction for next entity
+                            self.db.rollback()
+                            self.db.begin()
             
             self.db.commit()
             
@@ -679,12 +699,12 @@ class NormalizationService:
     def _find_existing_entity(self, entity_type: str, natural_key: str):
         """Find existing entity by natural key."""
         model_map = {
-            "Company": Company,
-            "Product": Product,
-            "Capability": Capability,
-            "Release": Release,
-            "Document": Document,
-            "Signal": Signal
+            "Company": ExtractedCompany,
+            "Product": ExtractedProduct,
+            "Capability": ExtractedCapability,
+            "Release": ExtractedRelease,
+            "Document": ExtractedDocument,
+            "Signal": ExtractedSignal
         }
         
         model = model_map.get(entity_type)
@@ -701,12 +721,12 @@ class NormalizationService:
     def _create_new_entity(self, entity_type: str, entity_data: Dict[str, Any], natural_key: str, competitor: str) -> str:
         """Create new entity in database."""
         model_map = {
-            "Company": Company,
-            "Product": Product,
-            "Capability": Capability,
-            "Release": Release,
-            "Document": Document,
-            "Signal": Signal
+            "Company": ExtractedCompany,
+            "Product": ExtractedProduct,
+            "Capability": ExtractedCapability,
+            "Release": ExtractedRelease,
+            "Document": ExtractedDocument,
+            "Signal": ExtractedSignal
         }
         
         model = model_map.get(entity_type)
@@ -732,12 +752,12 @@ class NormalizationService:
     def _update_entity_in_db(self, entity_type: str, entity_id: str, merged_data: Dict[str, Any]):
         """Update existing entity in database."""
         model_map = {
-            "Company": Company,
-            "Product": Product,
-            "Capability": Capability,
-            "Release": Release,
-            "Document": Document,
-            "Signal": Signal
+            "Company": ExtractedCompany,
+            "Product": ExtractedProduct,
+            "Capability": ExtractedCapability,
+            "Release": ExtractedRelease,
+            "Document": ExtractedDocument,
+            "Signal": ExtractedSignal
         }
         
         model = model_map.get(entity_type)

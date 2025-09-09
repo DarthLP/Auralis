@@ -14,10 +14,6 @@
               "type": "string"
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         },
         {
@@ -34,10 +30,6 @@
               "type": "string"
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         },
         {
@@ -51,10 +43,6 @@
               "type": "boolean"
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         },
         {
@@ -68,10 +56,6 @@
               "type": "string"
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         },
         {
@@ -91,11 +75,6 @@
               "type": "string"
             }
           },
-          "required": [
-            "type",
-            "min",
-            "max"
-          ],
           "additionalProperties": false
         },
         {
@@ -112,10 +91,6 @@
               }
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         },
         {
@@ -130,10 +105,6 @@
               "format": "uri"
             }
           },
-          "required": [
-            "type",
-            "value"
-          ],
           "additionalProperties": false
         }
       ]

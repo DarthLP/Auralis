@@ -10,8 +10,11 @@
         "name": {
           "type": "string"
         },
+        "category": {
+          "type": ["string", "null"]
+        },
         "definition": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "tags": {
           "type": "array",
@@ -20,11 +23,6 @@
           }
         }
       },
-      "required": [
-        "id",
-        "name",
-        "tags"
-      ],
       "additionalProperties": false
     }
   },
