@@ -168,9 +168,9 @@ async def run_extraction(
         db.commit()
         db.refresh(extraction_session)
         
-        # Start background BATCH extraction (restructured pipeline)
+        # Start background extraction
         background_tasks.add_task(
-            _run_batch_extraction_background,
+            _run_extraction_background,
             extraction_session.id,
             extraction_service
         )
@@ -433,178 +433,6 @@ async def stop_all_running_sessions(
         raise HTTPException(status_code=500, detail=f"Failed to stop extraction sessions: {e}")
 
 
-async def _run_batch_extraction_background(
-    extraction_session_id: int,
-    extraction_service: ExtractionService
-):
-    """
-    Background task to run the batch extraction process using the restructured pipeline.
-    
-    New approach:
-    - Step 1: Process each page individually to get basic extractions
-    - Step 2A: ONE consolidated company LLM request with all company data  
-    - Step 2B: ONE consolidated product LLM request with all product data (sequential after 2A)
-    """
-    # Create a new database session for the background task
-    from app.core.db import SessionLocal
-    db = SessionLocal()
-    
-    try:
-        extraction_session = db.query(ExtractionSession).filter(
-            ExtractionSession.id == extraction_session_id
-        ).first()
-        
-        if not extraction_session:
-            logger.error(f"Extraction session {extraction_session_id} not found")
-            return
-        
-        # Get all page fingerprints for this session that have text
-        fingerprints = db.query(PageFingerprint).filter(
-            PageFingerprint.fingerprint_session_id == extraction_session.fingerprint_session_id,
-            PageFingerprint.normalized_text_len > 0,
-            PageFingerprint.extracted_text.isnot(None)
-        ).all()
-        
-        extraction_session.total_pages = len(fingerprints)
-        db.commit()
-        
-        logger.info(f"Starting BATCH extraction for {len(fingerprints)} pages")
-        
-        # Prepare page data for batch processing
-        page_data_list = []
-        for fingerprint in fingerprints:
-            # Emit page queued event
-            emit_page_queued(extraction_session_id, fingerprint.id, fingerprint.url)
-            
-            page_data_list.append({
-                "text": fingerprint.extracted_text,
-                "url": fingerprint.url,
-                "page_type": fingerprint.page_type,
-                "content_hash": fingerprint.content_hash,
-                "fingerprint_id": fingerprint.id
-            })
-        
-        start_time = datetime.utcnow()
-        
-        # Run batch extraction (Step 1 + consolidated Step 2A + Step 2B)
-        batch_result = await extraction_service.extract_batch_from_pages(
-            page_data_list=page_data_list,
-            competitor=extraction_session.competitor,
-            session_id=str(extraction_session_id)
-        )
-        
-        if batch_result.success:
-            logger.info(f"Batch extraction succeeded with confidence {batch_result.confidence:.2f}")
-            
-            # Emit extraction results for all pages (since they were processed as a batch)
-            for page_data in page_data_list:
-                emit_page_extracted(
-                    extraction_session_id,
-                    page_data["fingerprint_id"],
-                    batch_result.method,
-                    batch_result.confidence,
-                    batch_result.tokens_input,
-                    batch_result.tokens_output,
-                    batch_result.cache_hit
-                )
-            
-            # Normalize and store extracted entities (once for all pages)
-            with competitor_lock(db, extraction_session.competitor) as lock_acquired:
-                if lock_acquired:
-                    normalization_service = NormalizationService(db)
-                    
-                    # Create consolidated source metadata
-                    source_metadata = {
-                        "extraction_session_id": extraction_session_id,
-                        "competitor": extraction_session.competitor,
-                        "method": batch_result.method,
-                        "confidence": batch_result.confidence,
-                        "processing_time_ms": batch_result.processing_time_ms,
-                        "tokens_input": batch_result.tokens_input,
-                        "tokens_output": batch_result.tokens_output,
-                        "cache_hit": batch_result.cache_hit,
-                        "pages_processed": len(page_data_list)
-                    }
-                    
-                    # Normalize entities
-                    changes = normalization_service.normalize_and_upsert(
-                        extracted_entities=batch_result.entities,
-                        competitor=extraction_session.competitor,
-                        extraction_session_id=extraction_session_id,
-                        source_metadata=source_metadata
-                    )
-                    
-                    # Emit merge completion for all pages
-                    for page_data in page_data_list:
-                        emit_page_merged(extraction_session_id, page_data["fingerprint_id"], [], len(changes))
-                    
-                    # Update extraction session stats
-                    extraction_session.processed_pages = len(page_data_list)
-                    extraction_session.companies_found = len(batch_result.entities.get("Company", []))
-                    extraction_session.products_found = len(batch_result.entities.get("Product", []))
-                    extraction_session.capabilities_found = len(batch_result.entities.get("Capability", []))
-                    extraction_session.releases_found = len(batch_result.entities.get("Release", []))
-                    extraction_session.documents_found = len(batch_result.entities.get("Document", []))
-                    extraction_session.signals_found = len(batch_result.entities.get("Signal", []))
-                    extraction_session.changes_detected = len(changes)
-                    extraction_session.cache_hits = 1 if batch_result.cache_hit else 0
-                    
-                    logger.info(f"Batch extraction completed: {extraction_session.companies_found} companies, "
-                              f"{extraction_session.products_found} products, {extraction_session.capabilities_found} capabilities")
-                else:
-                    logger.warning(f"Could not acquire competitor lock for {extraction_session.competitor}")
-                    extraction_session.failed_pages = len(page_data_list)
-                    extraction_session.error_summary = {"lock_error": "Could not acquire competitor lock"}
-        else:
-            logger.error(f"Batch extraction failed: {batch_result.error}")
-            extraction_session.failed_pages = len(page_data_list)
-            extraction_session.error_summary = {"batch_error": batch_result.error}
-            
-            # Emit failure for all pages
-            for page_data in page_data_list:
-                emit_page_failed(extraction_session_id, page_data["fingerprint_id"], batch_result.error or "Batch extraction failed")
-        
-        # Complete the session
-        extraction_session.completed_at = datetime.utcnow()
-        db.commit()
-        
-        # Emit session finished event
-        if batch_result.success:
-            emit_session_finished(extraction_session_id, len(page_data_list), len(page_data_list), 0, extraction_session.changes_detected or 0)
-        else:
-            emit_session_finished(extraction_session_id, 0, 0, len(page_data_list), 0)
-        
-        # Export data
-        try:
-            await export_extraction_data(db, extraction_session_id)
-            logger.info(f"Exported extraction data for session {extraction_session_id}")
-        except Exception as e:
-            logger.error(f"Failed to export extraction data: {e}")
-        
-        processing_time = (datetime.utcnow() - start_time).total_seconds()
-        logger.info(f"Batch extraction session {extraction_session_id} completed in {processing_time:.2f}s")
-        
-    except Exception as e:
-        logger.error(f"Batch extraction session {extraction_session_id} failed: {e}")
-        
-        # Update session with error
-        try:
-            extraction_session = db.query(ExtractionSession).filter(
-                ExtractionSession.id == extraction_session_id
-            ).first()
-            if extraction_session:
-                extraction_session.completed_at = datetime.utcnow()
-                extraction_session.error_summary = {"system_error": str(e)}
-                db.commit()
-                
-                emit_session_finished(extraction_session_id, 0, 0, 0, 0)
-        except Exception as cleanup_error:
-            logger.error(f"Failed to update session after error: {cleanup_error}")
-    
-    finally:
-        db.close()
-
-
 async def _run_extraction_background(
     extraction_session_id: int,
     extraction_service: ExtractionService
@@ -646,10 +474,64 @@ async def _run_extraction_background(
         error_summary = {}
         start_time = datetime.utcnow()
         
-        for i, fingerprint in enumerate(fingerprints):
-            try:
-                # Emit page queued event
+        # NEW: Use consolidated multi-stage extraction instead of page-by-page
+        try:
+            # Emit initial events for all pages
+            for fingerprint in fingerprints:
                 emit_page_queued(extraction_session_id, fingerprint.id, fingerprint.url)
+            
+            # Prepare consolidated page data
+            pages_data = []
+            for fingerprint in fingerprints:
+                pages_data.append({
+                    "raw_text": fingerprint.extracted_text,
+                    "url": fingerprint.url,
+                    "page_type": fingerprint.page_type,
+                    "content_hash": fingerprint.content_hash,
+                    "fingerprint_id": fingerprint.id
+                })
+            
+            logger.info(f"Starting consolidated multi-stage extraction for {len(pages_data)} pages")
+            
+            # Run consolidated extraction
+            consolidated_result = await extraction_service.extract_consolidated_multistage(
+                pages_data=pages_data,
+                competitor=extraction_session.competitor,
+                session_id=str(extraction_session_id)
+            )
+            
+            # Process results and update stats
+            processed = consolidated_result["summary"]["step1_successful"]
+            failed = len(fingerprints) - processed
+            
+            # Emit events for completed pages  
+            for step1_result in consolidated_result["step1_results"]:
+                fingerprint = next((fp for fp in fingerprints if fp.url == step1_result["url"]), None)
+                if fingerprint:
+                    emit_page_started(extraction_session_id, fingerprint.id)
+                    emit_page_extracted(extraction_session_id, fingerprint.id, "ai_multistage_consolidated", 0.85, None, None, False)
+                    emit_page_completed(extraction_session_id, fingerprint.id)
+            
+            # Emit events for failed pages
+            for failed_page in consolidated_result["failed_pages"]:
+                if failed_page["step"] == "step1":
+                    fingerprint = next((fp for fp in fingerprints if fp.url == failed_page["url"]), None)
+                    if fingerprint:
+                        emit_page_failed(extraction_session_id, fingerprint.id, failed_page["error"])
+                        error_summary[str(fingerprint.id)] = failed_page["error"]
+            
+            logger.info(f"Consolidated extraction completed: {processed} successful, {failed} failed")
+            
+        except Exception as e:
+            logger.error(f"Consolidated extraction failed: {e}")
+            failed = len(fingerprints)
+            error_summary["system"] = str(e)
+            
+            # Emit failure events for all pages
+            for fingerprint in fingerprints:
+                emit_page_failed(extraction_session_id, fingerprint.id, str(e))
+        
+        # Final update
                 
                 # Check if already processed (hash-and-skip)
                 # TODO: Implement hash-and-skip logic here
@@ -737,7 +619,7 @@ async def _run_extraction_background(
                 logger.error(f"Error processing {fingerprint.url}: {e}")
             
             # Update progress periodically and emit metrics
-            if (processed + skipped + failed) % 5 == 0 or i == len(fingerprints) - 1 or (processed + skipped + failed) == 1:
+            if (processed + skipped + failed) % 10 == 0 or i == len(fingerprints) - 1:
                 extraction_session.processed_pages = processed
                 extraction_session.skipped_pages = skipped
                 extraction_session.failed_pages = failed
@@ -748,9 +630,9 @@ async def _run_extraction_background(
                 
                 # Calculate metrics
                 elapsed_seconds = (datetime.utcnow() - start_time).total_seconds()
-                pages_per_minute = ((processed + failed) / max(elapsed_seconds, 1)) * 60
+                qps = (processed + failed) / max(elapsed_seconds, 1)
                 remaining = len(fingerprints) - (processed + skipped + failed)
-                eta_seconds = int(remaining / max(pages_per_minute / 60, 0.1)) if remaining > 0 else 0
+                eta_seconds = int(remaining / max(qps, 0.1)) if remaining > 0 else 0
                 
                 # Emit metrics
                 emit_metrics(
@@ -761,7 +643,7 @@ async def _run_extraction_background(
                     skipped,
                     cache_hits,
                     total_retries,
-                    pages_per_minute,
+                    qps,
                     eta_seconds if remaining > 0 else None
                 )
         

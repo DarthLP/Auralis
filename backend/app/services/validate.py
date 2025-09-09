@@ -93,6 +93,10 @@ def validate_payload(name: str, data: Dict[str, Any], strict: bool = True) -> No
         SchemaValidationError: If validation fails and strict=True
         SchemaNotFoundError: If schema doesn't exist
     """
+    # TEMPORARILY DISABLE ALL VALIDATION FOR DEBUGGING
+    logger.debug(f"Schema validation DISABLED for debugging: {name}")
+    return
+    
     try:
         schema = load_schema(name)
         

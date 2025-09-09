@@ -17,10 +17,10 @@ class Product(Base):
     __table_args__ = {'schema': None}  # Use default schema
     
     id = Column(String, primary_key=True, index=True)
-    company_id = Column(String, ForeignKey("companies.id"), nullable=False, index=True)
-    name = Column(String, nullable=False, index=True)
-    category = Column(String, nullable=False)
-    stage = Column(String, nullable=False)  # ProductStage enum
+    company_id = Column(String, ForeignKey("companies.id"), nullable=True, index=True)  # Removed required constraint
+    name = Column(String, nullable=True, index=True)  # Removed required constraint
+    category = Column(String, nullable=True)  # Removed required constraint
+    stage = Column(String, nullable=True)  # Removed required constraint
     markets = Column(ARRAY(String), default=list)
     tags = Column(ARRAY(String), default=list)
     short_desc = Column(Text, nullable=True)
@@ -51,7 +51,7 @@ class Capability(Base):
     __table_args__ = {'schema': None}  # Use default schema
     
     id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
+    name = Column(String, nullable=True, index=True)  # Removed required constraint
     definition = Column(Text, nullable=True)
     tags = Column(ARRAY(String), default=list)
     

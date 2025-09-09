@@ -91,6 +91,8 @@ The schema-first extraction pipeline transforms raw page text into structured co
 | `GET` | `/api/extract/status/{session_id}` | Get extraction progress and results | JSON with session status and statistics |
 | `GET` | `/api/extract/sessions` | List extraction sessions with filtering | JSON array of extraction sessions |
 | `GET` | `/api/extract/stream/{session_id}` | **NEW**: Real-time progress via Server-Sent Events | Live SSE stream |
+| `POST` | `/api/extract/stop/{session_id}` | **NEW**: Stop a running extraction session | JSON with stop confirmation |
+| `POST` | `/api/extract/stop-all` | **NEW**: Stop all running extraction sessions | JSON with batch stop results |
 
 #### POST /api/crawl/discover
 
@@ -235,8 +237,10 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 ```
 
 **Extraction Pipeline Features:**
-- **Rules-First Strategy**: Fast regex patterns for pricing tables, product specs, releases
-- **AI Fallback**: Theta EdgeCloud (DeepSeek-R1) for complex extraction when rules fail
+- **Multi-Stage LLM Process**: Simplified two-stage approach for better reliability
+  - Stage 1: Per-page extraction with simple 3-key JSON output (products, company, source)
+  - Stage 2: Batch consolidation into structured Company and Products objects
+- **Deterministic Output**: Uses SHA1 hashing for consistent product/capability IDs
 - **Schema Validation**: All outputs validated against JSON schemas
 - **Hash & Skip**: Avoids re-processing unchanged content
 - **Change Detection**: Tracks entity changes between extraction runs
@@ -357,6 +361,67 @@ eventSource.addEventListener('error', (event) => {
 - 🎯 **Method Insights**: See which pages use rules vs AI extraction
 - ❌ **Error Monitoring**: Immediate notification of failed pages
 - ⚡ **Performance**: No polling overhead, instant updates
+
+#### POST /api/extract/stop/{session_id}
+
+**NEW**: Stop a running extraction session to prevent unnecessary LLM costs and resource usage.
+
+**Path Parameters:**
+- `session_id` (required): ID of the extraction session to stop
+
+**Response:**
+```json
+{
+  "message": "Successfully stopped extraction session 1",
+  "status": "stopped",
+  "competitor": "Figure AI",
+  "processed_pages": 2,
+  "total_pages": 7,
+  "stopped_at": "2025-09-09T10:56:16.666459Z"
+}
+```
+
+**Use Cases:**
+- 🛑 **Cost Control**: Stop runaway LLM requests that are incurring high costs
+- 🔄 **Fresh Start**: Clear old sessions before starting new extractions
+- 🚨 **Error Recovery**: Stop sessions that are stuck or failing repeatedly
+- 📊 **Resource Management**: Free up processing resources for other tasks
+
+#### POST /api/extract/stop-all
+
+**NEW**: Stop all currently running extraction sessions in bulk. Optionally filter by competitor.
+
+**Query Parameters:**
+- `competitor` (optional): Only stop sessions for this specific competitor
+
+**Response:**
+```json
+{
+  "message": "Successfully stopped 3 extraction sessions",
+  "status": "stopped",
+  "stopped_count": 3,
+  "stopped_sessions": [
+    {
+      "session_id": 1,
+      "competitor": "Figure AI",
+      "processed_pages": 2,
+      "total_pages": 7
+    },
+    {
+      "session_id": 2,
+      "competitor": "Boston Dynamics",
+      "processed_pages": 0,
+      "total_pages": 12
+    }
+  ]
+}
+```
+
+**Use Cases:**
+- 💰 **Emergency Stop**: Immediately halt all LLM processing to prevent costs
+- 🔄 **Pipeline Reset**: Clean slate before starting fresh extraction runs
+- 🎯 **Competitor Focus**: Stop only sessions for a specific competitor
+- 🚀 **Batch Management**: Efficiently manage multiple concurrent sessions
 
 #### POST /api/crawl/fingerprint
 
@@ -623,30 +688,32 @@ npm run build  # Generates JSON schemas in backend/app/schema/json/
 
 ## 🧠 Extraction Pipeline Architecture
 
-The Auralis extraction pipeline transforms raw page text into structured competitive intelligence using a sophisticated rules-first + AI fallback strategy.
+The Auralis extraction pipeline transforms raw page text into structured competitive intelligence using a multi-stage LLM approach for better reliability and maintainability.
 
 ### Pipeline Overview
 
 ```
-Raw Page Text → Rules Extraction → AI Fallback → Validation → Normalization → Entity Storage
-                      ↓                ↓             ↓            ↓              ↓
-                 Fast patterns    Theta EdgeCloud   JSON Schema   Natural Keys   PostgreSQL
-                 (0.1s/page)      (2-5s/page)      Validation    Resolution     + Snapshots
+Raw Page Text → Stage 1: Simple Extraction → Stage 2A: Company → Stage 2B: Products → Entity Storage
+                         ↓                           ↓                    ↓              ↓
+                    3-key JSON               Company Object      Products + Capabilities   PostgreSQL
+                  (products/company/source)  Consolidation         Consolidation         + Snapshots
+                      (1-2s/page)            (batch process)      (batch process)
 ```
 
 ### Core Components
 
-#### 1. Extraction Service (`app/services/extract.py`)
-- **Rules-First Strategy**: Fast regex patterns for pricing tables, product specifications, release notes
-- **AI Fallback**: Theta EdgeCloud (DeepSeek-R1) when rules confidence < 60%
-- **Confidence Scoring**: Each extraction method provides confidence scores (0-1)
-- **Error Isolation**: Per-page processing with graceful degradation
+#### 1. Multi-Stage Extraction Service (`app/services/extract.py`)
+- **MultiStageAIExtractor**: Implements the two-stage LLM approach
+- **Stage 1**: Per-page extraction with simple 3-key JSON output
+- **Stage 2A**: Company consolidation from multiple page results
+- **Stage 2B**: Products and capabilities consolidation
+- **Session Management**: Proper cost tracking and session coordination
 
-#### 2. Schema Compaction (`app/services/schema_utils.py`)
-- **Dynamic Schema Trimming**: Only include relevant entity schemas per page type
-- **Field Prioritization**: Focus on required + high-value optional fields
-- **Token Management**: Stay within 110k token budget for AI prompts
-- **Page Type Mapping**: Product pages → Product+Company schemas, Release pages → Release+Product schemas
+#### 2. Multi-Stage Prompts (`app/services/schema_utils.py`)
+- **Stage 1 Prompts**: Simple extraction with fixed bullet-point format
+- **Stage 2A Prompts**: Company normalization and consolidation
+- **Stage 2B Prompts**: Product deduplication and capability extraction
+- **Deterministic IDs**: SHA1-based hashing for consistent product/capability IDs
 
 #### 3. Theta EdgeCloud Client (`app/services/theta_client.py`)
 - **JSON Mode**: Structured output with provider-side JSON enforcement
@@ -666,36 +733,42 @@ Raw Page Text → Rules Extraction → AI Fallback → Validation → Normalizat
 - **Per-Competitor Locking**: Prevent merge conflicts during concurrent extractions
 - **Automatic Cleanup**: Session-scoped locks with automatic release
 
-### Extraction Strategies
+### Multi-Stage Extraction Process
 
-#### Rules-Based Extraction
-Fast, deterministic patterns for common data structures:
+#### Stage 1: Per-Page Simple Extraction
+Extracts basic information from individual pages into a simple 3-key format:
 
-```python
-# Pricing detection
-r"[\$€£¥]\s*(\d+(?:,\d{3})*(?:\.\d{2})?)"
-
-# Version extraction  
-r"(?:version|v\.?|release)\s*(\d+(?:\.\d+)*(?:\.\d+)*)"
-
-# Feature lists
-r"(?:features?|capabilities?):\s*(.+?)(?:\n\n|\.|$)"
+```json
+{
+  "products": {
+    "Product Name": {
+      "text": "WHAT: Description\nCATEGORY: Category\nFEATURES: Feature list\n..."
+    }
+  },
+  "company": "NAME: Company Name\nWEBSITE: https://...\nLOCATION: Country\n...",
+  "source": {"url": "https://..."}
+}
 ```
 
 **Advantages:**
-- ⚡ Ultra-fast (0.1s per page)
-- 💰 Zero AI costs
-- 🎯 High precision for structured data
-- 🔒 Deterministic and auditable
+- 🎯 Simple, focused extraction per page
+- 📝 Structured bullet-point format for consistency
+- 🚫 No complex schema validation during extraction
+- 🔄 Easy to parse and consolidate
 
-#### AI-Based Extraction
-Sophisticated understanding for complex content:
+#### Stage 2: Batch Consolidation
+Combines multiple Stage 1 results into final structured entities:
 
-**Prompt Strategy:**
-- Compact schema definitions (10-30 fields vs full schemas)
-- Page context (competitor, URL, page type)
-- Extraction rules (prefer factual data, use null for missing fields)
-- Pure JSON output with confidence scoring
+**Stage 2A - Company Consolidation:**
+- Merges company information from all pages
+- Resolves conflicts (prefers official pages)
+- Generates canonical company object
+
+**Stage 2B - Products Consolidation:**
+- Deduplicates products by normalized names
+- Extracts capabilities from product descriptions
+- Generates deterministic IDs using SHA1 hashing
+- Creates final product objects with nested capabilities
 
 **Model Configuration:**
 - **Model**: DeepSeek-R1 via Theta EdgeCloud

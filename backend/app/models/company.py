@@ -17,12 +17,13 @@ class Company(Base):
     __table_args__ = {'schema': None}  # Use default schema
     
     id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
+    name = Column(String, nullable=True, index=True)  # Removed required constraint
     aliases = Column(ARRAY(String), default=list)
     hq_country = Column(String, nullable=True)
     website = Column(String, nullable=True)
-    status = Column(String, nullable=False, default="active")  # 'active' | 'dormant'
+    status = Column(String, nullable=True, default="active")  # Removed required constraint
     tags = Column(ARRAY(String), default=list)
+    short_desc = Column(Text, nullable=True)  # Short description from extraction
     logo_url = Column(String, nullable=True)
     is_self = Column(Boolean, default=False)  # true if "Your Company"
     

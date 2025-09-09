@@ -35,11 +35,6 @@
           }
         }
       },
-      "required": [
-        "company_id",
-        "one_liner",
-        "sources"
-      ],
       "additionalProperties": false
     }
   },

@@ -190,6 +190,7 @@ class ThetaClient:
             
             # Generate prompt hash for caching (use cache_key as it already contains the prompt info)
             import hashlib
+            prompt_text = json.dumps({"cache_key": cache_key, "model": self.model}, sort_keys=True)
             prompt_hash = hashlib.sha256(cache_key.encode()).hexdigest()
             
             cache_entry = AICache(
@@ -211,6 +212,8 @@ class ThetaClient:
             
         except Exception as e:
             logger.warning(f"Cache storage failed: {e}")
+            # Don't let cache failures block the main process
+            pass
     
     async def _wait_for_rate_limit(self, session_id: Optional[str] = None):
         """Wait for rate limit availability."""
@@ -294,6 +297,50 @@ class ThetaClient:
             self.circuit_breaker.call_failed()
             raise ThetaClientError(f"Unexpected error: {e}")
     
+    def _clean_json_response(self, content: str) -> str:
+        """Clean and repair common JSON formatting issues."""
+        try:
+            # Remove any markdown code block formatting
+            import re
+            json_match = re.search(r'```json\s*\n(.*?)\n```', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(1).strip()
+            
+            # Remove any text before the first { or [
+            content = content.strip()
+            first_brace = content.find('{')
+            first_bracket = content.find('[')
+            
+            if first_brace != -1 and (first_bracket == -1 or first_brace < first_bracket):
+                content = content[first_brace:]
+            elif first_bracket != -1:
+                content = content[first_bracket:]
+            
+            # Remove any text after the last } or ]
+            last_brace = content.rfind('}')
+            last_bracket = content.rfind(']')
+            
+            if last_brace != -1 and (last_bracket == -1 or last_brace > last_bracket):
+                content = content[:last_brace + 1]
+            elif last_bracket != -1:
+                content = content[:last_bracket + 1]
+            
+            # Fix common JSON issues
+            # Fix trailing commas
+            content = re.sub(r',\s*([}\]])', r'\1', content)
+            
+            # Fix missing commas between objects/arrays
+            content = re.sub(r'([}\]])\s*([{\[])', r'\1,\2', content)
+            
+            # Fix missing commas between string values
+            content = re.sub(r'"\s*\n\s*"', '",\n"', content)
+            
+            return content.strip()
+            
+        except Exception as e:
+            logger.warning(f"JSON cleaning failed: {e}")
+            return content
+    
     def _extract_content(self, response: Dict[str, Any]) -> str:
         """Extract content from Theta EdgeCloud response."""
         try:
@@ -369,13 +416,13 @@ class ThetaClient:
         if not self.circuit_breaker.can_attempt():
             raise ThetaClientError("Circuit breaker open - too many recent failures")
         
-        # Check cache first
+        # Cache disabled - skip cache check
         cache_key = None
-        if use_cache:
-            cache_key = self._compute_cache_key(prompt, schema_version, page_type, competitor)
-            cached_response = self._get_cached_response(cache_key)
-            if cached_response:
-                return cached_response
+        # if use_cache:
+        #     cache_key = self._compute_cache_key(prompt, schema_version, page_type, competitor)
+        #     cached_response = self._get_cached_response(cache_key)
+        #     if cached_response:
+        #         return cached_response
         
         # Wait for rate limits
         await self._wait_for_rate_limit(session_id)
@@ -388,24 +435,40 @@ class ThetaClient:
                 response = await self._make_request(payload)
                 content = self._extract_content(response)
                 
-                # Parse JSON response
+                # Parse JSON response with cleaning and enhanced retry
                 try:
                     result = json.loads(content)
                 except json.JSONDecodeError as e:
-                    # Try corrective retry on first attempt
-                    if attempt == 0:
-                        logger.warning(f"JSON parsing failed, attempting corrective retry: {e}")
-                        corrective_prompt = f"{prompt}\n\nIMPORTANT: Your previous response was invalid JSON. Return ONLY valid JSON with no additional text or formatting."
-                        payload = self._build_request_payload(corrective_prompt, use_json_mode=True)
-                        response = await self._make_request(payload)
-                        content = self._extract_content(response)
-                        result = json.loads(content)  # This will raise if still invalid
-                    else:
-                        raise ThetaValidationError(f"Invalid JSON response: {e}")
+                    logger.warning(f"JSON parsing failed: {e}")
+                    
+                    # Try cleaning the JSON first
+                    try:
+                        cleaned_content = self._clean_json_response(content)
+                        logger.info("Attempting to parse cleaned JSON...")
+                        result = json.loads(cleaned_content)
+                        logger.info("✅ Successfully parsed cleaned JSON!")
+                    except json.JSONDecodeError as clean_error:
+                        # If cleaning failed and this is first attempt, try corrective retry
+                        if attempt == 0:
+                            logger.warning(f"JSON cleaning also failed: {clean_error}")
+                            logger.warning("Attempting corrective retry with explicit JSON instructions...")
+                            corrective_prompt = f"{prompt}\n\nIMPORTANT: Your previous response contained invalid JSON syntax. Return ONLY valid JSON with proper formatting:\n- Use double quotes for strings\n- No trailing commas\n- Proper bracket/brace matching\n- No comments or extra text"
+                            payload = self._build_request_payload(corrective_prompt, use_json_mode=True)
+                            response = await self._make_request(payload)
+                            content = self._extract_content(response)
+                            
+                            # Try parsing the retry response with cleaning
+                            try:
+                                result = json.loads(content)
+                            except json.JSONDecodeError:
+                                cleaned_retry = self._clean_json_response(content)
+                                result = json.loads(cleaned_retry)  # This will raise if still invalid
+                        else:
+                            raise ThetaValidationError(f"Invalid JSON response after cleaning: {clean_error}")
                 
-                # Cache successful response
-                if use_cache and cache_key:
-                    self._cache_response(cache_key, result)
+                # Cache disabled - skip storing response
+                # if use_cache and cache_key:
+                #     self._cache_response(cache_key, result)
                 
                 return result
                 

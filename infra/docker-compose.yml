@@ -13,6 +13,7 @@ services:
     restart: unless-stopped
     volumes:
       - ../backend/logs:/app/logs
+      - ../backend/exports:/app/app/exports
       - ../data:/data
 
   db:

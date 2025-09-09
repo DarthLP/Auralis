@@ -89,6 +89,7 @@ class ExtractedCompany(Base):
     hq_country = Column(String, nullable=True)
     status = Column(String, nullable=True)  # active, dormant
     tags = Column(JSON, default=list)
+    short_desc = Column(Text, nullable=True)
     
     # Metadata
     first_seen = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -218,7 +219,7 @@ class ExtractedRelease(Base):
                            cascade="all, delete-orphan")
 
 
-class Document(Base):
+class ExtractedDocument(Base):
     """Extracted document entities."""
     __tablename__ = "documents"
     __table_args__ = (
@@ -249,7 +250,7 @@ class Document(Base):
     
     # Relationships
     snapshots = relationship("EntitySnapshot",
-                           primaryjoin="and_(Document.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Document')",
+                           primaryjoin="and_(ExtractedDocument.id==foreign(EntitySnapshot.entity_id), EntitySnapshot.entity_type=='Document')",
                            cascade="all, delete-orphan")
 
 

@@ -17,18 +17,26 @@ from sqlalchemy import text
 from app.core.db import get_db
 
 
-def ensure_exports_directory() -> Path:
-    """Ensure the exports directory structure exists."""
-    exports_dir = Path(__file__).parent.parent / "exports"
+def ensure_exports_directory() -> tuple[Path, Path]:
+    """Ensure the exports directory structure exists on both container and host."""
+    # Container path
+    container_exports_dir = Path(__file__).parent.parent / "exports"
+    container_exports_dir.mkdir(exist_ok=True)
     
-    # Create main exports directory
-    exports_dir.mkdir(exist_ok=True)
+    # Host path (mounted volume)
+    host_exports_dir = Path("/Users/lorenzpiazolo/Documents/Theta Hackathon 25/_Code/Auralis/backend/exports")
+    try:
+        host_exports_dir.mkdir(exist_ok=True)
+    except (OSError, PermissionError):
+        host_exports_dir = None
     
-    # Create subdirectories
+    # Create subdirectories in both locations
     for subdir in ["crawling", "fingerprinting", "extraction", "llm_responses"]:
-        (exports_dir / subdir).mkdir(exist_ok=True)
+        (container_exports_dir / subdir).mkdir(exist_ok=True)
+        if host_exports_dir:
+            (host_exports_dir / subdir).mkdir(exist_ok=True)
     
-    return exports_dir
+    return container_exports_dir, host_exports_dir
 
 
 def json_serial(obj) -> str:
@@ -40,7 +48,7 @@ def json_serial(obj) -> str:
 
 def export_crawling_data(session_id: int, competitor: str = "unknown") -> Path:
     """Export crawling data to JSON file with automatic formatting."""
-    exports_dir = ensure_exports_directory()
+    container_exports_dir, host_exports_dir = ensure_exports_directory()
     
     db = next(get_db())
     try:
@@ -85,15 +93,25 @@ def export_crawling_data(session_id: int, competitor: str = "unknown") -> Path:
             }
             records.append(record)
         
-        filename = f"{competitor}_crawling_session_{session_id}.json"
-        filepath = exports_dir / "crawling" / filename
+        # Sanitize competitor name for filename
+        safe_competitor = competitor.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_")
+        filename = f"{safe_competitor}_crawling_session_{session_id}.json"
         
-        # Write with automatic JSON serialization handling
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # Save to container filesystem
+        container_filepath = container_exports_dir / "crawling" / filename
+        with open(container_filepath, 'w', encoding='utf-8') as f:
             json.dump(records, f, indent=2, ensure_ascii=False, default=json_serial)
+        print(f"✅ Exported {len(records)} crawling records to container: {container_filepath}")
         
-        print(f"✅ Exported {len(records)} crawling records to {filepath}")
-        return filepath
+        # Also save to host filesystem if available
+        if host_exports_dir:
+            host_filepath = host_exports_dir / "crawling" / filename
+            with open(host_filepath, 'w', encoding='utf-8') as f:
+                json.dump(records, f, indent=2, ensure_ascii=False, default=json_serial)
+            print(f"✅ Exported {len(records)} crawling records to host: {host_filepath}")
+            return host_filepath
+        
+        return container_filepath
         
     finally:
         db.close()
@@ -101,7 +119,7 @@ def export_crawling_data(session_id: int, competitor: str = "unknown") -> Path:
 
 def export_fingerprinting_data(fingerprint_session_id: int, competitor: str = "unknown") -> Path:
     """Export fingerprinting data to JSON file with automatic formatting."""
-    exports_dir = ensure_exports_directory()
+    container_exports_dir, host_exports_dir = ensure_exports_directory()
     
     db = next(get_db())
     try:
@@ -146,15 +164,25 @@ def export_fingerprinting_data(fingerprint_session_id: int, competitor: str = "u
             }
             records.append(record)
         
-        filename = f"{competitor}_fingerprinting_session_{fingerprint_session_id}.json"
-        filepath = exports_dir / "fingerprinting" / filename
+        # Sanitize competitor name for filename
+        safe_competitor = competitor.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_")
+        filename = f"{safe_competitor}_fingerprinting_session_{fingerprint_session_id}.json"
         
-        # Write with automatic JSON serialization handling
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # Save to container filesystem
+        container_filepath = container_exports_dir / "fingerprinting" / filename
+        with open(container_filepath, 'w', encoding='utf-8') as f:
             json.dump(records, f, indent=2, ensure_ascii=False, default=json_serial)
+        print(f"✅ Exported {len(records)} fingerprinting records to container: {container_filepath}")
         
-        print(f"✅ Exported {len(records)} fingerprinting records to {filepath}")
-        return filepath
+        # Also save to host filesystem if available
+        if host_exports_dir:
+            host_filepath = host_exports_dir / "fingerprinting" / filename
+            with open(host_filepath, 'w', encoding='utf-8') as f:
+                json.dump(records, f, indent=2, ensure_ascii=False, default=json_serial)
+            print(f"✅ Exported {len(records)} fingerprinting records to host: {host_filepath}")
+            return host_filepath
+        
+        return container_filepath
         
     finally:
         db.close()
@@ -162,7 +190,7 @@ def export_fingerprinting_data(fingerprint_session_id: int, competitor: str = "u
 
 def export_extraction_data(extraction_session_id: int, competitor: str = "unknown") -> Path:
     """Export extraction session data to JSON file with automatic formatting."""
-    exports_dir = ensure_exports_directory()
+    container_exports_dir, host_exports_dir = ensure_exports_directory()
     
     db = next(get_db())
     try:
@@ -220,14 +248,22 @@ def export_extraction_data(extraction_session_id: int, competitor: str = "unknow
         }
         
         filename = f"{competitor}_extraction_session_{extraction_session_id}.json"
-        filepath = exports_dir / "extraction" / filename
         
-        # Write with automatic JSON serialization handling
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # Save to container filesystem
+        container_filepath = container_exports_dir / "extraction" / filename
+        with open(container_filepath, 'w', encoding='utf-8') as f:
             json.dump(record, f, indent=2, ensure_ascii=False, default=json_serial)
+        print(f"✅ Exported extraction session to container: {container_filepath}")
         
-        print(f"✅ Exported extraction session to {filepath}")
-        return filepath
+        # Also save to host filesystem if available
+        if host_exports_dir:
+            host_filepath = host_exports_dir / "extraction" / filename
+            with open(host_filepath, 'w', encoding='utf-8') as f:
+                json.dump(record, f, indent=2, ensure_ascii=False, default=json_serial)
+            print(f"✅ Exported extraction session to host: {host_filepath}")
+            return host_filepath
+        
+        return container_filepath
         
     finally:
         db.close()
@@ -235,7 +271,7 @@ def export_extraction_data(extraction_session_id: int, competitor: str = "unknow
 
 def auto_export_pipeline_data(competitor: str = "test_competitor"):
     """Automatically export data from the latest pipeline run."""
-    exports_dir = ensure_exports_directory()
+    container_exports_dir, host_exports_dir = ensure_exports_directory()
     
     db = next(get_db())
     try:
@@ -269,7 +305,8 @@ def auto_export_pipeline_data(competitor: str = "test_competitor"):
         if extraction_session:
             export_extraction_data(extraction_session[0], competitor)
         
-        print(f"📁 All exports saved to: {exports_dir}")
+        export_location = host_exports_dir if host_exports_dir else container_exports_dir
+        print(f"📁 All exports saved to: {export_location}")
         
     finally:
         db.close()
