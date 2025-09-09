@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:48:28.550057",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Figure's Helix is a humanoid robot designed for general-purpose logistics.\nCATEGORY: Humanoid robot.\nFEATURES: Vision-language-action model, generalist control, real-world logistics applications.\nCAPABILITIES: Complex reasoning, natural interaction, autonomous operation.\nSTAGE: Not specified.\nLINKS: https://figure.ai/news\nNOTE: No additional notes."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: Not specified\nLOCATION: Not specified\nPOSITIONING: Not specified\nINDUSTRIES: Not specified\nCUSTOMERS: Not specified\nPARTNERS: Not specified\nCOMPLIANCE: Not specified\nLINKS: https://figure.ai/news\nNOTE: No additional notes."
+    },
+    "source": {
+      "url": "https://figure.ai/news"
+    }
+  },
+  "prompt_length": 2638,
+  "response_size": 722
+}

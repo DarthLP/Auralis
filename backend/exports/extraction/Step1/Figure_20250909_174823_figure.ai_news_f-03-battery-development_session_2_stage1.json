@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:48:23.097014",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/f-03-battery-development",
+  "llm_response": {
+    "products": {
+      "F.03 Battery": {
+        "text": "WHAT: Figure F.03 Battery\n\nCATEGORY: Core humanoid robot technology advancement\n\nFEATURES: Pushes boundaries in energy density, safety, reliability, cost, and scale\n\nCAPABILITIES: Dramatic increase in energy density by 94%, integrated battery system, improved safety and abuse tolerance\n\nSPECS: Run Time: 2.3 kWh enables 5 hours of run time at peak performance\n\nSTAGE: Mass production components\n\nLINKS: https://figure.ai/news/f-03-battery\n\nNOTE: Custom battery packs for applications, first humanoid robot battery certified to UN38.3 and UL2271 standards, manufactured in-house at BotQ, transitioned from complex machining to high-volume manufacturing processes"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\n\nCONTACT: Not explicitly provided\n\nLOCATION: Mountain View, California\n\nPOSITIONING: Leader in robot safety, differentiates product in market\n\nCOMPLIANCE: Worked with OSHA NRTL to develop UL standard for humanoid robot application\n\nNOTE: Investing thousands of hours in battery system design to pass twenty-three primary tests"
+    },
+    "source": {
+      "url": "https://figure.ai/news/f-03-battery"
+    }
+  },
+  "prompt_length": 9869,
+  "response_size": 1152
+}

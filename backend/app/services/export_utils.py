@@ -31,7 +31,7 @@ def ensure_exports_directory() -> tuple[Path, Path]:
         host_exports_dir = None
     
     # Create subdirectories in both locations
-    for subdir in ["crawling", "fingerprinting", "extraction", "llm_responses"]:
+    for subdir in ["crawling", "fingerprinting", "extraction"]:
         (container_exports_dir / subdir).mkdir(exist_ok=True)
         if host_exports_dir:
             (host_exports_dir / subdir).mkdir(exist_ok=True)

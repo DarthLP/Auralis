@@ -1,0 +1,287 @@
+[
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/botq",
+    "canonical_url": "https://figure.ai/news/botq",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "news"
+    ],
+    "score": 0.95,
+    "signals": [
+      "product_specs",
+      "news_content",
+      "strategic_info"
+    ],
+    "depth": 0,
+    "size_bytes": 54016,
+    "mime_type": null,
+    "content_hash": "2f40b39531748e9be0c716bd51be5749c103c8047d7caf7e1a43ca70a27c51f9",
+    "crawled_at": "2025-09-09T17:41:51.758743"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/helix",
+    "canonical_url": "https://figure.ai/news/helix",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.95,
+    "signals": [
+      "product_specs",
+      "competitive_intel"
+    ],
+    "depth": 0,
+    "size_bytes": 87379,
+    "mime_type": null,
+    "content_hash": "4ca317f2dcf85c266b0edb071d018e6c0bf241a62ee295887db7f051a93ba2cb",
+    "crawled_at": "2025-09-09T17:41:51.758861"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/scaling-helix-logistics",
+    "canonical_url": "https://figure.ai/news/scaling-helix-logistics",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "release"
+    ],
+    "score": 0.9,
+    "signals": [
+      "product_specs",
+      "release_notes",
+      "technical_details"
+    ],
+    "depth": 0,
+    "size_bytes": 82686,
+    "mime_type": null,
+    "content_hash": "7f41534a445e642b3bd89d41ff833e9a965517142fc98ace2f4d4915a64f871a",
+    "crawled_at": "2025-09-09T17:41:51.758903"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/f-03-battery-development",
+    "canonical_url": "https://figure.ai/news/f-03-battery-development",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details"
+    ],
+    "score": 0.9,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 0,
+    "size_bytes": 63320,
+    "mime_type": null,
+    "content_hash": "0ab09b55798f7a15927ddbec50b75089d66e5cd325395745608bd6fea0a00300",
+    "crawled_at": "2025-09-09T17:41:51.758961"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/reinforcement-learning-walking",
+    "canonical_url": "https://figure.ai/news/reinforcement-learning-walking",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details",
+      "strategic_info"
+    ],
+    "score": 0.9,
+    "signals": [
+      "product_specs",
+      "technical_details",
+      "strategic_info"
+    ],
+    "depth": 0,
+    "size_bytes": 45057,
+    "mime_type": null,
+    "content_hash": "ab50e77db590528b0b99ad1b51a60216c014f08dc2016b0cd5f831f5b2381e09",
+    "crawled_at": "2025-09-09T17:41:51.759013"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news",
+    "canonical_url": "https://figure.ai/news",
+    "status_code": 200,
+    "primary_category": "news",
+    "secondary_categories": [
+      "product_specs",
+      "technical_details"
+    ],
+    "score": 0.85,
+    "signals": [
+      "product_specs",
+      "technical_details",
+      "strategic_info"
+    ],
+    "depth": 0,
+    "size_bytes": 40215,
+    "mime_type": null,
+    "content_hash": "b732303c50f4a47330f35e7d31f2181918c80c43d5efac35226750363959ad54",
+    "crawled_at": "2025-09-09T17:41:51.759051"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/helix-logistics",
+    "canonical_url": "https://figure.ai/news/helix-logistics",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "strategic_info",
+      "market_analysis"
+    ],
+    "score": 0.85,
+    "signals": [
+      "product_specs",
+      "technical_details",
+      "strategic_info"
+    ],
+    "depth": 0,
+    "size_bytes": 93524,
+    "mime_type": null,
+    "content_hash": "6c46bc85cbcf44787d9894e99702f4217ae01abcf2df4bbd17a471b0f0975c24",
+    "crawled_at": "2025-09-09T17:41:51.759088"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/ai",
+    "canonical_url": "https://figure.ai/ai",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product_specs",
+      "technical_details",
+      "news_content"
+    ],
+    "score": 0.85,
+    "signals": [
+      "product_specs",
+      "technical_details",
+      "news_content"
+    ],
+    "depth": 0,
+    "size_bytes": 20381691,
+    "mime_type": null,
+    "content_hash": "74fe1623864132748343c79dc47e4cc111ef40d5ebd84cb156714d427d5d3c2b",
+    "crawled_at": "2025-09-09T17:41:51.759145"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/master-plan",
+    "canonical_url": "https://figure.ai/master-plan",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product"
+    ],
+    "score": 0.85,
+    "signals": [
+      "product_specs",
+      "strategic_info"
+    ],
+    "depth": 0,
+    "size_bytes": 63035,
+    "mime_type": null,
+    "content_hash": "4500712cefd2eb783c7f683e8286df652763a0f9d3b9d76caa287c48d97f7bc6",
+    "crawled_at": "2025-09-09T17:41:51.759184"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/helix-loads-the-dishwasher",
+    "canonical_url": "https://figure.ai/news/helix-loads-the-dishwasher",
+    "status_code": 200,
+    "primary_category": "news",
+    "secondary_categories": [
+      "company_info"
+    ],
+    "score": 0.75,
+    "signals": [
+      "news_content",
+      "company_info"
+    ],
+    "depth": 0,
+    "size_bytes": 35747,
+    "mime_type": null,
+    "content_hash": "c2782ffa28beff056cf5b267c00ef4aac7f7d53fce200e27620cc238d027ae39",
+    "crawled_at": "2025-09-09T17:41:51.759223"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/",
+    "canonical_url": "https://figure.ai/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "use_cases",
+      "product_specs"
+    ],
+    "score": 0.7,
+    "signals": [
+      "product_specs",
+      "use_cases"
+    ],
+    "depth": 0,
+    "size_bytes": 154602,
+    "mime_type": null,
+    "content_hash": "eee39e6ef5cfbd1836e10a3f425cd5ad432acbdb19db6f1035688a159c1a6b97",
+    "crawled_at": "2025-09-09T17:41:51.759254"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/culture",
+    "canonical_url": "https://figure.ai/culture",
+    "status_code": 200,
+    "primary_category": "company",
+    "secondary_categories": [
+      "company_info"
+    ],
+    "score": 0.7,
+    "signals": [
+      "company_info",
+      "market_analysis"
+    ],
+    "depth": 0,
+    "size_bytes": 65820,
+    "mime_type": null,
+    "content_hash": "3fb4672334588f047ea48338544464fdcf87aa38ac76a9c1fc727667ed5786a4",
+    "crawled_at": "2025-09-09T17:41:51.759334"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/about-us",
+    "canonical_url": "https://figure.ai/about-us",
+    "status_code": 200,
+    "primary_category": "company",
+    "secondary_categories": [
+      "values",
+      "mission"
+    ],
+    "score": 0.55,
+    "signals": [],
+    "depth": 0,
+    "size_bytes": 54208,
+    "mime_type": null,
+    "content_hash": "de240e1295e107eb8ae417881d2ed5daf247589c19bcf75ee1ddcb1937cf784e",
+    "crawled_at": "2025-09-09T17:41:51.759365"
+  },
+  {
+    "crawl_session_id": 31,
+    "url": "https://figure.ai/news/helix-learns-to-fold-laundry",
+    "canonical_url": "https://figure.ai/news/helix-learns-to-fold-laundry",
+    "status_code": 200,
+    "primary_category": "news",
+    "secondary_categories": [],
+    "score": 0.45,
+    "signals": [
+      "news_url"
+    ],
+    "depth": 0,
+    "size_bytes": 37478,
+    "mime_type": null,
+    "content_hash": "e5934b58a43e74e65a4b6e6f54213eca39183c8ef605d66d3be54e0d72850e32",
+    "crawled_at": "2025-09-09T17:41:51.759421"
+  }
+]

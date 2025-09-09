@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:49:55.233514",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix-loads-the-dishwasher",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Figure’s Vision Language Action (VLA) model\nCATEGORY: General-purpose architecture\nFEATURES: Can handle various tasks like folding laundry and loading a dishwasher\nCAPABILITIES: Singulate stacked plates, pick up glasses, reorient them, handle messy configurations\nSTAGE: Alpha\nLINKS: https://figure.ai/news/helix-loads-the-dishwasher\nNOTE: No new algorithms, no special-case engineering, just new data."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: Not explicitly mentioned\nLOCATION: Not explicitly mentioned\nPOSITIONING: A company focused on humanoid robots and general-purpose learning"
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix-loads-the-dishwasher"
+    }
+  },
+  "prompt_length": 4179,
+  "response_size": 716
+}

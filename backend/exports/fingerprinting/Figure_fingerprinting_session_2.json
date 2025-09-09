@@ -1,6 +1,6 @@
 [
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/news/helix",
     "key_url": "https://figure.ai/news/helix",
     "page_type": "product",
@@ -11,11 +11,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 86149,
-    "processed_at": "2025-09-09T16:50:25.403215"
+    "content_length": 86143,
+    "processed_at": "2025-09-09T17:16:27.024442"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/news/botq",
     "key_url": "https://figure.ai/news/botq",
     "page_type": "product",
@@ -27,10 +27,10 @@
     "fetch_status": 200,
     "content_type": "text/html",
     "content_length": 52404,
-    "processed_at": "2025-09-09T16:50:25.253487"
+    "processed_at": "2025-09-09T17:16:26.984501"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/culture",
     "key_url": "https://figure.ai/culture",
     "page_type": "product",
@@ -41,11 +41,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 64366,
-    "processed_at": "2025-09-09T16:50:25.290455"
+    "content_length": 64354,
+    "processed_at": "2025-09-09T17:16:27.068184"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/about-us",
     "key_url": "https://figure.ai/about-us",
     "page_type": "product",
@@ -56,11 +56,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 52251,
-    "processed_at": "2025-09-09T16:50:25.218525"
+    "content_length": 52261,
+    "processed_at": "2025-09-09T17:16:27.171305"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/",
     "key_url": "https://figure.ai/",
     "page_type": "product",
@@ -72,10 +72,10 @@
     "fetch_status": 200,
     "content_type": "text/html",
     "content_length": 152598,
-    "processed_at": "2025-09-09T16:50:25.374809"
+    "processed_at": "2025-09-09T17:16:27.154049"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/news",
     "key_url": "https://figure.ai/news",
     "page_type": "product",
@@ -87,10 +87,10 @@
     "fetch_status": 200,
     "content_type": "text/html",
     "content_length": 38591,
-    "processed_at": "2025-09-09T16:50:25.235918"
+    "processed_at": "2025-09-09T17:16:27.040588"
   },
   {
-    "fingerprint_session_id": 1,
+    "fingerprint_session_id": 2,
     "url": "https://figure.ai/ai",
     "key_url": "https://figure.ai/ai",
     "page_type": "product",
@@ -101,7 +101,7 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 144607,
-    "processed_at": "2025-09-09T16:50:25.329168"
+    "content_length": 144615,
+    "processed_at": "2025-09-09T17:16:27.108229"
   }
 ]

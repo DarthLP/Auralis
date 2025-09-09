@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:49:43.221621",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/about-us",
+  "llm_response": {
+    "products": {
+      "Figure 03": {
+        "text": "WHAT: Figure 03 is a humanoid robot designed for real-world applications.\nCATEGORY: Robotic design.\nFEATURES: Aggressive optimism, mission-focused, and improved access to goods and services."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\n"
+    },
+    "source": {
+      "url": "https://figure.ai/about-us"
+    }
+  },
+  "prompt_length": 3815,
+  "response_size": 321
+}

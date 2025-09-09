@@ -67,7 +67,7 @@ def _should_skip_url(url: str) -> tuple[bool, str]:
         'admin', 'dashboard', 'account',
         'search', 'search?',
         '404', 'error', 'not-found',
-        'test', 'testing', 'dev', '/dev/',
+        'test', 'testing',
         'staging', 'preview', 'demo',
         'api/', 'api/v', 'api/v1', 'api/v2',
         'feed', 'rss', 'atom',
@@ -159,7 +159,7 @@ def _extract_basic_metadata_fast(content: str) -> Dict[str, str]:
     }
 
 
-async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown", crawl_logger=None, stop_check=None, skip_ai_scoring: bool = True) -> Dict:
+async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown", crawl_logger=None, stop_check=None, skip_ai_scoring: bool = False) -> Dict:
     """
     Discover and classify interesting pages from a website.
     
@@ -669,17 +669,10 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         # Always set the reason, even if AI scoring is not attempted
         page_info["ai_scoring_reason"] = ai_scoring_reason
         
-        # Only attempt AI scoring for pages that are likely to be valuable
-        # Skip obvious low-value pages to save time
-        skip_ai_scoring = any(noise in url.lower() for noise in [
-            'careers', 'privacy', 'terms', 'cookies', 'legal', 'accessibility', 
-            'contact', 'support', 'help', 'faq', 'sitemap'
-        ])
-        
+        # Attempt AI scoring for all pages when enabled and service is available
         if (settings.AI_SCORING_ENABLED and 
             ai_scoring_service and 
-            has_minimal_content and 
-            not skip_ai_scoring):
+            has_minimal_content):
             
             # Combine all heading information for better context
             all_headings = f"{h1_text} {h2_text} {h3_text}".strip()
@@ -736,25 +729,30 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         page_info["ai_error"] = ai_result.error if 'ai_result' in locals() and hasattr(ai_result, 'error') else None
         
         # Choose which scoring method to use as primary
-        # Lower confidence threshold and prefer AI scoring when available
+        # AI scoring is always preferred when available and successful
         if (ai_score is not None and 
             ai_success and 
-            ai_confidence >= 0.2):  # Lowered threshold for better coverage
+            ai_confidence >= 0.1):  # Very low threshold to prioritize AI scoring
             # Use AI scoring as primary
             page_info["primary_category"] = ai_category
             page_info["secondary_categories"] = ai_result.secondary_categories if 'ai_result' in locals() else []
             page_info["score"] = ai_score
             page_info["signals"] = ai_signals
             page_info["scoring_method"] = "ai"
-            logger.debug(f"AI scoring for {url}: {ai_score:.2f} ({ai_category}) confidence={ai_confidence:.2f}")
+            logger.info(f"✅ AI scoring for {url}: {ai_score:.2f} ({ai_category}) confidence={ai_confidence:.2f}")
         else:
-            # Use rules-based scoring as primary
+            # Fall back to rules-based scoring only if AI scoring failed or unavailable
             page_info["primary_category"] = rules_category
             page_info["score"] = rules_score
             page_info["signals"] = rules_signals
             page_info["scoring_method"] = "rules"
             
-            logger.debug(f"Rules-based scoring for {url}: {rules_score:.2f} ({rules_category})")
+            # Log why we fell back to rules
+            if ai_score is not None:
+                logger.info(f"⚠️ Fallback to rules for {url}: AI confidence {ai_confidence:.2f} < 0.1 threshold")
+            else:
+                logger.info(f"⚠️ Fallback to rules for {url}: AI scoring failed or unavailable")
+            logger.info(f"📏 Rules-based scoring for {url}: {rules_score:.2f} ({rules_category})")
         
     except Exception as e:
         logger.debug(f"Error processing page {url}: {e}")

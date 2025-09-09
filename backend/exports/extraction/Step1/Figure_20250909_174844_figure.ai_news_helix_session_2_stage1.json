@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:48:44.893356",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: A Vision-Language-Action (VLA) model that unifies perception, language understanding, and learned control to overcome multiple longstanding challenges in robotics.\n\nCATEGORY: Vision-Language-Action (VLA) model\n\nFEATURES: Full-upper-body control, multi-robot collaboration, pick-up-anything capability, one neural network weights, commercial-ready performance, scalable for home robotics.\n\nCAPABILITIES: High-rate continuous control, zero-shot multi-robot coordination, pick-up-anything generalization, end-to-end training, real-time coordination, zero-shot grocery storage, emergent language-to-action grasping capability.\n\nSTAGE: Alpha\n\nLINKS: https://figure.ai/news/helix\n\nNOTE: Helix is the first VLA that enables real-time coordination and generalization across tasks and objects with a single unified model."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\n\nCONTACT: Not explicitly provided\n\nLOCATION: Not explicitly provided\n\nPOSITIONING: A leading company in embodied AI and robotics\n\nINDUSTRIES: Not explicitly provided\n\nCUSTOMERS: Not explicitly provided\n\nPARTNERS: Not explicitly provided\n\nCOMPLIANCE: Not explicitly provided\n\nLINKS: Not explicitly provided\n\nNOTE: Figure is the company introducing Helix."
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix"
+    }
+  },
+  "prompt_length": 16272,
+  "response_size": 1327
+}

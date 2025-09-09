@@ -97,7 +97,16 @@ class CoreCrawlService:
             
             self.db.commit()
             
-            logger.info(f"Fingerprinting complete: {total_processed} processed, {total_errors} errors")
+            logger.info(f"=== FINGERPRINTING COMPLETE ===")
+            logger.info(f"Total processed: {total_processed} pages")
+            logger.info(f"Total errors: {total_errors} pages")
+            logger.info(f"Final fingerprints returned: {len(all_results)} results")
+            
+            # Debug: Show which URLs made it to the final results
+            if all_results:
+                logger.info(f"Final fingerprinted URLs:")
+                for i, result in enumerate(all_results):
+                    logger.info(f"  {i+1}. {result.url} (type: {result.page_type}, hash: {result.content_hash[:8]}...)")
             
             return FingerprintResponse(
                 fingerprint_session_id=fingerprint_session.id,
@@ -255,17 +264,27 @@ class CoreCrawlService:
         """
         async with semaphore:
             start_time = time.time()
+            logger.debug(f"Processing page: {page.url}")
             
             try:
                 # Step 2: Fetch content
+                logger.debug(f"Fetching content for: {page.url}")
                 content_bytes, content_type, fetch_status, fetch_notes = await self._fetch_content(page.url)
                 elapsed_ms = int((time.time() - start_time) * 1000)
                 
+                logger.debug(f"Fetch result for {page.url}: status={fetch_status}, content_type={content_type}, size={len(content_bytes) if content_bytes else 0} bytes, notes={fetch_notes}")
+                
+                if fetch_status != 200 or not content_bytes:
+                    logger.warning(f"Fetch failed for {page.url}: status={fetch_status}, notes={fetch_notes}")
+                
                 # Step 3: Generate fingerprint
+                logger.debug(f"Generating fingerprint for: {page.url}")
                 key_url = self._detect_canonical_url(content_bytes, content_type, page.url)
                 content_hash, normalized_text_len, low_text_pdf, needs_render = self._fingerprint_content(
                     content_bytes, content_type
                 )
+                
+                logger.debug(f"Fingerprint result for {page.url}: hash={content_hash[:8]}..., text_len={normalized_text_len}, low_text_pdf={low_text_pdf}, needs_render={needs_render}")
                 
                 # Create fetch metadata
                 fetch_meta = FetchMeta(
@@ -311,11 +330,13 @@ class CoreCrawlService:
                 )
                 self.db.add(page_fingerprint)
                 
+                logger.info(f"Successfully processed {page.url}: fingerprint={content_hash[:8]}...")
                 return result
                 
             except Exception as e:
                 elapsed_ms = int((time.time() - start_time) * 1000)
-                logger.error(f"Failed to process page {page.url}: {e}")
+                logger.error(f"Failed to process page {page.url}: {type(e).__name__}: {e}")
+                logger.error(f"Exception details for {page.url}", exc_info=True)
                 
                 # Save error to database
                 error_fingerprint = PageFingerprint(

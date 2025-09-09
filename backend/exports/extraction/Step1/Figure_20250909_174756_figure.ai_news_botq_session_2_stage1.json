@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:47:56.128801",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/botq",
+  "llm_response": {
+    "products": {
+      "BotQ": {
+        "text": "WHAT: Figure's new high-volume manufacturing facility for humanoid robots.\n\nCAPABILITIES: Manufacturing up to 12,000 humanoids per year.\n\nSTAGE: Alpha\n\nLINKS: https://figure.ai/news/botq\n\nNOTE: Initial production lines; scalability planned; note that BotQ is a manufacturing facility, not a traditional product."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\n\nCONTACT: Not provided\n\nLOCATION: Not provided\n\nPOSITIONING: Major leap in humanoid robot manufacturing; significant investments in manufacturing, supply chain, and software infrastructure."
+    },
+    "source": {
+      "url": "https://figure.ai/news/botq"
+    }
+  },
+  "prompt_length": 10854,
+  "response_size": 638
+}

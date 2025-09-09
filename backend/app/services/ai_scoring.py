@@ -802,10 +802,10 @@ INPUT
 SCORING
   - Score range: 0.0–1.0
     - High Value (0.9–1.0): product specs, pricing, datasheets, launches, strategies
-    - Medium-High (0.7–0.9): product pages and updates, press releases, use cases, partnerships, general company info (what is the company doing)
-    - Medium (0.4–0.7): other company info, blogs, product updates, support docs
-    - Low (0.1–0.3): generic info, admin, social, basic marketing
-    - Minimal (0.0–0.1): careers, legal, privacy, contact, cookie notices
+    - Medium-High (0.7–0.9): product pages and updates, press releases, use cases, partnerships
+    - Medium (0.5–0.7): company info, blogs, product updates, support docs
+    - Low (0.3–0.5): generic info, admin, social, basic marketing
+    - Minimal (0.0–0.3): careers, legal, privacy, contact, cookie notices
 
 OUTPUT FORMAT
 {{

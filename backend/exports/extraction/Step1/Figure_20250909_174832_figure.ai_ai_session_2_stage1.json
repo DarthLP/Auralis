@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:48:32.396132",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/ai",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Generalist humanoid Vision-Language-Action model\nCATEGORY: N/A\nFEATURES: Reasons like a human\nCAPABILITIES: General-purpose robotics\nSTAGE: N/A\nLINKS: N/A\nNOTE: No specific features or capabilities detailed"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: N/A\nLOCATION: N/A\nPOSITIONING: Building robots that learn and reason like humans"
+    },
+    "source": {
+      "url": "https://figure.ai/ai"
+    }
+  },
+  "prompt_length": 2628,
+  "response_size": 428
+}

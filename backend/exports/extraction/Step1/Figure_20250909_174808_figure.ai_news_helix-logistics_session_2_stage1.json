@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-09T17:48:08.845508",
+  "session_id": "2",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix-logistics",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Figure’s internally designed Vision-Language-Action (VLA) model.\nCATEGORY: AI/ML Models, specifically Vision-Language-Action Models.\nFEATURES: Unifies perception, language understanding, and learned control.\nCAPABILITIES: Manipulating objects with human-level speed, precision, and adaptability.\nSTAGE: Still in alpha testing.\nSPECS: Includes stereo vision, multiscale feature extraction, and learned visual proprioception.\nCOMPLIANCE: None mentioned.\nLINKS: https://figure.ai/news/helix-logistics\nNOTE: Ownership unclear."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: null\nLOCATION: null\nPOSITIONING: Competitor in humanoid robots and AI/ML, focusing on Vision-Language-Action (VLA) models\nINDUSTRIES: Logistics, manufacturing\nCUSTOMERS: Logistics companies, enterprises looking to optimize operations\nKEY ROLES: AI/ML engineers, robotics engineers\n"
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix-logistics"
+    }
+  },
+  "prompt_length": 10495,
+  "response_size": 974
+}
