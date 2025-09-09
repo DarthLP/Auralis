@@ -58,7 +58,7 @@ def _should_skip_url(url: str) -> tuple[bool, str]:
         'terms', 'terms-of-service', 'terms_of_service', 'terms-of-use', 'terms_of_use',
         'legal', 'legal-notice', 'legal_notice',
         'cookies', 'cookie-policy', 'cookie_policy',
-        'accessibility', 'accessibility-statement', 'accessibility_statement',
+        'accessibility-statement', 'accessibility_statement',
         'robots.txt',
         'contact', 'contact-us', 'contact_us',
         'support', 'help', 'faq',
@@ -67,7 +67,7 @@ def _should_skip_url(url: str) -> tuple[bool, str]:
         'admin', 'dashboard', 'account',
         'search', 'search?',
         '404', 'error', 'not-found',
-        'test', 'testing', 'dev', '/dev/', '/development/',
+        'test', 'testing', 'dev', '/dev/',
         'staging', 'preview', 'demo',
         'api/', 'api/v', 'api/v1', 'api/v2',
         'feed', 'rss', 'atom',
@@ -287,15 +287,19 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             for url in filtered_sitemap_urls[:sitemap_budget]:
                 normalized = normalize_url(url, base_domain)
                 if normalized:
-                    canonical = canonicalize_url(normalized)
-                    if canonical not in canonical_urls:
-                        canonical_urls.add(canonical)  # Add to set immediately to prevent duplicates
-                        url_queue.append((normalized, 0))
+                    # Don't pre-populate canonical_urls - let BFS loop handle duplicate detection
+                    url_queue.append((normalized, 0))
         
         # BFS crawl
         skipped_urls = 0
         skipped_urls_details = []
+        if crawl_logger:
+            crawl_logger.info(f"Starting BFS crawl with {len(url_queue)} URLs in queue, max_pages: {limits['max_pages']}")
+        
         while url_queue and len(pages_found) < limits['max_pages']:
+            if crawl_logger:
+                crawl_logger.info(f"BFS loop iteration: queue size={len(url_queue)}, pages_found={len(pages_found)}")
+            
             # Check if crawling should be stopped
             if stop_check and stop_check():
                 logger.info("Crawling stopped by user request")
@@ -307,7 +311,16 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             
             # Check for duplicates using canonical URLs
             canonical = canonicalize_url(current_url)
-            if canonical in canonical_urls or depth > limits['max_depth']:
+            is_duplicate = canonical in canonical_urls
+            depth_exceeded = depth > limits['max_depth']
+            
+            if crawl_logger:
+                crawl_logger.info(f"Duplicate check: {current_url} -> canonical: {canonical}, is_duplicate: {is_duplicate}, depth: {depth}, depth_exceeded: {depth_exceeded}")
+            
+            if is_duplicate or depth_exceeded:
+                if crawl_logger:
+                    reason = "duplicate" if is_duplicate else "depth exceeded"
+                    crawl_logger.info(f"SKIPPING {current_url} - {reason}")
                 continue
             
             # Early URL filtering - skip low-value pages before fetching
@@ -319,7 +332,7 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                     "reason": skip_reason
                 })
                 if crawl_logger:
-                    crawl_logger.debug(f"Skipping URL: {current_url} - {skip_reason}")
+                    crawl_logger.info(f"Skipping URL: {current_url} - {skip_reason}")
                 continue
                 
             crawled_urls.add(current_url)
@@ -333,6 +346,9 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             use_js_for_page = enable_js and _should_use_javascript(current_url, depth)
             
             # Fetch page (with JavaScript if needed)
+            if crawl_logger:
+                crawl_logger.info(f"Fetching URL: {current_url} (JS: {use_js_for_page})")
+            
             status, content = await fetch_url(
                 current_url, 
                 limits['timeout'], 
@@ -340,6 +356,11 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 enable_js=use_js_for_page,
                 js_wait_time=js_wait_time
             )
+            
+            # Log fetch result
+            if crawl_logger:
+                content_size = len(content) if content else 0
+                crawl_logger.info(f"Fetch result: {current_url} - Status: {status}, Size: {content_size} bytes")
             
             # Log JS usage decision
             if use_js_for_page:
@@ -373,7 +394,7 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                     
                     link_canonical = canonicalize_url(link)
                     if link_canonical not in canonical_urls:
-                        canonical_urls.add(link_canonical)  # Add to set immediately to prevent duplicates
+                        # Don't pre-populate canonical_urls - let BFS loop handle duplicate detection
                         url_queue.append((link, depth + 1))
         
         # Sort pages by score and categorize
@@ -398,8 +419,26 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
         
         # Add sitemap processing details for transparency
         if sitemap_urls:
-            result["sitemap_urls"] = sitemap_urls
-            result["filtered_sitemap_urls"] = filtered_sitemap_urls
+            # Normalize all sitemap URLs for consistent display format
+            normalized_sitemap_urls = []
+            for url in sitemap_urls:
+                normalized = normalize_url(url, base_domain)
+                if normalized:
+                    normalized_sitemap_urls.append(normalized)
+                else:
+                    normalized_sitemap_urls.append(url)  # Fallback to original if normalization fails
+            
+            # Normalize filtered sitemap URLs for consistent display format
+            normalized_filtered_urls = []
+            for url in filtered_sitemap_urls:
+                normalized = normalize_url(url, base_domain)
+                if normalized:
+                    normalized_filtered_urls.append(normalized)
+                else:
+                    normalized_filtered_urls.append(url)  # Fallback to original if normalization fails
+            
+            result["sitemap_urls"] = normalized_sitemap_urls
+            result["filtered_sitemap_urls"] = normalized_filtered_urls
             result["sitemap_filtered_count"] = len(sitemap_urls) - len(filtered_sitemap_urls)
             result["sitemap_processed_count"] = len(filtered_sitemap_urls)
         

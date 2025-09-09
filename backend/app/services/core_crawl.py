@@ -423,9 +423,14 @@ class CoreCrawlService:
             clean_query = '&'.join(query_params) if query_params else ''
             clean_path = parsed.path.rstrip('/') if parsed.path != '/' else '/'
             
+            # Remove www prefix for canonicalization (treat www and non-www as same)
+            clean_netloc = parsed.netloc.lower()
+            if clean_netloc.startswith('www.'):
+                clean_netloc = clean_netloc[4:]  # Remove 'www.'
+            
             return urlunparse((
                 parsed.scheme.lower(),
-                parsed.netloc.lower(),
+                clean_netloc,
                 clean_path,
                 parsed.params,
                 clean_query,

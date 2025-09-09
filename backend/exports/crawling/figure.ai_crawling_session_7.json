@@ -1,0 +1,38 @@
+[
+  {
+    "crawl_session_id": 7,
+    "url": "https://figure.ai/",
+    "canonical_url": "https://figure.ai/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 1.0,
+    "signals": [
+      "product_h1"
+    ],
+    "depth": 0,
+    "size_bytes": 154574,
+    "mime_type": null,
+    "content_hash": "980099836ac7b2e567a062614b91383f96fedbad56c341551314f437a46917d2",
+    "crawled_at": "2025-09-09T15:04:50.860779"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://www.figure.ai/news",
+    "canonical_url": "https://www.figure.ai/news",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 1.0,
+    "signals": [
+      "product_h1",
+      "news_url",
+      "news_title"
+    ],
+    "depth": 0,
+    "size_bytes": 40215,
+    "mime_type": null,
+    "content_hash": "96d9d08ace241cb9cda24cd05991320acf899aa237f9c1be72ab02af86ed1d60",
+    "crawled_at": "2025-09-09T15:04:50.860874"
+  }
+]

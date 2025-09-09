@@ -353,11 +353,23 @@ def normalize_url(link: str, base_url: str) -> Optional[str]:
         if not _same_registrable_domain(parsed.netloc, base_parsed.netloc):
             return None
             
-        # Remove fragment, normalize path
+        # Remove fragment, normalize path (add trailing slash for root URLs)
+        if not parsed.path or parsed.path == '':
+            clean_path = '/'  # Root URL should have trailing slash
+        elif parsed.path == '/':
+            clean_path = '/'  # Already correct
+        else:
+            clean_path = parsed.path.rstrip('/')  # Remove trailing slash from non-root paths
+        
+        # Remove www prefix for consistency (same as canonicalize_url)
+        clean_netloc = parsed.netloc.lower()
+        if clean_netloc.startswith('www.'):
+            clean_netloc = clean_netloc[4:]  # Remove 'www.'
+        
         normalized = urlunparse((
             parsed.scheme,
-            parsed.netloc.lower(),
-            parsed.path or '/',
+            clean_netloc,
+            clean_path,
             parsed.params,
             parsed.query,
             ''  # Remove fragment
@@ -438,13 +450,23 @@ def canonicalize_url(url: str) -> str:
         # Rebuild query string
         clean_query = '&'.join(query_params) if query_params else ''
         
-        # Normalize path (remove trailing slash except for root)
-        clean_path = parsed.path.rstrip('/') if parsed.path != '/' else '/'
+        # Normalize path (same logic as normalize_url for consistency)
+        if not parsed.path or parsed.path == '':
+            clean_path = '/'  # Root URL should have trailing slash
+        elif parsed.path == '/':
+            clean_path = '/'  # Already correct
+        else:
+            clean_path = parsed.path.rstrip('/')  # Remove trailing slash from non-root paths
+        
+        # Remove www prefix for canonicalization (treat www and non-www as same)
+        clean_netloc = parsed.netloc.lower()
+        if clean_netloc.startswith('www.'):
+            clean_netloc = clean_netloc[4:]  # Remove 'www.'
         
         # Rebuild URL
         canonical = urlunparse((
             parsed.scheme.lower(),
-            parsed.netloc.lower(),
+            clean_netloc,
             clean_path,
             parsed.params,
             clean_query,

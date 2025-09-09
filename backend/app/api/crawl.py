@@ -123,6 +123,7 @@ class CrawlResponse(BaseModel):
     filtered_sitemap_urls: list = []
     sitemap_filtered_count: int = 0
     sitemap_processed_count: int = 0
+    skipped_urls_details: list = []
 
 
 class StopCrawlRequest(BaseModel):

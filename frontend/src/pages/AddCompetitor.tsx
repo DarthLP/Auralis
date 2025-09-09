@@ -623,7 +623,7 @@ export default function AddCompetitor() {
                 {processingState.stepsCompleted.discovery && (
                   <div className="text-right">
                     <div className="text-sm text-green-600 font-medium">
-                      {processingState.progress.discoveredPages} pages found
+                      {processingState.progress.discoveredPages} discovered
                     </div>
                     {processingState.progress.skippedPages > 0 && (
                       <div className="text-xs text-gray-500">

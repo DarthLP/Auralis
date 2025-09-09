@@ -8,6 +8,7 @@ of pages based on their content relevance for competitive analysis.
 import json
 import logging
 import time
+import asyncio
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass
@@ -34,6 +35,8 @@ class AIScoringResult:
     tokens_output: Optional[int] = None
     cache_hit: bool = False
     error: Optional[str] = None
+    retry_count: int = 0
+    retry_errors: List[str] = None
 
 
 class AIScoringService:
@@ -85,7 +88,191 @@ class AIScoringService:
             }
         }
     
-    async def score_page(
+    def _is_retryable_error(self, error: Exception, ai_response_dict: Optional[Dict] = None) -> bool:
+        """
+        Determine if an error should trigger a retry attempt.
+        
+        Args:
+            error: The exception that occurred
+            ai_response_dict: The parsed AI response (if available)
+            
+        Returns:
+            True if the error is retryable, False otherwise
+        """
+        # Network/API errors are retryable
+        if isinstance(error, ThetaClientError):
+            error_str = str(error).lower()
+            # Don't retry on authentication or quota errors
+            if any(keyword in error_str for keyword in ['401', '403', 'unauthorized', 'quota', 'rate limit']):
+                return False
+            # Retry on timeout, connection, and temporary server errors
+            if any(keyword in error_str for keyword in ['timeout', 'connection', 'temporary', '502', '503', '504']):
+                return True
+            # Retry other API errors (could be temporary)
+            return True
+        
+        # JSON parsing errors are retryable (AI might produce better output on retry)
+        if isinstance(error, json.JSONDecodeError):
+            return True
+        
+        # Check for string-based error patterns that are retryable
+        error_str = str(error).lower()
+        retryable_patterns = [
+            'failed to parse ai response',
+            'no content found in ai response',
+            'missing required field',
+            'parse_error',
+            'timeout',
+            'connection',
+            'temporary',
+            '502', '503', '504',
+            'empty message content',
+            'empty direct message',
+            'empty direct content',
+            'does not contain valid json',
+            'no recognizable content fields'
+        ]
+        
+        if any(pattern in error_str for pattern in retryable_patterns):
+            return True
+        
+        # Check for specific AI response issues that are retryable
+        if ai_response_dict:
+            # If we have a response but it's missing critical fields
+            if isinstance(ai_response_dict, dict):
+                # Check for parse_error signals (indicates malformed AI output)
+                signals = ai_response_dict.get("signals", [])
+                if "parse_error" in signals:
+                    return True
+                
+                # Check for very low confidence with parse-related reasoning
+                confidence = ai_response_dict.get("confidence", 1.0)
+                reasoning = ai_response_dict.get("reasoning", "").lower()
+                if confidence == 0.0 and "parse" in reasoning:
+                    return True
+        
+        # Don't retry programming errors or other unexpected issues
+        return False
+    
+    async def _score_page_with_retry(
+        self, 
+        url: str, 
+        title: str, 
+        content: str = "", 
+        h1_headings: str = "",
+        competitor: str = "unknown",
+        session_id: Optional[str] = None,
+        max_retries: int = 2
+    ) -> AIScoringResult:
+        """
+        Score a page with automatic retry logic for transient failures.
+        
+        Args:
+            url: Page URL
+            title: Page title
+            content: Page content (optional, not used in lightweight mode)
+            h1_headings: H1 headings from the page
+            competitor: Competitor name for context
+            session_id: Session ID for rate limiting
+            max_retries: Maximum number of retry attempts (default: 2)
+            
+        Returns:
+            AIScoringResult with retry information included
+        """
+        retry_errors = []
+        last_error = None
+        
+        for attempt in range(max_retries + 1):  # +1 for initial attempt
+            try:
+                # Add exponential backoff delay for retries
+                if attempt > 0:
+                    delay = min(2 ** (attempt - 1), 4)  # Cap at 4 seconds
+                    logger.info(f"Retrying AI scoring for {url} (attempt {attempt + 1}/{max_retries + 1}) after {delay}s delay")
+                    await asyncio.sleep(delay)
+                
+                # Attempt the scoring
+                result = await self._score_page_single_attempt(
+                    url=url,
+                    title=title,
+                    content=content,
+                    h1_headings=h1_headings,
+                    competitor=competitor,
+                    session_id=session_id
+                )
+                
+                # Add retry information to successful result
+                result.retry_count = attempt
+                result.retry_errors = retry_errors.copy() if retry_errors else []
+                
+                # If successful, return immediately
+                if result.success:
+                    if attempt > 0:
+                        logger.info(f"AI scoring succeeded on retry attempt {attempt + 1} for {url}")
+                    return result
+                
+                # If not successful, check if we should retry
+                if attempt < max_retries:
+                    # For unsuccessful results, check if the error is retryable
+                    # Check for parsing errors or other retryable conditions
+                    is_retryable = (
+                        result.error and (
+                            self._is_retryable_error(Exception(result.error)) or
+                            "parse_error" in result.signals or
+                            "Failed to parse AI response" in result.reasoning or
+                            (result.confidence == 0.0 and "parse" in result.reasoning.lower())
+                        )
+                    )
+                    
+                    if is_retryable:
+                        retry_errors.append(f"Attempt {attempt + 1}: {result.error}")
+                        logger.warning(f"AI scoring failed (retryable), will retry: {result.error}")
+                        continue
+                    else:
+                        # Non-retryable failure, return immediately
+                        logger.warning(f"AI scoring failed (non-retryable): {result.error}")
+                        result.retry_count = attempt
+                        result.retry_errors = retry_errors.copy() if retry_errors else []
+                        return result
+                else:
+                    # Max retries reached
+                    logger.error(f"AI scoring failed after {max_retries + 1} attempts for {url}")
+                    result.retry_count = attempt
+                    result.retry_errors = retry_errors.copy() if retry_errors else []
+                    # Add retry_exhausted signal if not already present
+                    if "retry_exhausted" not in result.signals:
+                        result.signals.append("retry_exhausted")
+                    return result
+                    
+            except Exception as e:
+                last_error = e
+                logger.warning(f"AI scoring attempt {attempt + 1} failed for {url}: {e}")
+                
+                # Check if this error is retryable
+                if attempt < max_retries and self._is_retryable_error(e):
+                    retry_errors.append(f"Attempt {attempt + 1}: {str(e)}")
+                    continue
+                else:
+                    # Non-retryable error or max retries reached
+                    logger.error(f"AI scoring failed permanently for {url}: {e}")
+                    break
+        
+        # If we get here, all attempts failed
+        processing_time = 0  # We don't have timing info for failed attempts
+        return AIScoringResult(
+            success=False,
+            score=0.0,
+            primary_category="other",
+            secondary_categories=[],
+            confidence=0.0,
+            reasoning=f"AI scoring failed after {max_retries + 1} attempts",
+            signals=["retry_exhausted"],
+            processing_time_ms=processing_time,
+            error=str(last_error) if last_error else "All retry attempts failed",
+            retry_count=max_retries,
+            retry_errors=retry_errors
+        )
+
+    async def _score_page_single_attempt(
         self, 
         url: str, 
         title: str, 
@@ -95,18 +282,9 @@ class AIScoringService:
         session_id: Optional[str] = None
     ) -> AIScoringResult:
         """
-        Score a page using AI analysis with lightweight input.
+        Single attempt at scoring a page (extracted from original score_page method).
         
-        Args:
-            url: Page URL
-            title: Page title
-            content: Page content (optional, not used in lightweight mode)
-            h1_headings: H1 headings from the page
-            competitor: Competitor name for context
-            session_id: Session ID for rate limiting
-            
-        Returns:
-            AIScoringResult with comprehensive scoring
+        This is the core scoring logic without retry handling.
         """
         start_time = time.time()
         
@@ -195,7 +373,9 @@ class AIScoringService:
                 tokens_input=estimated_tokens,
                 tokens_output=len(json.dumps(ai_response)) // 4,  # Rough estimate
                 cache_hit=False,  # Theta client handles this internally
-                error=result.get("reasoning") if parsing_failed else None
+                error=result.get("reasoning") if parsing_failed else None,
+                retry_count=0,
+                retry_errors=[]
             )
             
         except ThetaClientError as e:
@@ -211,7 +391,9 @@ class AIScoringService:
                 reasoning="AI scoring failed",
                 signals=["ai_error"],
                 processing_time_ms=processing_time,
-                error=str(e)
+                error=str(e),
+                retry_count=0,
+                retry_errors=[]
             )
             
         except Exception as e:
@@ -227,8 +409,46 @@ class AIScoringService:
                 reasoning="Unexpected error",
                 signals=["error"],
                 processing_time_ms=processing_time,
-                error=str(e)
+                error=str(e),
+                retry_count=0,
+                retry_errors=[]
             )
+    
+    async def score_page(
+        self, 
+        url: str, 
+        title: str, 
+        content: str = "", 
+        h1_headings: str = "",
+        competitor: str = "unknown",
+        session_id: Optional[str] = None
+    ) -> AIScoringResult:
+        """
+        Score a page using AI analysis with automatic retry on failures.
+        
+        This method now includes automatic retry logic for transient failures
+        such as JSON parsing errors, network timeouts, and temporary API issues.
+        
+        Args:
+            url: Page URL
+            title: Page title
+            content: Page content (optional, not used in lightweight mode)
+            h1_headings: H1 headings from the page
+            competitor: Competitor name for context
+            session_id: Session ID for rate limiting
+            
+        Returns:
+            AIScoringResult with comprehensive scoring and retry information
+        """
+        return await self._score_page_with_retry(
+            url=url,
+            title=title,
+            content=content,
+            h1_headings=h1_headings,
+            competitor=competitor,
+            session_id=session_id,
+            max_retries=2  # Allow up to 2 retries (3 total attempts)
+        )
     
     def _prepare_lightweight_content_for_analysis(self, url: str, title: str, h1_headings: str) -> str:
         """Prepare lightweight content for AI analysis using URL, title, H1 headings, and URL structure."""
@@ -355,23 +575,43 @@ class AIScoringService:
                             message = infer_request["output"]["message"]
                             logger.debug(f"Message content: {message[:200]}...")
                             logger.debug(f"Message content (last 500 chars): ...{message[-500:]}")
+                            
+                            # Check for empty or whitespace-only message
+                            if not message or not message.strip():
+                                logger.warning(f"AI API returned empty message content")
+                                raise ThetaClientError("AI API returned empty message content")
+                            
                             # Extract JSON from the message if it contains JSON
                             extracted_json = self._extract_json_from_text(message)
                             logger.debug(f"Extracted JSON: {extracted_json}")
+                            
+                            # Check if extraction actually found valid content
+                            if extracted_json == message and not message.strip().startswith('{'):
+                                logger.warning(f"AI API message does not contain JSON: {message[:100]}...")
+                                raise ThetaClientError("AI API message does not contain valid JSON")
+                            
                             return extracted_json
                 
                 # Fallback: try to extract from other possible locations
                 if "message" in result:
-                    logger.debug(f"Direct message content: {result['message'][:200]}...")
-                    return self._extract_json_from_text(result["message"])
+                    message = result["message"]
+                    logger.debug(f"Direct message content: {message[:200]}...")
+                    if not message or not message.strip():
+                        logger.warning(f"Direct message is empty")
+                        raise ThetaClientError("AI API returned empty direct message")
+                    return self._extract_json_from_text(message)
                 elif "content" in result:
-                    logger.debug(f"Direct content: {result['content'][:200]}...")
-                    return self._extract_json_from_text(result["content"])
+                    content = result["content"]
+                    logger.debug(f"Direct content: {content[:200]}...")
+                    if not content or not str(content).strip():
+                        logger.warning(f"Direct content is empty")
+                        raise ThetaClientError("AI API returned empty direct content")
+                    return self._extract_json_from_text(str(content))
                 else:
                     # Debug: Log the full response for analysis
                     logger.debug(f"Full API response: {json.dumps(result, indent=2)}")
-                    # Return the raw response as JSON string
-                    return json.dumps(result)
+                    logger.warning(f"No recognizable content found in API response")
+                    raise ThetaClientError("AI API response contains no recognizable content fields")
                     
         except Exception as e:
             logger.error(f"Scoring API call failed: {e}")
@@ -539,28 +779,34 @@ class AIScoringService:
 
     def _build_scoring_prompt(self, analysis_text: str, competitor: str) -> str:
         """Build the AI prompt for lightweight page scoring."""
-        return f"""You are an expert competitive intelligence analyst. Your ONLY task is to output a single valid JSON object. 
+        return f"""
+You are an expert competitive intelligence analyst. Your task is to evaluate the competitive relevance of the given webpage and output a single valid JSON object with a score and categorization.
 
-⚠️ RULES:
-- Output must be ONLY a raw JSON object (no text, no explanation, no markdown, no commentary).
-- JSON must start with {{ and end with }}.
-- All strings must be quoted properly.
-- All fields must be included, even if you have to use null or [].
-- Language: English ONLY.
+TASK
+- Assess how important the provided webpage is for competitive analysis of the competitor.
+- Use the SCORING criteria to decide the numeric score and categories.
+- Base your judgment ONLY on the provided metadata text. Do not invent extra details.
 
-INPUT CONTEXT:
-COMPETITOR: {competitor}
-WEBPAGE METADATA: {analysis_text}
+RULES
+- Output ONLY a raw JSON object (no text, no markdown, no commentary).
+- JSON must begin with {{ and end with }}.
+- All strings must be properly quoted.
+- All fields must be present; use null or [] if not applicable.
+- Output language: English ONLY.
 
-SCORING CRITERIA:
-- Score (0.0–1.0): relevance for competitive analysis
-- High Value (0.8–1.0): product specs, pricing, datasheets, launches, strategies
-- Medium-High (0.6–0.8): product pages, press releases, use cases, partnerships
-- Medium (0.4–0.6): company info, blogs, product updates, support docs
-- Low (0.1–0.4): generic info, admin, social, basic marketing
-- Minimal (0.0–0.1): careers, legal, privacy, contact, cookie notices
+INPUT
+  - COMPETITOR: {competitor}
+  - WEBPAGE METADATA: {analysis_text}
 
-OUTPUT JSON FORMAT (mandatory):
+SCORING
+  - Score range: 0.0–1.0
+    - High Value (0.9–1.0): product specs, pricing, datasheets, launches, strategies
+    - Medium-High (0.7–0.9): product pages, press releases, use cases, partnerships
+    - Medium (0.5–0.7): company info, blogs, product updates, support docs
+    - Low (0.1–0.5): generic info, admin, social, basic marketing
+    - Minimal (0.0–0.1): careers, legal, privacy, contact, cookie notices
+
+OUTPUT FORMAT
 {{
   "score": <float>,
   "primary_category": "<string>",
@@ -570,10 +816,12 @@ OUTPUT JSON FORMAT (mandatory):
   "signals": ["<string>", ...]
 }}
 
-PRIMARY CATEGORY OPTIONS: ["product","pricing","datasheet","release","news","company","other"]  
-SIGNALS OPTIONS: ["product_specs","pricing_info","technical_details","release_notes","news_content","company_info","low_value","high_value","competitive_intel","strategic_info","market_analysis","business_model"]
+OPTIONS
+  - primary_category: ["product","pricing","datasheet","release","news","company","other"]
+  - signals: ["product_specs","pricing_info","technical_details","release_notes","news_content","company_info","low_value","high_value","competitive_intel","strategic_info","market_analysis","business_model"]
 
-Remember: produce ONLY valid JSON, nothing else."""
+Return JSON ONLY.
+"""
     
     def _parse_ai_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
         """Parse and validate AI response."""
