@@ -45,7 +45,121 @@ def _extract_clean_text(soup: BeautifulSoup) -> str:
         return ""
 
 
-async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown", crawl_logger=None, stop_check=None) -> Dict:
+def _should_skip_url(url: str) -> tuple[bool, str]:
+    """
+    Check if URL should be skipped based on URL patterns.
+    Returns (should_skip, reason)
+    """
+    url_lower = url.lower()
+    
+    # High-confidence skip patterns (very low value pages)
+    high_confidence_skip = [
+        'privacy', 'privacy-policy', 'privacy_policy',
+        'terms', 'terms-of-service', 'terms_of_service', 'terms-of-use', 'terms_of_use',
+        'legal', 'legal-notice', 'legal_notice',
+        'cookies', 'cookie-policy', 'cookie_policy',
+        'accessibility', 'accessibility-statement', 'accessibility_statement',
+        'robots.txt',
+        'contact', 'contact-us', 'contact_us',
+        'support', 'help', 'faq',
+        'careers', 'jobs', 'hiring',
+        'login', 'signin', 'register', 'signup',
+        'admin', 'dashboard', 'account',
+        'search', 'search?',
+        '404', 'error', 'not-found',
+        'test', 'testing', 'dev', '/dev/', '/development/',
+        'staging', 'preview', 'demo',
+        'api/', 'api/v', 'api/v1', 'api/v2',
+        'feed', 'rss', 'atom',
+        'sitemap', 'sitemap.xml', 'sitemap_index.xml'
+    ]
+    
+    # Check for exact matches or path segments
+    for pattern in high_confidence_skip:
+        if pattern in url_lower:
+            return True, f"URL contains low-value pattern: {pattern}"
+    
+    # File extensions to skip
+    skip_extensions = [
+        '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+        '.zip', '.rar', '.tar', '.gz',
+        '.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp',
+        '.mp4', '.avi', '.mov', '.wmv',
+        '.mp3', '.wav', '.flac',
+        '.css', '.js', '.json', '.xml', '.txt',
+        '.ico', '.woff', '.woff2', '.ttf', '.eot'
+    ]
+    
+    for ext in skip_extensions:
+        if url_lower.endswith(ext):
+            return True, f"URL has skip extension: {ext}"
+    
+    # Query parameter patterns to skip
+    skip_query_params = [
+        'utm_', 'utm_source', 'utm_medium', 'utm_campaign',
+        'ref=', 'referrer=', 'source=',
+        'fbclid=', 'gclid=', 'msclkid=',
+        'sessionid=', 'sid=',
+        'debug=', 'test=', 'preview=',
+        'print=', 'printable=',
+        'share=', 'share=',
+        'lang=', 'language=',
+        'currency=', 'country=',
+        'sort=', 'order=', 'filter=',
+        'page=', 'p=', 'offset=',
+        'limit=', 'per_page=',
+        'format=', 'output=',
+        'callback=', 'jsonp='
+    ]
+    
+    for param in skip_query_params:
+        if param in url_lower:
+            return True, f"URL has skip query parameter: {param}"
+    
+    # Fragment patterns to skip
+    if '#' in url_lower:
+        fragment = url_lower.split('#')[1]
+        if any(pattern in fragment for pattern in ['section', 'chapter', 'part', 'tab', 'panel']):
+            return True, f"URL has skip fragment: {fragment}"
+    
+    return False, "URL passed all filters"
+
+
+def _extract_basic_metadata_fast(content: str) -> Dict[str, str]:
+    """Fast extraction of basic metadata using regex - no full HTML parsing."""
+    import re
+    
+    # Extract title using regex (much faster than BeautifulSoup)
+    title_match = re.search(r'<title[^>]*>(.*?)</title>', content, re.IGNORECASE | re.DOTALL)
+    title_text = title_match.group(1).strip() if title_match else ""
+    
+    # Extract H1 tags using regex
+    h1_matches = re.findall(r'<h1[^>]*>(.*?)</h1>', content, re.IGNORECASE | re.DOTALL)
+    h1_text = " ".join([re.sub(r'<[^>]+>', '', h1).strip() for h1 in h1_matches])
+    
+    # Extract H2 tags using regex
+    h2_matches = re.findall(r'<h2[^>]*>(.*?)</h2>', content, re.IGNORECASE | re.DOTALL)
+    h2_text = " ".join([re.sub(r'<[^>]+>', '', h2).strip() for h2 in h2_matches])
+    
+    # Extract H3 tags using regex
+    h3_matches = re.findall(r'<h3[^>]*>(.*?)</h3>', content, re.IGNORECASE | re.DOTALL)
+    h3_text = " ".join([re.sub(r'<[^>]+>', '', h3).strip() for h3 in h3_matches])
+    
+    # Quick content length check (approximate)
+    # Remove HTML tags and get rough text length
+    text_content = re.sub(r'<[^>]+>', ' ', content)
+    text_content = re.sub(r'\s+', ' ', text_content).strip()
+    
+    return {
+        "title": title_text,
+        "h1": h1_text,
+        "h2": h2_text,
+        "h3": h3_text,
+        "content_length": len(text_content)
+    }
+
+
+async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown", crawl_logger=None, stop_check=None, skip_ai_scoring: bool = True) -> Dict:
     """
     Discover and classify interesting pages from a website.
     
@@ -149,7 +263,16 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             # Use up to 70% of our budget for sitemap URLs, prioritizing interesting ones
             sitemap_budget = int(limits['max_pages'] * 0.7)
             
-            # Prioritize sitemap URLs that look interesting
+            # Filter sitemap URLs before processing
+            filtered_sitemap_urls = []
+            for url in sitemap_urls:
+                should_skip, _ = _should_skip_url(url)
+                if not should_skip:
+                    filtered_sitemap_urls.append(url)
+            
+            result["warnings"].append(f"Filtered sitemap URLs: {len(sitemap_urls)} -> {len(filtered_sitemap_urls)} (skipped {len(sitemap_urls) - len(filtered_sitemap_urls)})")
+            
+            # Prioritize remaining sitemap URLs that look interesting
             def sitemap_priority(url):
                 url_lower = url.lower()
                 if any(pattern in url_lower for pattern in ['/product', '/solution', '/item', '/model']):
@@ -159,9 +282,9 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 else:
                     return 2  # Lower priority
             
-            sitemap_urls.sort(key=sitemap_priority)
+            filtered_sitemap_urls.sort(key=sitemap_priority)
             
-            for url in sitemap_urls[:sitemap_budget]:
+            for url in filtered_sitemap_urls[:sitemap_budget]:
                 normalized = normalize_url(url, base_domain)
                 if normalized:
                     canonical = canonicalize_url(normalized)
@@ -170,6 +293,8 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                         url_queue.append((normalized, 0))
         
         # BFS crawl
+        skipped_urls = 0
+        skipped_urls_details = []
         while url_queue and len(pages_found) < limits['max_pages']:
             # Check if crawling should be stopped
             if stop_check and stop_check():
@@ -183,6 +308,18 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             # Check for duplicates using canonical URLs
             canonical = canonicalize_url(current_url)
             if canonical in canonical_urls or depth > limits['max_depth']:
+                continue
+            
+            # Early URL filtering - skip low-value pages before fetching
+            should_skip, skip_reason = _should_skip_url(current_url)
+            if should_skip:
+                skipped_urls += 1
+                skipped_urls_details.append({
+                    "url": current_url,
+                    "reason": skip_reason
+                })
+                if crawl_logger:
+                    crawl_logger.debug(f"Skipping URL: {current_url} - {skip_reason}")
                 continue
                 
             crawled_urls.add(current_url)
@@ -211,7 +348,10 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 logger.debug(f"Using requests for {current_url}")
             
             # Process page (even if failed - record the failure)
-            page_info = await _process_page(current_url, status, content, depth, competitor, ai_scoring_service)
+            if skip_ai_scoring:
+                page_info = await _process_page_fast(current_url, status, content, depth, competitor)
+            else:
+                page_info = await _process_page(current_url, status, content, depth, competitor, ai_scoring_service)
             pages_found.append(page_info)
             
             # Extract links if successful and not at max depth
@@ -220,6 +360,17 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 for link in links:
                     if len(url_queue) + len(crawled_urls) >= limits['max_pages']:
                         break
+                    
+                    # Early URL filtering for extracted links
+                    should_skip, skip_reason = _should_skip_url(link)
+                    if should_skip:
+                        skipped_urls += 1
+                        skipped_urls_details.append({
+                            "url": link,
+                            "reason": skip_reason
+                        })
+                        continue
+                    
                     link_canonical = canonicalize_url(link)
                     if link_canonical not in canonical_urls:
                         url_queue.append((link, depth + 1))
@@ -235,7 +386,21 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 if len(result["top_by_category"][category]) < 10:  # Top 10 per category
                     result["top_by_category"][category].append(page['url'])
         
-        logger.info(f"Crawled {len(pages_found)} pages from {root_url}")
+        logger.info(f"Crawled {len(pages_found)} pages from {root_url}, skipped {skipped_urls} low-value URLs")
+        if crawl_logger:
+            crawl_logger.info(f"Crawled {len(pages_found)} pages from {root_url}, skipped {skipped_urls} low-value URLs")
+        
+        # Add skipped URLs count and details to results
+        result["skipped_urls"] = skipped_urls
+        result["skipped_urls_details"] = skipped_urls_details
+        result["warnings"].append(f"Skipped {skipped_urls} low-value URLs during discovery")
+        
+        # Add sitemap processing details for transparency
+        if sitemap_urls:
+            result["sitemap_urls"] = sitemap_urls
+            result["filtered_sitemap_urls"] = filtered_sitemap_urls
+            result["sitemap_filtered_count"] = len(sitemap_urls) - len(filtered_sitemap_urls)
+            result["sitemap_processed_count"] = len(filtered_sitemap_urls)
         
         # Generate AI scoring debugging information
         if crawl_logger:
@@ -258,6 +423,86 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
             db.close()
         
     return result
+
+
+async def _process_page_fast(url: str, status: Optional[int], content: str, depth: int, competitor: str = "unknown") -> Dict:
+    """Fast page processing without AI scoring - only basic metadata extraction."""
+    page_info = {
+        "url": url,
+        "status": status,
+        "depth": depth,
+        "primary_category": "other",
+        "secondary_categories": [],
+        "score": 0.0,
+        "signals": [],
+        "content_hash": None,
+        "size_bytes": len(content) if content else 0,
+        "mime_type": None,
+        "scoring_method": "rules",
+        "ai_scoring_reason": "Fast discovery mode - AI scoring skipped",
+        "ai_error": None
+    }
+    
+    if status != 200 or not content:
+        return page_info
+        
+    # Check if it's a PDF or binary file
+    if url.lower().endswith('.pdf') or 'pdf' in url.lower():
+        page_info["primary_category"] = "datasheet"
+        page_info["mime_type"] = "application/pdf"
+        page_info["score"] = 0.9
+        page_info["signals"] = ["pdf_url"]
+        return page_info
+        
+    # Hash content for text pages
+    page_info["content_hash"] = sha256_text(content)
+    
+    # Fast metadata extraction using regex
+    metadata = _extract_basic_metadata_fast(content)
+    title_text = metadata["title"]
+    h1_text = metadata["h1"]
+    h2_text = metadata["h2"]
+    h3_text = metadata["h3"]
+    content_length = metadata["content_length"]
+    
+    # Rules-based scoring only
+    rules_category, rules_score, rules_signals = _classify_page(url, title_text.lower(), h1_text.lower(), content)
+    
+    # Apply depth penalty to rules score
+    rules_score *= (0.9 ** depth)
+    
+    # Apply noise penalty to rules score
+    if any(noise in url.lower() for noise in ['careers', 'privacy', 'terms', 'cookies', 'legal']):
+        rules_score = min(rules_score, 0.05)
+    
+    rules_score = min(1.0, max(0.0, rules_score))  # Clip to [0,1]
+    
+    # Store results
+    page_info["primary_category"] = rules_category
+    page_info["score"] = rules_score
+    page_info["signals"] = rules_signals
+    page_info["rules_score"] = rules_score
+    page_info["rules_category"] = rules_category
+    page_info["rules_signals"] = rules_signals
+    
+    # Add metadata for potential AI scoring later
+    page_info["title"] = title_text
+    page_info["h1"] = h1_text
+    page_info["h2"] = h2_text
+    page_info["h3"] = h3_text
+    page_info["content_length"] = content_length
+    page_info["has_minimal_content"] = bool(
+        title_text.strip() or 
+        h1_text.strip() or 
+        h2_text.strip() or 
+        h3_text.strip() or
+        content_length > 100
+    )
+    
+    # Debug logging for minimal content check
+    logger.debug(f"Minimal content check for {url}: title='{title_text[:50]}...', h1='{h1_text[:50]}...', h2='{h2_text[:50]}...', h3='{h3_text[:50]}...', content_len={content_length}, has_minimal={page_info['has_minimal_content']}")
+    
+    return page_info
 
 
 async def _process_page(url: str, status: Optional[int], content: str, depth: int, competitor: str = "unknown", ai_scoring_service: Optional[AIScoringService] = None) -> Dict:

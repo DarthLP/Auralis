@@ -158,6 +158,15 @@ export interface CrawlResponse {
   warnings: string[];
   crawl_session_id: number;
   pages_saved_to_db: number;
+  skipped_urls?: number;
+  skipped_urls_details?: Array<{
+    url: string;
+    reason: string;
+  }>;
+  sitemap_urls?: string[];
+  filtered_sitemap_urls?: string[];
+  sitemap_filtered_count?: number;
+  sitemap_processed_count?: number;
 }
 
 export interface FingerprintRequest {
@@ -284,6 +293,31 @@ export async function getActiveCrawlSessions(): Promise<{ active_sessions: numbe
   
   if (!response.ok) {
     throw new Error(`Get active sessions failed: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
+export async function scorePagesWithAI(pages: any[], competitor: string): Promise<{
+  success: boolean;
+  pages: any[];
+  total_pages: number;
+  ai_scored_pages: number;
+}> {
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const response = await fetch(`${baseUrl}/api/crawl/score-pages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      pages,
+      competitor
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`AI scoring failed: ${response.status}`);
   }
   
   return response.json();

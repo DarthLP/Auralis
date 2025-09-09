@@ -6,7 +6,7 @@ import logging
 import os
 import asyncio
 from datetime import datetime
-from typing import Dict, Set
+from typing import Dict, Set, List, Any
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, validator
@@ -119,6 +119,10 @@ class CrawlResponse(BaseModel):
     warnings: list = []
     error: str = None
     crawl_session_id: int = None
+    sitemap_urls: list = []
+    filtered_sitemap_urls: list = []
+    sitemap_filtered_count: int = 0
+    sitemap_processed_count: int = 0
 
 
 class StopCrawlRequest(BaseModel):
@@ -290,14 +294,15 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         active_crawl_sessions.add(temp_session_id)
         
         try:
-            # Perform discovery with JavaScript support
+            # Perform fast discovery without AI scoring
             result = await discover_interesting_pages(
                 str(request.url), 
                 limits, 
                 enable_js=settings.SCRAPER_ENABLE_JAVASCRIPT,
                 competitor=competitor,
                 crawl_logger=crawl_logger,
-                stop_check=lambda: temp_session_id not in active_crawl_sessions
+                stop_check=lambda: temp_session_id not in active_crawl_sessions,
+                skip_ai_scoring=True  # Fast discovery mode
             )
         finally:
             # Always remove from active sessions when done
@@ -539,3 +544,101 @@ async def get_active_sessions() -> Dict[str, list]:
         Dictionary with list of active session IDs
     """
     return {"active_sessions": list(active_crawl_sessions)}
+
+
+# Request model for AI scoring
+class ScorePagesRequest(BaseModel):
+    pages: List[Dict[str, Any]]
+    competitor: str
+
+
+@router.post("/score-pages")
+async def score_pages_with_ai(
+    request: ScorePagesRequest,
+    db: Session = Depends(get_db)
+):
+    """Score discovered pages with AI analysis."""
+    try:
+        # Initialize AI scoring service
+        from app.services.theta_client import ThetaClient
+        from app.services.ai_scoring import AIScoringService
+        
+        theta_client = ThetaClient(db)
+        ai_scoring_service = AIScoringService(theta_client)
+        
+        scored_pages = []
+        
+        for page in request.pages:
+            # Skip pages that don't qualify for AI scoring
+            if not page.get("has_minimal_content", False):
+                page["ai_scoring_reason"] = "No minimal content"
+                page["ai_score"] = None
+                page["ai_category"] = None
+                page["ai_signals"] = []
+                page["ai_success"] = False
+                scored_pages.append(page)
+                continue
+            
+            # Skip obvious noise pages
+            noise_patterns = ['careers', 'privacy', 'terms', 'cookies', 'legal', 'accessibility', 'contact', 'support', 'help', 'faq', 'sitemap']
+            if any(noise in page["url"].lower() for noise in noise_patterns):
+                page["ai_scoring_reason"] = "Smart filtering: URL contains noise patterns"
+                page["ai_score"] = None
+                page["ai_category"] = None
+                page["ai_signals"] = []
+                page["ai_success"] = False
+                scored_pages.append(page)
+                continue
+            
+            try:
+                # Perform AI scoring
+                ai_result = await ai_scoring_service.score_page(
+                    url=page["url"],
+                    title=page.get("title", ""),
+                    content="",  # No full content for lightweight scoring
+                    h1_headings=page.get("h1", ""),
+                    competitor=request.competitor
+                )
+                
+                # Update page with AI results
+                page["ai_score"] = ai_result.score
+                page["ai_category"] = ai_result.primary_category
+                page["ai_signals"] = ai_result.signals
+                page["ai_confidence"] = ai_result.confidence
+                page["ai_reasoning"] = ai_result.reasoning
+                page["ai_success"] = ai_result.success
+                page["ai_scoring_reason"] = "AI scoring completed"
+                
+                # Use AI score if successful, otherwise fall back to rules score
+                if ai_result.success and ai_result.score > 0:
+                    page["score"] = ai_result.score
+                    page["primary_category"] = ai_result.primary_category
+                    page["secondary_categories"] = ai_result.secondary_categories
+                    page["signals"] = ai_result.signals
+                    page["scoring_method"] = "ai"
+                else:
+                    page["scoring_method"] = "rules"
+                    page["ai_error"] = ai_result.error
+                
+            except Exception as e:
+                logger.error(f"AI scoring failed for {page['url']}: {e}")
+                page["ai_scoring_reason"] = f"AI scoring failed: {str(e)}"
+                page["ai_score"] = None
+                page["ai_category"] = None
+                page["ai_signals"] = []
+                page["ai_success"] = False
+                page["ai_error"] = str(e)
+                page["scoring_method"] = "rules"
+            
+            scored_pages.append(page)
+        
+        return {
+            "success": True,
+            "pages": scored_pages,
+            "total_pages": len(scored_pages),
+            "ai_scored_pages": len([p for p in scored_pages if p.get("ai_success", False)])
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in AI scoring: {e}")
+        raise HTTPException(status_code=500, detail=f"AI scoring failed: {str(e)}")

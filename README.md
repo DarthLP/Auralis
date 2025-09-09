@@ -48,6 +48,28 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 
 **Data Management**: Added options to clear old crawl data between jobs to prevent data persistence issues. Use `clear_old_data: true` in crawl requests or call the `/api/crawl/clear-data` endpoint.
 
+## 🔄 Recent Improvements (Latest)
+
+### Enhanced Discovery Process Visualization
+- **Complete Sitemap Transparency**: Now shows all sitemap URLs found (e.g., 18 URLs) with visual filtering breakdown
+- **Step-by-Step Processing**: Displays the complete discovery flow: sitemap → filtering → final pages
+- **Visual Status Indicators**: Color-coded status for each URL (filtered, processed, queued)
+- **No More Truncation**: Removed "... and X more pages" limits - shows complete lists
+- **Filtering Details**: Clear breakdown of why URLs were filtered out (privacy, terms, etc.)
+
+### Improved URL Filtering Logic
+- **Context-Aware Filtering**: Fixed overly aggressive filtering that was removing valuable content
+- **Product Announcement Support**: URLs like `/news/f-03-battery-development` now pass filtering
+- **Refined Patterns**: Changed from `'development'` to `'/development/'` to avoid false positives
+- **Better Content Discovery**: More pages now make it through the discovery process
+
+### AI Scoring Fixes
+- **Fixed "No Minimal Content" Issue**: Resolved frontend mapping that was missing content fields
+- **Complete Content Field Mapping**: Added `has_minimal_content`, `title`, `h1`, `h2`, `h3`, `content_length`
+- **Proper TypeScript Interfaces**: Updated type definitions for all content fields
+- **Debug Logging**: Added detailed logging for content extraction troubleshooting
+- **AI Scoring Now Works**: Pages with sufficient content now get proper AI scores instead of being skipped
+
 **Dual Scoring Debug Mode**: For debugging purposes, the system now calculates both AI and rules-based scores for every page, allowing you to compare the effectiveness of both approaches. This data is included in the API response and detailed logs.
 
 ### Scalability & Production

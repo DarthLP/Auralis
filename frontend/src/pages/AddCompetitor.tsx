@@ -6,6 +6,7 @@ import {
   startExtraction,
   getExtractionStatus,
   stopCrawl,
+  scorePagesWithAI,
   ExtractionProgressTracker,
   companies
 } from '../lib/api';
@@ -18,10 +19,18 @@ import UrlInputWithValidate from '../components/UrlInputWithValidate';
 import DedupAlert from '../components/DedupAlert';
 
 interface ProcessingState {
-  phase: 'idle' | 'discovering' | 'fingerprinting' | 'extracting' | 'completed' | 'error';
+  phase: 'idle' | 'discovering' | 'scoring' | 'fingerprinting' | 'extracting' | 'completed' | 'error';
   crawlSessionId: number | null;
   fingerprintSessionId: number | null;
   extractionSessionId: number | null;
+  
+  // Step completion tracking
+  stepsCompleted: {
+    discovery: boolean;
+    scoring: boolean;
+    fingerprinting: boolean;
+    extraction: boolean;
+  };
   
   // Progress tracking
   progress: {
@@ -29,6 +38,7 @@ interface ProcessingState {
     processedPages: number;
     extractedPages: number;
     totalPages: number;
+    skippedPages: number;
     entitiesFound: {
       companies: number;
       products: number;
@@ -57,6 +67,13 @@ interface ProcessingState {
     ai_confidence?: number;
     ai_reasoning?: string;
     signals: string[];
+    // Content fields for AI scoring
+    has_minimal_content: boolean;
+    title: string;
+    h1: string;
+    h2: string;
+    h3: string;
+    content_length: number;
     // Dual scoring debug fields
     ai_score?: number | null;
     ai_category?: string;
@@ -68,6 +85,18 @@ interface ProcessingState {
     rules_category?: string;
     rules_signals?: string[];
   }>;
+  
+  // Skipped URLs information
+  skippedUrls: Array<{
+    url: string;
+    reason: string;
+  }>;
+  
+  // Sitemap processing information
+  sitemapUrls: string[];
+  filteredSitemapUrls: string[];
+  sitemapFilteredCount: number;
+  sitemapProcessedCount: number;
   
   error: string | null;
   competitorName: string | null;
@@ -85,15 +114,27 @@ export default function AddCompetitor() {
     crawlSessionId: null,
     fingerprintSessionId: null,
     extractionSessionId: null,
+    stepsCompleted: {
+      discovery: false,
+      scoring: false,
+      fingerprinting: false,
+      extraction: false
+    },
     progress: {
       discoveredPages: 0,
       processedPages: 0,
       extractedPages: 0,
       totalPages: 0,
+      skippedPages: 0,
       entitiesFound: { companies: 0, products: 0, capabilities: 0, releases: 0, documents: 0, signals: 0 }
     },
     metrics: { qps: 0, etaSeconds: null, cacheHits: 0, retries: 0 },
     discoveredPages: [],
+    skippedUrls: [],
+    sitemapUrls: [],
+    filteredSitemapUrls: [],
+    sitemapFilteredCount: 0,
+    sitemapProcessedCount: 0,
     error: null,
     competitorName: null
   });
@@ -162,6 +203,7 @@ export default function AddCompetitor() {
       setProcessingState(prev => ({
         ...prev,
         phase: 'completed',
+        stepsCompleted: { ...prev.stepsCompleted, extraction: true },
         progress: {
           ...prev.progress,
           entitiesFound: {
@@ -274,17 +316,19 @@ export default function AddCompetitor() {
       console.log('Final competitor name:', competitorName);
       setProcessingState(prev => ({ ...prev, competitorName }));
 
-      // Phase 1: Discovery
+      // Phase 1: Discovery Only
       const crawlResult = await startCrawlDiscovery(validationResult.normalized_origin);
       
       setProcessingState(prev => ({
         ...prev,
-        phase: 'fingerprinting',
+        phase: 'scoring',
         crawlSessionId: crawlResult.crawl_session_id,
+        stepsCompleted: { ...prev.stepsCompleted, discovery: true },
         progress: {
           ...prev.progress,
           discoveredPages: crawlResult.pages.length,
-          totalPages: crawlResult.pages.length
+          totalPages: crawlResult.pages.length,
+          skippedPages: crawlResult.skipped_urls || 0
         },
         discoveredPages: crawlResult.pages.map((page: any) => ({
           url: page.url,
@@ -295,6 +339,13 @@ export default function AddCompetitor() {
           ai_confidence: page.ai_confidence,
           ai_reasoning: page.ai_reasoning,
           signals: page.signals || [],
+          // Content fields for AI scoring
+          has_minimal_content: page.has_minimal_content || false,
+          title: page.title || '',
+          h1: page.h1 || '',
+          h2: page.h2 || '',
+          h3: page.h3 || '',
+          content_length: page.content_length || 0,
           // Dual scoring debug fields
           ai_score: page.ai_score,
           ai_category: page.ai_category,
@@ -305,30 +356,105 @@ export default function AddCompetitor() {
           rules_score: page.rules_score,
           rules_category: page.rules_category,
           rules_signals: page.rules_signals || []
-        }))
+        })),
+        skippedUrls: crawlResult.skipped_urls_details || [],
+        sitemapUrls: crawlResult.sitemap_urls || [],
+        filteredSitemapUrls: crawlResult.filtered_sitemap_urls || [],
+        sitemapFilteredCount: crawlResult.sitemap_filtered_count || 0,
+        sitemapProcessedCount: crawlResult.sitemap_processed_count || 0
       }));
 
-      // Phase 2: Fingerprinting
-      console.log('Fingerprinting with:', { crawl_session_id: crawlResult.crawl_session_id, competitor: competitorName });
+      setIsAnalyzing(false);
+      
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'error',
+        error: error instanceof Error ? error.message : 'Analysis failed'
+      }));
+      setErrors({ general: 'Failed to analyze website. Please try again.' });
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Manual step functions
+  const handleStartScoring = async () => {
+    if (!processingState.discoveredPages.length || !processingState.competitorName) return;
+    
+    setIsAnalyzing(true);
+    setProcessingState(prev => ({ ...prev, phase: 'scoring' }));
+
+    try {
+      const scoringResult = await scorePagesWithAI(
+        processingState.discoveredPages,
+        processingState.competitorName
+      );
+      
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'fingerprinting',
+        stepsCompleted: { ...prev.stepsCompleted, scoring: true },
+        discoveredPages: scoringResult.pages
+      }));
+
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error('AI scoring failed:', error);
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'error',
+        error: error instanceof Error ? error.message : 'AI scoring failed'
+      }));
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleStartFingerprinting = async () => {
+    if (!processingState.crawlSessionId || !processingState.competitorName) return;
+    
+    setIsAnalyzing(true);
+    setProcessingState(prev => ({ ...prev, phase: 'fingerprinting' }));
+
+    try {
       const fingerprintResult = await startFingerprinting(
-        crawlResult.crawl_session_id, 
-        competitorName
+        processingState.crawlSessionId, 
+        processingState.competitorName
       );
       
       setProcessingState(prev => ({
         ...prev,
         phase: 'extracting',
         fingerprintSessionId: fingerprintResult.fingerprint_session_id,
+        stepsCompleted: { ...prev.stepsCompleted, scoring: true, fingerprinting: true },
         progress: {
           ...prev.progress,
           processedPages: fingerprintResult.total_processed
         }
       }));
 
-      // Phase 3: Extraction
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error('Fingerprinting failed:', error);
+      setProcessingState(prev => ({
+        ...prev,
+        phase: 'error',
+        error: error instanceof Error ? error.message : 'Fingerprinting failed'
+      }));
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleStartExtraction = async () => {
+    if (!processingState.fingerprintSessionId || !processingState.competitorName) return;
+    
+    setIsAnalyzing(true);
+    setProcessingState(prev => ({ ...prev, phase: 'extracting' }));
+
+    try {
       const extractionResult = await startExtraction({
-        fingerprint_session_id: fingerprintResult.fingerprint_session_id,
-        competitor: competitorName,
+        fingerprint_session_id: processingState.fingerprintSessionId,
+        competitor: processingState.competitorName,
         schema_version: 'v1'
       });
       
@@ -341,13 +467,12 @@ export default function AddCompetitor() {
       startProgressTracking(extractionResult.extraction_session_id);
       
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error('Extraction failed:', error);
       setProcessingState(prev => ({
         ...prev,
         phase: 'error',
-        error: error instanceof Error ? error.message : 'Analysis failed'
+        error: error instanceof Error ? error.message : 'Extraction failed'
       }));
-      setErrors({ general: 'Failed to analyze website. Please try again.' });
       setIsAnalyzing(false);
     }
   };
@@ -457,89 +582,324 @@ export default function AddCompetitor() {
         </div>
       </div>
 
-      {/* Progress Tracking */}
+      {/* Stepped Process */}
       {processingState.phase !== 'idle' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Analysis Progress</h3>
-            {(processingState.phase === 'discovering' || processingState.phase === 'fingerprinting' || processingState.phase === 'extracting') && (
-              <button
-                onClick={handleStop}
-                className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
-                </svg>
-                Stop Analysis
-              </button>
-            )}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Steps</h3>
+            
+            {/* Step 1: Discovery */}
+            <div className="mb-6 p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    processingState.stepsCompleted.discovery 
+                      ? 'bg-green-100 text-green-800' 
+                      : processingState.phase === 'discovering'
+                      ? 'bg-blue-100 text-blue-800 animate-pulse'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {processingState.stepsCompleted.discovery ? '✓' : '1'}
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-gray-900">Discovery</h4>
+                    <p className="text-xs text-gray-500">Find and analyze pages</p>
+                  </div>
+                </div>
+                {processingState.stepsCompleted.discovery && (
+                  <div className="text-right">
+                    <div className="text-sm text-green-600 font-medium">
+                      {processingState.progress.discoveredPages} pages found
+                    </div>
+                    {processingState.progress.skippedPages > 0 && (
+                      <div className="text-xs text-gray-500">
+                        {processingState.progress.skippedPages} URLs skipped
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {processingState.stepsCompleted.discovery && (
+                <div className="mt-3">
+                  <div className="text-sm text-gray-600 mb-2">
+                    Discovered {processingState.progress.discoveredPages} pages
+                    {processingState.progress.skippedPages > 0 && (
+                      <span className="ml-2 text-gray-500">
+                        (skipped {processingState.progress.skippedPages} low-value URLs)
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Sitemap Processing Overview */}
+                  {processingState.sitemapUrls.length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="text-xs font-medium text-gray-700 mb-2">
+                        Sitemap Processing ({processingState.sitemapUrls.length} URLs found)
+                      </h5>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                        <div className="grid grid-cols-3 gap-4 text-xs">
+                          <div className="text-center">
+                            <div className="text-blue-600 font-semibold">{processingState.sitemapUrls.length}</div>
+                            <div className="text-blue-700">Total Found</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-orange-600 font-semibold">{processingState.sitemapFilteredCount}</div>
+                            <div className="text-orange-700">Filtered Out</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-green-600 font-semibold">{processingState.sitemapProcessedCount}</div>
+                            <div className="text-green-700">Processed</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* All Sitemap URLs */}
+                  {processingState.sitemapUrls.length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="text-xs font-medium text-gray-700 mb-2">All Sitemap URLs</h5>
+                      <div className="max-h-32 overflow-y-auto">
+                        <div className="space-y-1">
+                          {processingState.sitemapUrls.map((url, index) => {
+                            const isFiltered = !processingState.filteredSitemapUrls.includes(url);
+                            const isProcessed = processingState.discoveredPages.some(page => page.url === url);
+                            return (
+                              <div key={index} className={`flex items-center justify-between text-xs p-2 rounded ${
+                                isFiltered 
+                                  ? 'bg-red-50 border-l-2 border-red-200' 
+                                  : isProcessed
+                                  ? 'bg-green-50 border-l-2 border-green-200'
+                                  : 'bg-yellow-50 border-l-2 border-yellow-200'
+                              }`}>
+                                <span className="truncate flex-1 mr-2">{url}</span>
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                  isFiltered 
+                                    ? 'bg-red-100 text-red-700' 
+                                    : isProcessed
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {isFiltered ? 'Filtered' : isProcessed ? 'Processed' : 'Queued'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Discovered Pages */}
+                  <div className="mb-4">
+                    <h5 className="text-xs font-medium text-gray-700 mb-2">Final Discovered Pages</h5>
+                    <div className="max-h-40 overflow-y-auto">
+                      <div className="space-y-1">
+                        {processingState.discoveredPages.map((page, index) => (
+                          <div key={index} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
+                            <span className="truncate flex-1 mr-2">{page.url}</span>
+                            <span className="text-gray-500">Score: {page.score.toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skipped URLs */}
+                  {processingState.progress.skippedPages > 0 && (
+                    <div className="mb-4">
+                      <h5 className="text-xs font-medium text-gray-700 mb-2">
+                        Skipped URLs ({processingState.progress.skippedPages})
+                      </h5>
+                      <div className="max-h-32 overflow-y-auto">
+                        <div className="space-y-1">
+                          {processingState.skippedUrls.map((skipped, index) => (
+                            <div key={index} className="flex items-start justify-between text-xs bg-red-50 p-2 rounded border-l-2 border-red-200">
+                              <span className="truncate flex-1 mr-2 text-red-700">{skipped.url}</span>
+                              <span className="text-red-500 text-right ml-2 flex-shrink-0">{skipped.reason}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Step 2: Scoring */}
+            <div className="mb-6 p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    processingState.stepsCompleted.scoring 
+                      ? 'bg-green-100 text-green-800' 
+                      : processingState.phase === 'scoring'
+                      ? 'bg-blue-100 text-blue-800 animate-pulse'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {processingState.stepsCompleted.scoring ? '✓' : '2'}
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-gray-900">Scoring</h4>
+                    <p className="text-xs text-gray-500">AI-powered page scoring</p>
+                  </div>
+                </div>
+                {processingState.stepsCompleted.scoring && (
+                  <span className="text-sm text-green-600 font-medium">Completed</span>
+                )}
+              </div>
+              
+              {processingState.stepsCompleted.scoring && (
+                <div className="mt-3">
+                  <div className="text-sm text-gray-600 mb-2">
+                    All pages scored with AI analysis
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step 3: Fingerprinting */}
+            <div className="mb-6 p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    processingState.stepsCompleted.fingerprinting 
+                      ? 'bg-green-100 text-green-800' 
+                      : processingState.phase === 'fingerprinting'
+                      ? 'bg-blue-100 text-blue-800 animate-pulse'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {processingState.stepsCompleted.fingerprinting ? '✓' : '3'}
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-gray-900">Fingerprinting</h4>
+                    <p className="text-xs text-gray-500">Extract and process content</p>
+                  </div>
+                </div>
+                {processingState.stepsCompleted.fingerprinting && (
+                  <span className="text-sm text-green-600 font-medium">
+                    {processingState.progress.processedPages} pages processed
+                  </span>
+                )}
+              </div>
+              
+              {processingState.stepsCompleted.fingerprinting && (
+                <div className="mt-3">
+                  <div className="text-sm text-gray-600 mb-2">
+                    Processed {processingState.progress.processedPages} pages
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step 4: Extraction */}
+            <div className="mb-6 p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    processingState.stepsCompleted.extraction 
+                      ? 'bg-green-100 text-green-800' 
+                      : processingState.phase === 'extracting'
+                      ? 'bg-blue-100 text-blue-800 animate-pulse'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {processingState.stepsCompleted.extraction ? '✓' : '4'}
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-gray-900">Extraction</h4>
+                    <p className="text-xs text-gray-500">Extract structured data</p>
+                  </div>
+                </div>
+                {processingState.stepsCompleted.extraction && (
+                  <span className="text-sm text-green-600 font-medium">
+                    {processingState.progress.extractedPages} pages extracted
+                  </span>
+                )}
+              </div>
+              
+              {processingState.stepsCompleted.extraction && (
+                <div className="mt-3">
+                  <div className="text-sm text-gray-600 mb-2">
+                    Extracted {processingState.progress.extractedPages} pages
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-3">
+              {processingState.phase === 'scoring' && !processingState.stepsCompleted.scoring && (
+                <button
+                  onClick={handleStartScoring}
+                  disabled={isAnalyzing}
+                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Starting AI Scoring...
+                    </>
+                  ) : (
+                    'Start AI Scoring'
+                  )}
+                </button>
+              )}
+
+              {processingState.phase === 'scoring' && processingState.stepsCompleted.scoring && !processingState.stepsCompleted.fingerprinting && (
+                <button
+                  onClick={handleStartFingerprinting}
+                  disabled={isAnalyzing}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Starting Fingerprinting...
+                    </>
+                  ) : (
+                    'Start Fingerprinting'
+                  )}
+                </button>
+              )}
+
+              {processingState.phase === 'extracting' && !processingState.stepsCompleted.extraction && (
+                <button
+                  onClick={handleStartExtraction}
+                  disabled={isAnalyzing}
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Starting Extraction...
+                    </>
+                  ) : (
+                    'Start Extraction'
+                  )}
+                </button>
+              )}
+
+              {(processingState.phase === 'discovering' || processingState.phase === 'fingerprinting' || processingState.phase === 'extracting') && (
+                <button
+                  onClick={handleStop}
+                  className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
+                  </svg>
+                  Stop Analysis
+                </button>
+              )}
+            </div>
           </div>
-            <div className="mt-2 flex items-center space-x-4">
-              <div className={`flex items-center ${processingState.phase === 'discovering' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'discovering' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
-                <span className="text-sm font-medium">Discovery</span>
-              </div>
-              <div className={`flex items-center ${processingState.phase === 'fingerprinting' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'fingerprinting' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
-                <span className="text-sm font-medium">Fingerprinting</span>
-              </div>
-              <div className={`flex items-center ${processingState.phase === 'extracting' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'extracting' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
-                <span className="text-sm font-medium">Extraction</span>
-              </div>
-              <div className={`flex items-center ${processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
-                <span className="text-sm font-medium">Complete</span>
-              </div>
-            </div>
-
-          {/* Progress Bars */}
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Pages Discovered</span>
-                <span>{processingState.progress.discoveredPages}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: '100%' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Pages Processed</span>
-                <span>{processingState.progress.processedPages}/{processingState.progress.totalPages}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${(processingState.progress.processedPages / Math.max(processingState.progress.totalPages, 1)) * 100}%` 
-                  }}
-                />
-              </div>
-            </div>
-
-            {processingState.phase === 'extracting' && (
-                <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Pages Extracted</span>
-                  <span>{processingState.progress.extractedPages}/{processingState.progress.totalPages}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                    style={{ 
-                      width: `${(processingState.progress.extractedPages / Math.max(processingState.progress.totalPages, 1)) * 100}%` 
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-              </div>
 
           {/* Real-time Metrics */}
           {processingState.phase === 'extracting' && (
@@ -614,11 +974,18 @@ export default function AddCompetitor() {
                         crawlSessionId: null,
                         fingerprintSessionId: null,
                         extractionSessionId: null,
+                        stepsCompleted: {
+                          discovery: false,
+                          scoring: false,
+                          fingerprinting: false,
+                          extraction: false
+                        },
                         progress: {
                           discoveredPages: 0,
                           processedPages: 0,
                           extractedPages: 0,
                           totalPages: 0,
+                          skippedPages: 0,
                           entitiesFound: {
                             companies: 0,
                             products: 0,
@@ -635,6 +1002,11 @@ export default function AddCompetitor() {
                           retries: 0
                         },
                         discoveredPages: [],
+                        skippedUrls: [],
+                        sitemapUrls: [],
+                        filteredSitemapUrls: [],
+                        sitemapFilteredCount: 0,
+                        sitemapProcessedCount: 0,
                         competitorName: '',
                         error: null
                       });
