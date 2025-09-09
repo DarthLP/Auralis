@@ -27,7 +27,7 @@ def json_serial(obj):
 from sqlalchemy import func
 
 from app.models.extraction import (
-    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, Document, ExtractedSignalEntity,
+    ExtractedCompany, ExtractedProduct, ExtractedCapability, ExtractedRelease, ExtractedDocument, ExtractedSignalEntity,
     ExtractionSource, EntitySnapshot, EntityChange, ExtractionSession
 )
 from app.core.config import settings
@@ -180,7 +180,7 @@ class EntityNormalizer:
             
             return ":".join(key_parts)
         
-        elif entity_type == "Document":
+        elif entity_type == "ExtractedDocument":
             title = self.normalize_text(data.get("title", ""))
             url = data.get("url", "")
             doc_type = data.get("doc_type", "")
@@ -567,7 +567,7 @@ class NormalizationService:
         try:
             # Process entities in dependency order: Company -> Product -> Capability -> others
             # This ensures foreign key constraints are satisfied
-            processing_order = ["Company", "Product", "Capability", "Release", "Document", "Signal"]
+            processing_order = ["Company", "Product", "Capability", "Release", "ExtractedDocument", "Signal"]
             
             # Process entities in the correct order
             for entity_type in processing_order:
@@ -703,7 +703,7 @@ class NormalizationService:
             "ExtractedProduct": ExtractedProduct,
             "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
-            "Document": Document,
+            "ExtractedDocument": ExtractedDocument,
             "ExtractedSignalEntity": ExtractedSignalEntity
         }
         
@@ -725,7 +725,7 @@ class NormalizationService:
             "ExtractedProduct": ExtractedProduct,
             "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
-            "Document": Document,
+            "ExtractedDocument": ExtractedDocument,
             "ExtractedSignalEntity": ExtractedSignalEntity
         }
         
@@ -756,7 +756,7 @@ class NormalizationService:
             "ExtractedProduct": ExtractedProduct,
             "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
-            "Document": Document,
+            "ExtractedDocument": ExtractedDocument,
             "ExtractedSignalEntity": ExtractedSignalEntity
         }
         

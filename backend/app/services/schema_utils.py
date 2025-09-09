@@ -314,10 +314,27 @@ Return JSON ONLY.
         return prompt
 
 
-# Global instance
+class SchemaCompactor:
+    """Schema compactor for text truncation."""
+    
+    def __init__(self):
+        self.token_counter = TokenCounter()
+    
+    def truncate_text(self, text: str, max_tokens: int) -> str:
+        """Truncate text to approximate token limit."""
+        return self.token_counter.truncate_to_tokens(text, max_tokens)
+
+
+# Global instances
 multi_stage_extractor = MultiStageExtractor()
+schema_compactor = SchemaCompactor()
 
 
 def get_multi_stage_extractor() -> MultiStageExtractor:
     """Get the global multi-stage extractor instance."""
     return multi_stage_extractor
+
+
+def get_schema_compactor() -> SchemaCompactor:
+    """Get the global schema compactor instance."""
+    return schema_compactor

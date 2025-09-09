@@ -76,7 +76,7 @@ async def get_companies(
                 "website": company.website,
                 "status": company.status,
                 "tags": company.tags or [],
-                "short_desc": company.short_desc,
+                "short_desc": getattr(company, 'short_desc', None),
                 "logoUrl": company.logo_url,
                 "isSelf": company.is_self
             }
@@ -109,7 +109,7 @@ async def get_company(company_id: str, db: Session = Depends(get_db)) -> dict:
             "website": company.website,
             "status": company.status,
             "tags": company.tags or [],
-            "short_desc": company.short_desc,
+            "short_desc": getattr(company, 'short_desc', None),
             "logoUrl": company.logo_url,
             "isSelf": company.is_self
         }

@@ -23,7 +23,7 @@ class Company(Base):
     website = Column(String, nullable=True)
     status = Column(String, nullable=True, default="active")  # Removed required constraint
     tags = Column(ARRAY(String), default=list)
-    short_desc = Column(Text, nullable=True)  # Short description from extraction
+    # short_desc = Column(Text, nullable=True)  # Short description from extraction - temporarily disabled
     logo_url = Column(String, nullable=True)
     is_self = Column(Boolean, default=False)  # true if "Your Company"
     
