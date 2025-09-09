@@ -45,7 +45,7 @@ def _extract_clean_text(soup: BeautifulSoup) -> str:
         return ""
 
 
-async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown") -> Dict:
+async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown", crawl_logger=None, stop_check=None) -> Dict:
     """
     Discover and classify interesting pages from a website.
     
@@ -61,6 +61,10 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
     Returns:
         Dictionary with discovered pages and metadata
     """
+    if crawl_logger:
+        crawl_logger.info(f"DEBUG: discover_interesting_pages called with root_url={root_url}, competitor={competitor}")
+    else:
+        logger.info(f"DEBUG: discover_interesting_pages called with root_url={root_url}, competitor={competitor}")
     parsed_root = urlparse(root_url)
     base_domain = f"{parsed_root.scheme}://{parsed_root.netloc}"
     
@@ -167,6 +171,13 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
         
         # BFS crawl
         while url_queue and len(pages_found) < limits['max_pages']:
+            # Check if crawling should be stopped
+            if stop_check and stop_check():
+                logger.info("Crawling stopped by user request")
+                if crawl_logger:
+                    crawl_logger.info("Crawling stopped by user request")
+                break
+            
             current_url, depth = url_queue.popleft()
             
             # Check for duplicates using canonical URLs
@@ -226,6 +237,18 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
         
         logger.info(f"Crawled {len(pages_found)} pages from {root_url}")
         
+        # Generate AI scoring debugging information
+        if crawl_logger:
+            crawl_logger.info(f"DEBUG: Generating AI scoring debug info for {len(pages_found)} pages")
+        else:
+            logger.info(f"DEBUG: Generating AI scoring debug info for {len(pages_found)} pages")
+        debug_info = _generate_ai_scoring_debug_info(pages_found)
+        if crawl_logger:
+            crawl_logger.info(f"DEBUG: Generated debug info: {debug_info}")
+        else:
+            logger.info(f"DEBUG: Generated debug info: {debug_info}")
+        result["ai_scoring_debug"] = debug_info
+        
     except Exception as e:
         logger.error(f"Error during crawling: {e}")
         result["warnings"].append(f"Crawling error: {str(e)}")
@@ -263,7 +286,9 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         "content_hash": None,
         "size_bytes": len(content) if content else 0,
         "mime_type": None,
-        "scoring_method": "rules"  # Default to rules-based scoring
+        "scoring_method": "rules",  # Default to rules-based scoring
+        "ai_scoring_reason": None,  # Track why AI scoring was/wasn't attempted
+        "ai_error": None  # Track AI scoring errors
     }
     
     if status != 200 or not content:
@@ -311,8 +336,23 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         
         # Try AI scoring if enabled and conditions are met
         # Use lightweight scoring with only URL, title, and H1 headings
-        has_minimal_content = title_text.strip() or h1_text.strip()
+        # Also check for other heading tags as fallback
+        h2_tags = soup.find_all('h2')
+        h2_text = " ".join([h2.get_text().strip() for h2 in h2_tags])
+        h3_tags = soup.find_all('h3')
+        h3_text = " ".join([h3.get_text().strip() for h3 in h3_tags])
+        
+        # Check for minimal content with fallbacks
+        has_minimal_content = bool(
+            title_text.strip() or 
+            h1_text.strip() or 
+            h2_text.strip() or 
+            h3_text.strip() or
+            (len(extracted_text.strip()) > 100)  # Fallback to content length
+        )
+        
         logger.debug(f"AI scoring check: enabled={settings.AI_SCORING_ENABLED}, service={ai_scoring_service is not None}, has_minimal_content={has_minimal_content}")
+        logger.debug(f"Content check: title='{title_text[:50]}...', h1='{h1_text[:50]}...', h2='{h2_text[:50]}...', h3='{h3_text[:50]}...', content_len={len(extracted_text)}")
         
         ai_score = None
         ai_category = None
@@ -320,6 +360,29 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         ai_confidence = 0.0
         ai_reasoning = ""
         ai_success = False
+        
+        # Determine AI scoring reason for debugging
+        ai_scoring_reason = None
+        if not settings.AI_SCORING_ENABLED:
+            ai_scoring_reason = "AI scoring disabled in settings"
+        elif ai_scoring_service is None:
+            ai_scoring_reason = "AI scoring service not available"
+        elif not has_minimal_content:
+            ai_scoring_reason = "No minimal content (title or H1 headings required)"
+        else:
+            # Check for noise patterns that would skip AI scoring
+            noise_patterns = [
+                'careers', 'privacy', 'terms', 'cookies', 'legal', 'accessibility', 
+                'contact', 'support', 'help', 'faq', 'sitemap'
+            ]
+            matched_noise = [pattern for pattern in noise_patterns if pattern in url.lower()]
+            if matched_noise:
+                ai_scoring_reason = f"Smart filtering: URL contains noise patterns: {', '.join(matched_noise)}"
+            else:
+                ai_scoring_reason = "AI scoring attempted"
+        
+        # Always set the reason, even if AI scoring is not attempted
+        page_info["ai_scoring_reason"] = ai_scoring_reason
         
         # Only attempt AI scoring for pages that are likely to be valuable
         # Skip obvious low-value pages to save time
@@ -333,13 +396,15 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
             has_minimal_content and 
             not skip_ai_scoring):
             
-            logger.info(f"Attempting lightweight AI scoring for {url} (title: {len(title_text)} chars, h1: {len(h1_text)} chars)")
+            # Combine all heading information for better context
+            all_headings = f"{h1_text} {h2_text} {h3_text}".strip()
+            logger.info(f"Attempting lightweight AI scoring for {url} (title: {len(title_text)} chars, headings: {len(all_headings)} chars)")
             try:
                 ai_result = await ai_scoring_service.score_page(
                     url=url,
                     title=title_text,
                     content="",  # No full content for lightweight scoring
-                    h1_headings=h1_text,  # Pass H1 headings separately
+                    h1_headings=all_headings,  # Pass all headings together
                     competitor=competitor
                 )
                 
@@ -362,11 +427,18 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
                     ai_score = min(1.0, max(0.0, ai_score))  # Clip to [0,1]
                     
                     logger.info(f"AI scoring successful for {url}: score={ai_score:.2f}, confidence={ai_confidence:.2f}, category={ai_category}")
+                    ai_scoring_reason = f"AI scoring successful: score={ai_score:.2f}, confidence={ai_confidence:.2f}"
                 else:
-                    logger.warning(f"AI scoring failed for {url}: success={ai_success}, confidence={ai_confidence:.2f}, error={ai_result.error or 'low confidence'}")
+                    error_msg = ai_result.error or 'low confidence'
+                    ai_scoring_reason = f"AI scoring failed: {error_msg}"
+                    logger.warning(f"AI scoring failed for {url}: success={ai_success}, confidence={ai_confidence:.2f}, error={error_msg}")
                     
             except Exception as e:
+                ai_scoring_reason = f"AI scoring error: {str(e)}"
                 logger.warning(f"AI scoring error for {url}: {e}")
+            
+            # Update the page_info with the final reason
+            page_info["ai_scoring_reason"] = ai_scoring_reason
         
         # Store AI scoring results (even if failed)
         page_info["ai_score"] = ai_score
@@ -375,6 +447,8 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         page_info["ai_confidence"] = ai_confidence
         page_info["ai_reasoning"] = ai_reasoning
         page_info["ai_success"] = ai_success
+        # ai_scoring_reason already set above
+        page_info["ai_error"] = ai_result.error if 'ai_result' in locals() and hasattr(ai_result, 'error') else None
         
         # Choose which scoring method to use as primary
         # Lower confidence threshold and prefer AI scoring when available
@@ -402,6 +476,62 @@ async def _process_page(url: str, status: Optional[int], content: str, depth: in
         page_info["signals"] = ["parse_error"]
         
     return page_info
+
+
+def _generate_ai_scoring_debug_info(pages: List[Dict]) -> Dict:
+    """
+    Generate AI scoring debugging information from processed pages.
+    
+    Args:
+        pages: List of processed page dictionaries
+        
+    Returns:
+        Dictionary with AI scoring debug statistics and page details
+    """
+    ai_scoring_stats = {
+        "attempted": 0,
+        "successful": 0,
+        "failed": 0,
+        "skipped": 0,
+        "reasons": {}
+    }
+    
+    pages_with_ai_info = []
+    
+    for page in pages:
+        ai_reason = page.get('ai_scoring_reason', 'Unknown')
+        ai_success = page.get('ai_success')
+        ai_error = page.get('ai_error')
+        scoring_method = page.get('scoring_method', 'unknown')
+        
+        # Categorize the page
+        if ai_reason and 'attempted' in ai_reason.lower():
+            ai_scoring_stats["attempted"] += 1
+            if ai_success:
+                ai_scoring_stats["successful"] += 1
+            else:
+                ai_scoring_stats["failed"] += 1
+        else:
+            ai_scoring_stats["skipped"] += 1
+        
+        # Track reasons
+        if ai_reason:
+            ai_scoring_stats["reasons"][ai_reason] = ai_scoring_stats["reasons"].get(ai_reason, 0) + 1
+        
+        # Collect pages with AI info for detailed debugging
+        if ai_reason or ai_error:
+            pages_with_ai_info.append({
+                "url": page.get("url"),
+                "ai_scoring_reason": ai_reason,
+                "ai_success": ai_success,
+                "ai_error": ai_error,
+                "scoring_method": scoring_method
+            })
+    
+    return {
+        "stats": ai_scoring_stats,
+        "pages_with_ai_info": pages_with_ai_info
+    }
 
 
 def _classify_page(url: str, title: str, h1_text: str, content: str) -> Tuple[str, float, List[str]]:

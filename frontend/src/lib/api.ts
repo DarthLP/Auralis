@@ -261,6 +261,34 @@ export async function startFingerprinting(crawlSessionId: number, competitor: st
   return response.json();
 }
 
+// Stop crawl functions
+export async function stopCrawl(crawlSessionId: number): Promise<{ success: boolean; message: string }> {
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const response = await fetch(`${baseUrl}/api/crawl/stop`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crawl_session_id: crawlSessionId })
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Stop crawl failed: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
+export async function getActiveCrawlSessions(): Promise<{ active_sessions: number[] }> {
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const response = await fetch(`${baseUrl}/api/crawl/active-sessions`);
+  
+  if (!response.ok) {
+    throw new Error(`Get active sessions failed: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
 // Extraction API functions
 export async function startExtraction(request: ExtractionRequest): Promise<ExtractionResponse> {
   const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';

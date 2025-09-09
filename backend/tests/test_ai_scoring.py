@@ -196,6 +196,36 @@ class TestAIScoringService:
         assert result.error is not None
         assert "ai_error" in result.signals
     
+    @pytest.mark.asyncio
+    async def test_ai_scoring_parse_failure(self, ai_scoring_service):
+        """Test handling of AI response parsing failures."""
+        # Mock AI response that will cause parsing failure
+        with patch.object(ai_scoring_service, '_call_scoring_api') as mock_call:
+            # Return an empty response that will cause "No content found" error
+            mock_call.return_value = ""
+            
+            # Test data
+            url = "https://example.com/products/test"
+            title = "Test Product"
+            h1_headings = "Test Headings"
+            
+            # Score the page
+            result = await ai_scoring_service.score_page(
+                url=url,
+                title=title,
+                h1_headings=h1_headings,
+                competitor="ExampleCorp"
+            )
+            
+            # Assertions - should be marked as failed due to parsing error
+            assert result.success is False
+            assert result.score == 0.1  # Fallback score
+            assert result.primary_category == "other"
+            assert result.confidence == 0.0
+            assert "Failed to parse AI response" in result.reasoning
+            assert "parse_error" in result.signals
+            assert result.error is not None
+    
     def test_category_priority(self, ai_scoring_service):
         """Test category priority system."""
         assert ai_scoring_service.get_category_priority("product") == 6

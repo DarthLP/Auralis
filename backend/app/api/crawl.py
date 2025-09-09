@@ -4,8 +4,9 @@ Crawling API endpoints for website discovery and analysis.
 
 import logging
 import os
+import asyncio
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Set
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, validator
@@ -20,6 +21,9 @@ from app.services.export_utils import export_crawling_data, export_fingerprintin
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/crawl", tags=["crawl"])
+
+# Global store for active crawl sessions that can be stopped
+active_crawl_sessions: Set[int] = set()
 
 
 def _extract_competitor_name(url: str) -> str:
@@ -115,6 +119,17 @@ class CrawlResponse(BaseModel):
     warnings: list = []
     error: str = None
     crawl_session_id: int = None
+
+
+class StopCrawlRequest(BaseModel):
+    """Request model for stopping a crawl session."""
+    crawl_session_id: int
+
+
+class StopCrawlResponse(BaseModel):
+    """Response model for stopping a crawl session."""
+    success: bool
+    message: str
 
 
 def setup_detailed_logging(log_file: str) -> logging.Logger:
@@ -267,13 +282,26 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         # Extract competitor name from URL for AI scoring context
         competitor = _extract_competitor_name(str(request.url))
         
-        # Perform discovery with JavaScript support
-        result = await discover_interesting_pages(
-            str(request.url), 
-            limits, 
-            enable_js=settings.SCRAPER_ENABLE_JAVASCRIPT,
-            competitor=competitor
-        )
+        # Create a temporary crawl session ID for tracking
+        # We'll create the actual session after crawling is complete
+        temp_session_id = int(datetime.utcnow().timestamp() * 1000)  # Use timestamp as temp ID
+        
+        # Register as active session
+        active_crawl_sessions.add(temp_session_id)
+        
+        try:
+            # Perform discovery with JavaScript support
+            result = await discover_interesting_pages(
+                str(request.url), 
+                limits, 
+                enable_js=settings.SCRAPER_ENABLE_JAVASCRIPT,
+                competitor=competitor,
+                crawl_logger=crawl_logger,
+                stop_check=lambda: temp_session_id not in active_crawl_sessions
+            )
+        finally:
+            # Always remove from active sessions when done
+            active_crawl_sessions.discard(temp_session_id)
         
         # Log detailed results
         crawl_logger.info(f"=== CRAWL RESULTS ===")
@@ -337,6 +365,21 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
                                 f"Primary: {primary_score:.2f} ({method}) | "
                                 f"AI: {ai_display} | Rules: {rules_display} | "
                                 f"{page.get('url', 'N/A')}")
+            
+            # Log AI scoring debugging information (if available)
+            if result.get('ai_scoring_debug'):
+                debug_info = result['ai_scoring_debug']
+                stats = debug_info.get('stats', {})
+                crawl_logger.info("=== AI SCORING DEBUG INFO ===")
+                crawl_logger.info(f"AI Scoring Stats: {stats.get('attempted', 0)} attempted, "
+                                f"{stats.get('successful', 0)} successful, "
+                                f"{stats.get('failed', 0)} failed, "
+                                f"{stats.get('skipped', 0)} skipped")
+                
+                # Log detailed reasons
+                reasons = stats.get('reasons', {})
+                for reason, count in reasons.items():
+                    crawl_logger.info(f"  - {reason}: {count} pages")
         
         # Add log file path to response
         result['log_file'] = log_file
@@ -357,6 +400,11 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
             )
             db.add(crawl_session)
             db.flush()  # Get the ID without committing
+            
+            # Update the temp session ID with the real one
+            if temp_session_id in active_crawl_sessions:
+                active_crawl_sessions.discard(temp_session_id)
+                active_crawl_sessions.add(crawl_session.id)
             
             crawl_logger.info(f"Created crawl session with ID: {crawl_session.id}")
             
@@ -438,3 +486,56 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
                 "warnings": [str(e)]
             }
         )
+
+
+@router.post("/stop", response_model=StopCrawlResponse)
+async def stop_crawl(request: StopCrawlRequest) -> StopCrawlResponse:
+    """
+    Stop an active crawl session.
+    
+    This endpoint stops a crawl session that is currently running.
+    The session will be marked as stopped and any ongoing crawling will be terminated.
+    
+    Args:
+        request: StopCrawlRequest with the crawl session ID to stop
+        
+    Returns:
+        StopCrawlResponse indicating success or failure
+    """
+    try:
+        crawl_session_id = request.crawl_session_id
+        
+        # Check if the session is active
+        if crawl_session_id not in active_crawl_sessions:
+            return StopCrawlResponse(
+                success=False,
+                message=f"Crawl session {crawl_session_id} is not active or does not exist"
+            )
+        
+        # Remove from active sessions
+        active_crawl_sessions.discard(crawl_session_id)
+        
+        logger.info(f"Stopped crawl session {crawl_session_id}")
+        
+        return StopCrawlResponse(
+            success=True,
+            message=f"Crawl session {crawl_session_id} has been stopped"
+        )
+        
+    except Exception as e:
+        logger.error(f"Error stopping crawl session {request.crawl_session_id}: {e}")
+        return StopCrawlResponse(
+            success=False,
+            message=f"Failed to stop crawl session: {str(e)}"
+        )
+
+
+@router.get("/active-sessions")
+async def get_active_sessions() -> Dict[str, list]:
+    """
+    Get list of active crawl sessions.
+    
+    Returns:
+        Dictionary with list of active session IDs
+    """
+    return {"active_sessions": list(active_crawl_sessions)}

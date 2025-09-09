@@ -57,7 +57,7 @@ class Settings(BaseSettings):
     SCRAPER_MAX_RETRIES: int = 3
     SCRAPER_USE_REALISTIC_HEADERS: bool = True
     SCRAPER_ENABLE_JAVASCRIPT: bool = True
-    SCRAPER_JS_WAIT_TIME: int = 1
+    SCRAPER_JS_WAIT_TIME: int = 3
     SCRAPER_LOG_LEVEL: str = "INFO"
     SCRAPER_LOG_FILE: str = "logs/scraper.log"
     

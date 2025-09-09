@@ -5,6 +5,7 @@ import {
   startFingerprinting,
   startExtraction,
   getExtractionStatus,
+  stopCrawl,
   ExtractionProgressTracker,
   companies
 } from '../lib/api';
@@ -61,6 +62,8 @@ interface ProcessingState {
     ai_category?: string;
     ai_signals?: string[];
     ai_success?: boolean;
+    ai_scoring_reason?: string;
+    ai_error?: string;
     rules_score?: number | null;
     rules_category?: string;
     rules_signals?: string[];
@@ -297,6 +300,8 @@ export default function AddCompetitor() {
           ai_category: page.ai_category,
           ai_signals: page.ai_signals || [],
           ai_success: page.ai_success,
+          ai_scoring_reason: page.ai_scoring_reason,
+          ai_error: page.ai_error,
           rules_score: page.rules_score,
           rules_category: page.rules_category,
           rules_signals: page.rules_signals || []
@@ -344,6 +349,23 @@ export default function AddCompetitor() {
       }));
       setErrors({ general: 'Failed to analyze website. Please try again.' });
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleStop = async () => {
+    if (processingState.crawlSessionId) {
+      try {
+        await stopCrawl(processingState.crawlSessionId);
+        setProcessingState(prev => ({
+          ...prev,
+          phase: 'error',
+          error: 'Crawling stopped by user'
+        }));
+        setIsAnalyzing(false);
+      } catch (error) {
+        console.error('Failed to stop crawling:', error);
+        setErrors({ general: 'Failed to stop crawling. Please try again.' });
+      }
     }
   };
 
@@ -438,8 +460,20 @@ export default function AddCompetitor() {
       {/* Progress Tracking */}
       {processingState.phase !== 'idle' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">Analysis Progress</h3>
+            {(processingState.phase === 'discovering' || processingState.phase === 'fingerprinting' || processingState.phase === 'extracting') && (
+              <button
+                onClick={handleStop}
+                className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
+                </svg>
+                Stop Analysis
+              </button>
+            )}
+          </div>
             <div className="mt-2 flex items-center space-x-4">
               <div className={`flex items-center ${processingState.phase === 'discovering' ? 'text-blue-600' : processingState.phase === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>
                 <div className={`w-3 h-3 rounded-full mr-2 ${processingState.phase === 'discovering' ? 'bg-blue-600 animate-pulse' : processingState.phase === 'completed' ? 'bg-green-600' : 'bg-gray-300'}`} />
@@ -458,7 +492,6 @@ export default function AddCompetitor() {
                 <span className="text-sm font-medium">Complete</span>
               </div>
             </div>
-          </div>
 
           {/* Progress Bars */}
           <div className="space-y-3">
@@ -466,7 +499,7 @@ export default function AddCompetitor() {
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Pages Discovered</span>
                 <span>{processingState.progress.discoveredPages}</span>
-        </div>
+              </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full transition-all duration-300"
@@ -734,6 +767,23 @@ export default function AddCompetitor() {
                             <span className={`ml-1 ${page.ai_success ? 'text-green-600' : 'text-red-600'}`}>
                               {page.ai_success ? 'Yes' : 'No'}
                             </span>
+                            {!page.ai_success && page.ai_scoring_reason && (
+                              <div className="mt-1 text-xs text-red-600">
+                                <span className="font-medium">Reason:</span> {page.ai_scoring_reason}
+                              </div>
+                            )}
+                            {!page.ai_success && page.ai_error && (
+                              <div className="mt-1 text-xs text-red-600">
+                                <span className="font-medium">Error:</span> {page.ai_error}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* AI Scoring Reason - Show even when AI success is undefined */}
+                        {page.ai_scoring_reason && page.ai_success === undefined && (
+                          <div className="mt-1 text-xs text-gray-600">
+                            <span className="font-medium">AI Status:</span> {page.ai_scoring_reason}
                           </div>
                         )}
                       </div>

@@ -150,9 +150,25 @@ class AIScoringService:
                             logger.debug(f"Successfully extracted and parsed JSON: {ai_response_dict}")
                         except json.JSONDecodeError as e2:
                             logger.error(f"Failed to parse extracted JSON: {e2}")
-                            ai_response_dict = {}
+                            # Create a fallback response with parse error
+                            ai_response_dict = {
+                                "score": 0.1,
+                                "primary_category": "other",
+                                "secondary_categories": [],
+                                "confidence": 0.0,
+                                "reasoning": f"Failed to parse AI response: {e2}",
+                                "signals": ["parse_error"]
+                            }
                     else:
-                        ai_response_dict = {}
+                        # Create a fallback response with parse error
+                        ai_response_dict = {
+                            "score": 0.1,
+                            "primary_category": "other",
+                            "secondary_categories": [],
+                            "confidence": 0.0,
+                            "reasoning": "Failed to parse AI response: No content found in AI response",
+                            "signals": ["parse_error"]
+                        }
             else:
                 ai_response_dict = ai_response
             
@@ -160,8 +176,15 @@ class AIScoringService:
             
             processing_time = int((time.time() - start_time) * 1000)
             
+            # Check if parsing failed by looking for parse_error signal or specific error patterns
+            parsing_failed = (
+                "parse_error" in result.get("signals", []) or
+                "Failed to parse AI response" in result.get("reasoning", "") or
+                result.get("confidence", 0) == 0.0 and "parse" in result.get("reasoning", "").lower()
+            )
+            
             return AIScoringResult(
-                success=True,
+                success=not parsing_failed,
                 score=result["score"],
                 primary_category=result["primary_category"],
                 secondary_categories=result["secondary_categories"],
@@ -171,7 +194,8 @@ class AIScoringService:
                 processing_time_ms=processing_time,
                 tokens_input=estimated_tokens,
                 tokens_output=len(json.dumps(ai_response)) // 4,  # Rough estimate
-                cache_hit=False  # Theta client handles this internally
+                cache_hit=False,  # Theta client handles this internally
+                error=result.get("reasoning") if parsing_failed else None
             )
             
         except ThetaClientError as e:
@@ -426,81 +450,130 @@ class AIScoringService:
             except json.JSONDecodeError:
                 continue
         
+        # Try to find incomplete JSON and attempt to complete it
+        # Look for patterns like {"score": or {"primary_category":
+        incomplete_json_patterns = [
+            r'\{[^}]*"score"\s*:\s*[^}]*$',  # JSON ending with score field
+            r'\{[^}]*"primary_category"\s*:\s*[^}]*$',  # JSON ending with category field
+        ]
+        
+        for pattern in incomplete_json_patterns:
+            matches = re.findall(pattern, text, re.DOTALL)
+            for match in matches:
+                # Try to complete the JSON with reasonable defaults
+                try:
+                    # Add missing closing brace and try to parse
+                    completed_json = match + '}'
+                    parsed = json.loads(completed_json)
+                    if 'score' in parsed or 'primary_category' in parsed or 'category' in parsed:
+                        return completed_json
+                except json.JSONDecodeError:
+                    # Try adding more fields to make it valid
+                    try:
+                        completed_json = match + ', "primary_category": "other", "confidence": 0.0, "reasoning": "Incomplete AI response", "signals": ["parse_error"]}'
+                        parsed = json.loads(completed_json)
+                        return completed_json
+                    except json.JSONDecodeError:
+                        continue
+        
+        # Try to find JSON that starts with reasoning text and extract the JSON part
+        # Look for patterns like "```json\n{...}\n```" or just "{...}" after reasoning
+        reasoning_json_patterns = [
+            r'```json\s*(\{.*?\})\s*```',  # JSON in code blocks
+            r'```\s*(\{.*?\})\s*```',      # JSON in generic code blocks
+            r'(\{[^{}]*"score"[^{}]*\})',  # JSON with score field
+            r'(\{[^{}]*"primary_category"[^{}]*\})',  # JSON with category field
+        ]
+        
+        for pattern in reasoning_json_patterns:
+            matches = re.findall(pattern, text, re.DOTALL)
+            for match in matches:
+                try:
+                    # Try to parse as JSON to validate
+                    parsed = json.loads(match)
+                    if 'score' in parsed or 'primary_category' in parsed or 'category' in parsed:
+                        return match
+                except json.JSONDecodeError:
+                    continue
+        
+        # Try to find any JSON object in the text, even if it's incomplete
+        # Look for the most complete JSON object we can find
+        json_candidates = []
+        
+        # Find all potential JSON objects
+        for match in re.finditer(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', text, re.DOTALL):
+            json_candidates.append(match.group())
+        
+        # Also look for incomplete JSON at the end
+        for match in re.finditer(r'\{[^}]*$', text, re.DOTALL):
+            json_candidates.append(match.group())
+        
+        # Try to parse each candidate, prioritizing complete ones
+        for candidate in json_candidates:
+            try:
+                parsed = json.loads(candidate)
+                if 'score' in parsed or 'primary_category' in parsed or 'category' in parsed:
+                    return candidate
+            except json.JSONDecodeError:
+                # Try to complete incomplete JSON
+                if candidate.endswith('"') or candidate.endswith(','):
+                    # Try adding missing closing brace and required fields
+                    try:
+                        completed = candidate.rstrip('",') + '}'
+                        parsed = json.loads(completed)
+                        if 'score' in parsed or 'primary_category' in parsed or 'category' in parsed:
+                            return completed
+                    except json.JSONDecodeError:
+                        # Try adding more fields to make it valid
+                        try:
+                            completed = candidate.rstrip('",') + ', "primary_category": "other", "confidence": 0.0, "reasoning": "Incomplete AI response", "signals": ["parse_error"]}'
+                            parsed = json.loads(completed)
+                            return completed
+                        except json.JSONDecodeError:
+                            continue
+                continue
+        
         # If no JSON found, return the original text
         logger.warning(f"No valid JSON found in AI response: {text[:200]}...")
         return text
 
     def _build_scoring_prompt(self, analysis_text: str, competitor: str) -> str:
         """Build the AI prompt for lightweight page scoring."""
-        return f"""You are an expert competitive intelligence analyst. Analyze the following webpage metadata and provide a comprehensive score and classification.
+        return f"""You are an expert competitive intelligence analyst. Your ONLY task is to output a single valid JSON object. 
 
-IMPORTANT: Respond ONLY in English. Do not use any other languages.
+⚠️ RULES:
+- Output must be ONLY a raw JSON object (no text, no explanation, no markdown, no commentary).
+- JSON must start with {{ and end with }}.
+- All strings must be quoted properly.
+- All fields must be included, even if you have to use null or [].
+- Language: English ONLY.
 
-COMPETITOR CONTEXT: {competitor}
-
-WEBPAGE METADATA TO ANALYZE:
-{analysis_text}
+INPUT CONTEXT:
+COMPETITOR: {competitor}
+WEBPAGE METADATA: {analysis_text}
 
 SCORING CRITERIA:
-Rate the page's relevance for competitive analysis on a scale of 0.0 to 1.0. Be precise and differentiate between similar pages based on their actual content and context.
+- Score (0.0–1.0): relevance for competitive analysis
+- High Value (0.8–1.0): product specs, pricing, datasheets, launches, strategies
+- Medium-High (0.6–0.8): product pages, press releases, use cases, partnerships
+- Medium (0.4–0.6): company info, blogs, product updates, support docs
+- Low (0.1–0.4): generic info, admin, social, basic marketing
+- Minimal (0.0–0.1): careers, legal, privacy, contact, cookie notices
 
-HIGH VALUE (0.8-1.0): Pages with exceptional competitive intelligence value:
-- Product specifications, technical details, or capabilities
-- Pricing information, business models, or commercial offerings
-- Technical documentation, datasheets, or detailed product data
-- Strategic announcements, major product launches, or roadmap information
-- Competitive positioning, market analysis, or business strategy
-
-MEDIUM-HIGH VALUE (0.6-0.8): Pages with strong competitive intelligence value:
-- Product overviews, feature descriptions, or product pages
-- Company updates, press releases, or strategic announcements
-- Case studies, customer success stories, or use cases
-- Industry insights, thought leadership, or market positioning
-- Partnership announcements or business developments
-
-MEDIUM VALUE (0.4-0.6): Pages with moderate competitive intelligence value:
-- General company information or about pages
-- News articles, blog posts, or content marketing
-- Product updates, releases, or changelogs
-- Support documentation or help content
-- Marketing materials or promotional content
-
-LOW VALUE (0.1-0.4): Pages with limited competitive intelligence value:
-- Generic company information or contact pages
-- Basic news or blog content without strategic value
-- Administrative or operational information
-- Community or social media pages
-
-MINIMAL VALUE (0.0-0.1): Pages with no competitive intelligence value:
-- Careers, jobs, or hiring information
-- Privacy policies, terms of service, or legal disclaimers
-- Generic contact information or forms
-- Cookie notices or accessibility statements
-- Low-value marketing or promotional content
-
-ASSESSMENT APPROACH:
-- Analyze the URL structure, title, and headings for context clues
-- Consider what specific competitive intelligence this page would provide
-- Evaluate the depth and specificity of information likely to be present
-- Assess the strategic importance for understanding the competitor's business
-- Consider the target audience and business purpose
-- Be precise in scoring - avoid giving identical scores to different pages
-- Think about what a competitor analyst would find most valuable
-
-OUTPUT FORMAT (JSON only):
+OUTPUT JSON FORMAT (mandatory):
 {{
-    "score": 0.85,
-    "primary_category": "product",
-    "secondary_categories": ["datasheet"],
-    "confidence": 0.9,
-    "reasoning": "High-value product specifications page with technical details that would provide significant competitive intelligence about product capabilities and positioning",
-    "signals": ["product_specs", "pricing_info", "technical_details"]
+  "score": <float>,
+  "primary_category": "<string>",
+  "secondary_categories": ["<string>", ...],
+  "confidence": <float>,
+  "reasoning": "<string>",
+  "signals": ["<string>", ...]
 }}
 
-CATEGORIES: Use your judgment to assign the most appropriate category from: product, pricing, datasheet, release, news, company, other
-SIGNALS: Identify relevant signals such as: product_specs, pricing_info, technical_details, release_notes, news_content, company_info, low_value, high_value, competitive_intel, strategic_info, market_analysis, business_model
+PRIMARY CATEGORY OPTIONS: ["product","pricing","datasheet","release","news","company","other"]  
+SIGNALS OPTIONS: ["product_specs","pricing_info","technical_details","release_notes","news_content","company_info","low_value","high_value","competitive_intel","strategic_info","market_analysis","business_model"]
 
-Return ONLY valid JSON with no additional text. Use only English language."""
+Remember: produce ONLY valid JSON, nothing else."""
     
     def _parse_ai_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
         """Parse and validate AI response."""
