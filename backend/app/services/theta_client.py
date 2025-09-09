@@ -188,10 +188,9 @@ class ThetaClient:
             
             expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
             
-            # Generate prompt hash for caching
+            # Generate prompt hash for caching (use cache_key as it already contains the prompt info)
             import hashlib
-            prompt_text = json.dumps({"messages": messages, "model": self.model}, sort_keys=True)
-            prompt_hash = hashlib.sha256(prompt_text.encode()).hexdigest()
+            prompt_hash = hashlib.sha256(cache_key.encode()).hexdigest()
             
             cache_entry = AICache(
                 cache_key=cache_key,

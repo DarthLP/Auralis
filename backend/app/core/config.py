@@ -29,11 +29,6 @@ class Settings(BaseSettings):
         """Convert comma-separated ALLOWED_ORIGINS to list"""
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
     
-    # AI Configuration
-    THETA_EDGECLOUD_API_KEY: str = ""
-    THETA_EDGECLOUD_URL: str = ""
-    API_KEY_SCHEMA: str = ""  # Deep Seek API for Analysis
-    
     # Theta EdgeCloud Configuration
     ON_DEMAND_API_ACCESS_TOKEN: str = ""
     THETA_REQUEST_TIMEOUT: int = 20
@@ -76,6 +71,15 @@ class Settings(BaseSettings):
     CORE_CRAWL_MAX_CONTENT_SIZE: int = 15 * 1024 * 1024  # 15MB
     CORE_CRAWL_CONNECT_TIMEOUT: int = 5  # seconds
     CORE_CRAWL_READ_TIMEOUT: int = 20  # seconds
+    
+    # AI Scoring Configuration
+    AI_SCORING_ENABLED: bool = True
+    AI_SCORING_FALLBACK_TO_RULES: bool = True
+    AI_SCORING_MIN_CONTENT_LENGTH: int = 50  # Lowered minimum content length for better coverage
+    AI_SCORING_MAX_CONTENT_LENGTH: int = 8000  # Maximum content length for AI scoring
+    AI_SCORING_CONFIDENCE_THRESHOLD: float = 0.2  # Lowered confidence threshold for better coverage
+    AI_SCORING_BATCH_SIZE: int = 5  # Smaller batch size for faster processing
+    AI_SCORING_RATE_LIMIT_PER_MINUTE: int = 20  # Reduced rate limit to prevent timeouts
     
     # On Demand API Configuration
     on_demand_api_access_token: str = ""

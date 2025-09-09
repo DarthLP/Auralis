@@ -1,0 +1,36 @@
+{
+  "test_info": {
+    "url": "https://figure.ai/",
+    "title": "Figure",
+    "test_time": "2025-09-09T12:47:50.250398",
+    "competitor": "Figure.ai"
+  },
+  "content_preview": "Figure is the first-of-its-kind AI robotics company bringing a general purpose humanoid to life. Watch the full video FIGURE IS FINALLY BRINGING ROBOTS HOME. FIGURE IS PUTTING LEARNING ROBOTS INTO THE GLOBAL WORKFORCE. FIGURE IS TAKING AN AI-FIRST APPROACH TO MARKET. FIGURE IN THE WORKFORCE FIGURE AT HOME We\u2019re engineering the first humanoid that can truly think for itself. Figure is poised to solve labor shortages. Up and running for our first commercial customers, it\u2019s learning and performing ...",
+  "scoring_result": {
+    "success": true,
+    "score": 0.85,
+    "primary_category": "product",
+    "secondary_categories": [
+      "datasheet"
+    ],
+    "confidence": 0.9,
+    "reasoning": "High-value product specifications page with technical details that would provide significant competitive intelligence about product capabilities and positioning",
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "processing_time_ms": 4548,
+    "tokens_input": 9,
+    "tokens_output": 97,
+    "cache_hit": false,
+    "error": null
+  },
+  "category_analysis": {
+    "priority": 6,
+    "description": "Product pages, specifications, features, models"
+  },
+  "score_interpretation": {
+    "level": "HIGH VALUE",
+    "interpretation": "Excellent content for competitive analysis"
+  }
+}

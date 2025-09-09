@@ -22,6 +22,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/crawl", tags=["crawl"])
 
 
+def _extract_competitor_name(url: str) -> str:
+    """
+    Extract competitor name from URL for AI scoring context.
+    """
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+        
+        # Remove common prefixes and suffixes
+        domain = domain.replace('www.', '').replace('www2.', '').replace('www3.', '')
+        
+        # Extract the main domain name
+        if '.' in domain:
+            main_domain = domain.split('.')[0]
+            # Capitalize first letter for better AI context
+            return main_domain.capitalize()
+        
+        return domain.capitalize()
+        
+    except Exception:
+        return "Unknown"
+
+
 def _canonicalize_url(url: str) -> str:
     """
     Simple URL canonicalization for deduplication.
@@ -71,6 +95,7 @@ def _canonicalize_url(url: str) -> str:
 class CrawlRequest(BaseModel):
     """Request model for crawl discovery endpoint."""
     url: HttpUrl
+    clear_old_data: bool = False  # Whether to clear old crawl data before starting
     
     @validator('url')
     def validate_url_scheme(cls, v):
@@ -118,6 +143,39 @@ def setup_detailed_logging(log_file: str) -> logging.Logger:
     return crawl_logger
 
 
+@router.delete("/clear-data")
+async def clear_crawl_data(db: Session = Depends(get_db)):
+    """
+    Clear all crawl data from the database.
+    
+    This endpoint removes all crawl sessions and their associated pages.
+    Use with caution as this action cannot be undone.
+    
+    Returns:
+        Dict with success status and count of cleared sessions
+    """
+    try:
+        # Count sessions before deletion
+        session_count = db.query(CrawlSession).count()
+        
+        # Delete all crawl sessions and their pages (cascade will handle pages)
+        db.query(CrawlSession).delete()
+        db.commit()
+        
+        logger.info(f"Cleared {session_count} crawl sessions and their pages")
+        
+        return {
+            "success": True,
+            "message": f"Cleared {session_count} crawl sessions and their associated pages",
+            "sessions_cleared": session_count
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to clear crawl data: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to clear crawl data: {str(e)}")
+
+
 @router.post("/discover", response_model=CrawlResponse)
 async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -> CrawlResponse:
     """
@@ -155,15 +213,66 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         logger.info(f"Starting crawl discovery for {request.url}")
         crawl_logger.info(f"=== CRAWL SESSION STARTED ===")
         crawl_logger.info(f"Target URL: {request.url}")
+        crawl_logger.info(f"Clear old data: {request.clear_old_data}")
         crawl_logger.info(f"JavaScript enabled: {settings.SCRAPER_ENABLE_JAVASCRIPT}")
         crawl_logger.info(f"Limits: {limits}")
         crawl_logger.info(f"Log file: {log_file}")
+        
+        # Clear old crawl data if requested
+        if request.clear_old_data:
+            try:
+                logger.info("Clearing old crawl data...")
+                crawl_logger.info("Clearing old crawl data...")
+                
+                # Delete in correct order to handle foreign key constraints
+                # First delete page fingerprints, then crawled pages, then crawl sessions
+                try:
+                    # Delete page fingerprints first
+                    from app.models.fingerprint import PageFingerprint
+                    db.query(PageFingerprint).delete()
+                    db.flush()
+                    
+                    # Then delete crawled pages
+                    db.query(CrawledPage).delete()
+                    db.flush()
+                    
+                    # Finally delete crawl sessions
+                    old_sessions = db.query(CrawlSession).all()
+                    for session in old_sessions:
+                        db.delete(session)
+                    
+                    db.commit()
+                    logger.info(f"Cleared {len(old_sessions)} old crawl sessions and related data")
+                    crawl_logger.info(f"Cleared {len(old_sessions)} old crawl sessions and related data")
+                    
+                except Exception as fk_error:
+                    # If foreign key deletion fails, try a simpler approach
+                    logger.warning(f"Foreign key deletion failed, trying simpler approach: {fk_error}")
+                    db.rollback()
+                    
+                    # Just delete crawl sessions and let cascade handle the rest
+                    old_sessions = db.query(CrawlSession).all()
+                    for session in old_sessions:
+                        db.delete(session)
+                    
+                    db.commit()
+                    logger.info(f"Cleared {len(old_sessions)} old crawl sessions (cascade delete)")
+                    crawl_logger.info(f"Cleared {len(old_sessions)} old crawl sessions (cascade delete)")
+                
+            except Exception as e:
+                logger.warning(f"Failed to clear old data: {e}")
+                crawl_logger.warning(f"Failed to clear old data: {e}")
+                db.rollback()  # Ensure clean state
+        
+        # Extract competitor name from URL for AI scoring context
+        competitor = _extract_competitor_name(str(request.url))
         
         # Perform discovery with JavaScript support
         result = await discover_interesting_pages(
             str(request.url), 
             limits, 
-            enable_js=settings.SCRAPER_ENABLE_JAVASCRIPT
+            enable_js=settings.SCRAPER_ENABLE_JAVASCRIPT,
+            competitor=competitor
         )
         
         # Log detailed results
@@ -171,20 +280,63 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         crawl_logger.info(f"Total pages found: {len(result.get('pages', []))}")
         crawl_logger.info(f"Warnings: {len(result.get('warnings', []))}")
         
-        # Log category breakdown
+        # Log category breakdown and scoring method statistics
         if result.get('pages'):
             category_counts = {}
+            scoring_method_counts = {}
+            ai_scores = []
+            rules_scores = []
+            ai_success_count = 0
+            ai_failed_count = 0
+            
             for page in result['pages']:
                 cat = page.get('primary_category', 'unknown')
                 category_counts[cat] = category_counts.get(cat, 0) + 1
-            crawl_logger.info(f"Category breakdown: {category_counts}")
+                
+                method = page.get('scoring_method', 'unknown')
+                scoring_method_counts[method] = scoring_method_counts.get(method, 0) + 1
+                
+                # Track AI scoring success/failure
+                if page.get('ai_success') is True:
+                    ai_success_count += 1
+                    if page.get('ai_score') is not None:
+                        ai_scores.append(page.get('ai_score', 0.0))
+                elif page.get('ai_success') is False:
+                    ai_failed_count += 1
+                
+                # Track rules scores
+                if page.get('rules_score') is not None:
+                    rules_scores.append(page.get('rules_score', 0.0))
             
-            # Log top pages
-            crawl_logger.info("=== TOP PAGES ===")
+            crawl_logger.info(f"Category breakdown: {category_counts}")
+            crawl_logger.info(f"Scoring method breakdown: {scoring_method_counts}")
+            crawl_logger.info(f"AI scoring success: {ai_success_count} pages, failed: {ai_failed_count} pages")
+            
+            if ai_scores:
+                avg_ai_score = sum(ai_scores) / len(ai_scores)
+                crawl_logger.info(f"AI scores: {len(ai_scores)} pages, avg score: {avg_ai_score:.3f}")
+            
+            if rules_scores:
+                avg_rules_score = sum(rules_scores) / len(rules_scores)
+                crawl_logger.info(f"Rules scores: {len(rules_scores)} pages, avg score: {avg_rules_score:.3f}")
+            
+            # Log top pages with dual scoring
+            crawl_logger.info("=== TOP PAGES (with dual scoring) ===")
             top_pages = sorted(result['pages'], key=lambda x: x.get('score', 0), reverse=True)[:10]
             for i, page in enumerate(top_pages, 1):
+                primary_score = page.get('score', 0)
+                ai_score = page.get('ai_score', 'N/A')
+                rules_score = page.get('rules_score', 'N/A')
+                method = page.get('scoring_method', 'unknown')
+                
+                # Format scores for display
+                ai_display = f"{ai_score:.2f}" if isinstance(ai_score, (int, float)) else str(ai_score)
+                rules_display = f"{rules_score:.2f}" if isinstance(rules_score, (int, float)) else str(rules_score)
+                
                 crawl_logger.info(f"{i:2d}. {page.get('primary_category', 'unknown'):10s} | "
-                                f"{page.get('score', 0):4.2f} | {page.get('url', 'N/A')}")
+                                f"Primary: {primary_score:.2f} ({method}) | "
+                                f"AI: {ai_display} | Rules: {rules_display} | "
+                                f"{page.get('url', 'N/A')}")
         
         # Add log file path to response
         result['log_file'] = log_file

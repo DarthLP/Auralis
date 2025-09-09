@@ -197,6 +197,15 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 - **Change Detection**: Tracks entity changes between extraction runs
 - **Source Tracking**: Full provenance of extracted data with confidence scores
 
+**AI-Powered Page Scoring:**
+- **Intelligent Classification**: DeepSeek analyzes page content to determine relevance for competitive analysis
+- **Comprehensive Scoring**: Pages scored 0.0-1.0 based on business value, technical depth, and competitive intelligence potential
+- **Category Detection**: Automatically classifies pages as product, pricing, datasheet, release, news, company, or other
+- **Signal Extraction**: Identifies specific signals like product_specs, pricing_info, technical_details, competitive_intel
+- **Confidence Scoring**: Each AI assessment includes confidence level and reasoning
+- **Fallback Strategy**: Gracefully falls back to rules-based scoring if AI is unavailable
+- **Rate Limiting**: Built-in rate limiting and caching to manage AI API costs
+
 #### GET /api/extract/status/{session_id}
 
 Monitor extraction progress and view detailed results for a specific session.

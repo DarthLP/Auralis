@@ -12,15 +12,40 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from app.core.config import settings
 from .fetch import (
     fetch_url, get_robots_txt, get_sitemap_urls, normalize_url, 
     sha256_text, smart_delay, canonicalize_url, are_urls_duplicate
 )
+from .ai_scoring import AIScoringService, get_ai_scoring_service
+from .theta_client import ThetaClient
 
 logger = logging.getLogger(__name__)
 
 
-async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True) -> Dict:
+def _extract_clean_text(soup: BeautifulSoup) -> str:
+    """Extract clean text content from BeautifulSoup object."""
+    try:
+        # Remove script and style elements
+        for script in soup(["script", "style", "nav", "footer", "header"]):
+            script.decompose()
+        
+        # Get text and clean it up
+        text = soup.get_text()
+        
+        # Clean up whitespace
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = ' '.join(chunk for chunk in chunks if chunk)
+        
+        return text
+        
+    except Exception as e:
+        logger.debug(f"Error extracting clean text: {e}")
+        return ""
+
+
+async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: bool = True, competitor: str = "unknown") -> Dict:
     """
     Discover and classify interesting pages from a website.
     
@@ -57,7 +82,29 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
         "warnings": []
     }
     
+    # Initialize AI scoring service if enabled
+    ai_scoring_service = None
+    db = None
+    
     try:
+        if settings.AI_SCORING_ENABLED:
+            logger.info(f"AI scoring is enabled, initializing service...")
+            try:
+                # Create a temporary database session for Theta client
+                from app.core.db import SessionLocal
+                db = SessionLocal()
+                theta_client = ThetaClient(db)
+                ai_scoring_service = AIScoringService(theta_client)
+                logger.info("AI scoring service initialized successfully")
+            except Exception as e:
+                logger.warning(f"Failed to initialize AI scoring service: {e}")
+                result["warnings"].append(f"AI scoring disabled due to initialization error: {e}")
+                if db:
+                    db.close()
+                    db = None
+        else:
+            logger.info("AI scoring is disabled in configuration")
+        
         # Normalize root URL
         normalized_root = normalize_url(root_url, root_url)
         if not normalized_root:
@@ -153,7 +200,7 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
                 logger.debug(f"Using requests for {current_url}")
             
             # Process page (even if failed - record the failure)
-            page_info = _process_page(current_url, status, content, depth)
+            page_info = await _process_page(current_url, status, content, depth, competitor, ai_scoring_service)
             pages_found.append(page_info)
             
             # Extract links if successful and not at max depth
@@ -182,11 +229,15 @@ async def discover_interesting_pages(root_url: str, limits: Dict, enable_js: boo
     except Exception as e:
         logger.error(f"Error during crawling: {e}")
         result["warnings"].append(f"Crawling error: {str(e)}")
+    finally:
+        # Clean up database session
+        if db:
+            db.close()
         
     return result
 
 
-def _process_page(url: str, status: Optional[int], content: str, depth: int) -> Dict:
+async def _process_page(url: str, status: Optional[int], content: str, depth: int, competitor: str = "unknown", ai_scoring_service: Optional[AIScoringService] = None) -> Dict:
     """
     Process a single page to extract metadata and classify it.
     
@@ -195,6 +246,8 @@ def _process_page(url: str, status: Optional[int], content: str, depth: int) -> 
         status: HTTP status code (None if failed)
         content: Page content
         depth: Crawl depth
+        competitor: Competitor name for AI scoring context
+        ai_scoring_service: Optional AI scoring service instance
         
     Returns:
         Page information dictionary
@@ -209,7 +262,8 @@ def _process_page(url: str, status: Optional[int], content: str, depth: int) -> 
         "signals": [],
         "content_hash": None,
         "size_bytes": len(content) if content else 0,
-        "mime_type": None
+        "mime_type": None,
+        "scoring_method": "rules"  # Default to rules-based scoring
     }
     
     if status != 200 or not content:
@@ -230,24 +284,118 @@ def _process_page(url: str, status: Optional[int], content: str, depth: int) -> 
     try:
         soup = BeautifulSoup(content, 'html.parser')
         title = soup.find('title')
-        title_text = title.get_text().lower() if title else ""
+        title_text = title.get_text().strip() if title else ""
         
         h1_tags = soup.find_all('h1')
-        h1_text = " ".join([h1.get_text().lower() for h1 in h1_tags])
+        h1_text = " ".join([h1.get_text().strip() for h1 in h1_tags])
         
-        # Classify and score
-        category, score, signals = _classify_page(url, title_text, h1_text, content)
+        # Extract clean text content for AI scoring
+        extracted_text = _extract_clean_text(soup)
         
-        # Apply depth penalty
-        score *= (0.9 ** depth)
+        # Always calculate rules-based score for debugging
+        rules_category, rules_score, rules_signals = _classify_page(url, title_text.lower(), h1_text.lower(), content)
         
-        # Apply noise penalty
+        # Apply depth penalty to rules score
+        rules_score *= (0.9 ** depth)
+        
+        # Apply noise penalty to rules score
         if any(noise in url.lower() for noise in ['careers', 'privacy', 'terms', 'cookies', 'legal']):
-            score = min(score, 0.05)
+            rules_score = min(rules_score, 0.05)
+        
+        rules_score = min(1.0, max(0.0, rules_score))  # Clip to [0,1]
+        
+        # Store rules-based scoring results
+        page_info["rules_score"] = rules_score
+        page_info["rules_category"] = rules_category
+        page_info["rules_signals"] = rules_signals
+        
+        # Try AI scoring if enabled and conditions are met
+        # Use lightweight scoring with only URL, title, and H1 headings
+        has_minimal_content = title_text.strip() or h1_text.strip()
+        logger.debug(f"AI scoring check: enabled={settings.AI_SCORING_ENABLED}, service={ai_scoring_service is not None}, has_minimal_content={has_minimal_content}")
+        
+        ai_score = None
+        ai_category = None
+        ai_signals = []
+        ai_confidence = 0.0
+        ai_reasoning = ""
+        ai_success = False
+        
+        # Only attempt AI scoring for pages that are likely to be valuable
+        # Skip obvious low-value pages to save time
+        skip_ai_scoring = any(noise in url.lower() for noise in [
+            'careers', 'privacy', 'terms', 'cookies', 'legal', 'accessibility', 
+            'contact', 'support', 'help', 'faq', 'sitemap'
+        ])
+        
+        if (settings.AI_SCORING_ENABLED and 
+            ai_scoring_service and 
+            has_minimal_content and 
+            not skip_ai_scoring):
             
-        page_info["primary_category"] = category
-        page_info["score"] = min(1.0, max(0.0, score))  # Clip to [0,1]
-        page_info["signals"] = signals
+            logger.info(f"Attempting lightweight AI scoring for {url} (title: {len(title_text)} chars, h1: {len(h1_text)} chars)")
+            try:
+                ai_result = await ai_scoring_service.score_page(
+                    url=url,
+                    title=title_text,
+                    content="",  # No full content for lightweight scoring
+                    h1_headings=h1_text,  # Pass H1 headings separately
+                    competitor=competitor
+                )
+                
+                ai_success = ai_result.success
+                ai_confidence = ai_result.confidence
+                ai_reasoning = ai_result.reasoning
+                
+                if ai_result.success:
+                    ai_score = ai_result.score
+                    ai_category = ai_result.primary_category
+                    ai_signals = ai_result.signals
+                    
+                    # Apply depth penalty to AI score
+                    ai_score *= (0.9 ** depth)
+                    
+                    # Apply noise penalty to AI score
+                    if any(noise in url.lower() for noise in ['careers', 'privacy', 'terms', 'cookies', 'legal']):
+                        ai_score = min(ai_score, 0.05)
+                    
+                    ai_score = min(1.0, max(0.0, ai_score))  # Clip to [0,1]
+                    
+                    logger.info(f"AI scoring successful for {url}: score={ai_score:.2f}, confidence={ai_confidence:.2f}, category={ai_category}")
+                else:
+                    logger.warning(f"AI scoring failed for {url}: success={ai_success}, confidence={ai_confidence:.2f}, error={ai_result.error or 'low confidence'}")
+                    
+            except Exception as e:
+                logger.warning(f"AI scoring error for {url}: {e}")
+        
+        # Store AI scoring results (even if failed)
+        page_info["ai_score"] = ai_score
+        page_info["ai_category"] = ai_category
+        page_info["ai_signals"] = ai_signals
+        page_info["ai_confidence"] = ai_confidence
+        page_info["ai_reasoning"] = ai_reasoning
+        page_info["ai_success"] = ai_success
+        
+        # Choose which scoring method to use as primary
+        # Lower confidence threshold and prefer AI scoring when available
+        if (ai_score is not None and 
+            ai_success and 
+            ai_confidence >= 0.2):  # Lowered threshold for better coverage
+            # Use AI scoring as primary
+            page_info["primary_category"] = ai_category
+            page_info["secondary_categories"] = ai_result.secondary_categories if 'ai_result' in locals() else []
+            page_info["score"] = ai_score
+            page_info["signals"] = ai_signals
+            page_info["scoring_method"] = "ai"
+            logger.debug(f"AI scoring for {url}: {ai_score:.2f} ({ai_category}) confidence={ai_confidence:.2f}")
+        else:
+            # Use rules-based scoring as primary
+            page_info["primary_category"] = rules_category
+            page_info["score"] = rules_score
+            page_info["signals"] = rules_signals
+            page_info["scoring_method"] = "rules"
+            
+            logger.debug(f"Rules-based scoring for {url}: {rules_score:.2f} ({rules_category})")
         
     except Exception as e:
         logger.debug(f"Error processing page {url}: {e}")

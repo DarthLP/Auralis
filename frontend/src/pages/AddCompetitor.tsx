@@ -46,6 +46,26 @@ interface ProcessingState {
     retries: number;
   };
   
+  // Debug information
+  discoveredPages: Array<{
+    url: string;
+    score: number;
+    primary_category: string;
+    secondary_categories: string[];
+    scoring_method: string;
+    ai_confidence?: number;
+    ai_reasoning?: string;
+    signals: string[];
+    // Dual scoring debug fields
+    ai_score?: number | null;
+    ai_category?: string;
+    ai_signals?: string[];
+    ai_success?: boolean;
+    rules_score?: number | null;
+    rules_category?: string;
+    rules_signals?: string[];
+  }>;
+  
   error: string | null;
   competitorName: string | null;
 }
@@ -70,10 +90,12 @@ export default function AddCompetitor() {
       entitiesFound: { companies: 0, products: 0, capabilities: 0, releases: 0, documents: 0, signals: 0 }
     },
     metrics: { qps: 0, etaSeconds: null, cacheHits: 0, retries: 0 },
+    discoveredPages: [],
     error: null,
     competitorName: null
   });
   const [progressTracker, setProgressTracker] = useState<ExtractionProgressTracker | null>(null);
+  const [showDebugView, setShowDebugView] = useState(false);
 
   // Load existing companies for deduplication
   useEffect(() => {
@@ -98,6 +120,9 @@ export default function AddCompetitor() {
   }, [progressTracker]);
 
   const extractCompetitorNameFromDomain = (domain: string): string => {
+    if (!domain || domain.trim() === '') {
+      return 'Unknown';
+    }
     return domain
       .replace('www.', '')
       .split('.')[0]
@@ -240,7 +265,10 @@ export default function AddCompetitor() {
       }
 
       // Extract competitor name
+      console.log('Validation result:', validationResult);
+      console.log('eTLD1:', validationResult.eTLD1);
       const competitorName = extractCompetitorNameFromDomain(validationResult.eTLD1);
+      console.log('Final competitor name:', competitorName);
       setProcessingState(prev => ({ ...prev, competitorName }));
 
       // Phase 1: Discovery
@@ -254,10 +282,29 @@ export default function AddCompetitor() {
           ...prev.progress,
           discoveredPages: crawlResult.pages.length,
           totalPages: crawlResult.pages.length
-        }
+        },
+        discoveredPages: crawlResult.pages.map((page: any) => ({
+          url: page.url,
+          score: page.score || 0,
+          primary_category: page.primary_category || 'other',
+          secondary_categories: page.secondary_categories || [],
+          scoring_method: page.scoring_method || 'rules',
+          ai_confidence: page.ai_confidence,
+          ai_reasoning: page.ai_reasoning,
+          signals: page.signals || [],
+          // Dual scoring debug fields
+          ai_score: page.ai_score,
+          ai_category: page.ai_category,
+          ai_signals: page.ai_signals || [],
+          ai_success: page.ai_success,
+          rules_score: page.rules_score,
+          rules_category: page.rules_category,
+          rules_signals: page.rules_signals || []
+        }))
       }));
 
       // Phase 2: Fingerprinting
+      console.log('Fingerprinting with:', { crawl_session_id: crawlResult.crawl_session_id, competitor: competitorName });
       const fingerprintResult = await startFingerprinting(
         crawlResult.crawl_session_id, 
         competitorName
@@ -554,6 +601,7 @@ export default function AddCompetitor() {
                           cacheHits: 0,
                           retries: 0
                         },
+                        discoveredPages: [],
                         competitorName: '',
                         error: null
                       });
@@ -577,6 +625,190 @@ export default function AddCompetitor() {
               <p className="text-sm text-red-700">{processingState.error}</p>
           </div>
           )}
+        </div>
+      )}
+
+      {/* Debug: Discovered Pages with Scores */}
+      {processingState.discoveredPages.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Discovered Pages (Debug View)</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Showing {processingState.discoveredPages.length} pages with their AI/Rules-based scores and classifications
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDebugView(!showDebugView)}
+              className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              {showDebugView ? 'Hide Details' : 'Show Details'}
+            </button>
+          </div>
+
+          {showDebugView && (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {processingState.discoveredPages
+                .sort((a, b) => b.score - a.score) // Sort by score descending
+                .map((page, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {page.url}
+                        </span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          page.scoring_method === 'ai' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {page.scoring_method.toUpperCase()}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="flex items-center space-x-1">
+                          <span className="font-medium">Primary Score:</span>
+                          <span className={`font-bold ${
+                            page.score >= 0.8 ? 'text-green-600' :
+                            page.score >= 0.6 ? 'text-yellow-600' :
+                            page.score >= 0.4 ? 'text-orange-600' :
+                            'text-red-600'
+                          }`}>
+                            {page.score.toFixed(3)}
+                          </span>
+                          <span className="text-xs text-gray-500">({page.scoring_method})</span>
+                        </div>
+                        
+                        <div className="flex items-center space-x-1">
+                          <span className="font-medium">Category:</span>
+                          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
+                            {page.primary_category}
+                          </span>
+                        </div>
+
+                        {page.ai_confidence && (
+                          <div className="flex items-center space-x-1">
+                            <span className="font-medium">AI Confidence:</span>
+                            <span className="text-blue-600 font-medium">
+                              {(page.ai_confidence * 100).toFixed(1)}%
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Dual Scoring Debug Information */}
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <div className="font-medium text-gray-700 mb-1">Dual Scoring Debug:</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <span className="font-medium text-blue-600">AI Score:</span>
+                            <span className="ml-1">
+                              {page.ai_score !== null && page.ai_score !== undefined 
+                                ? page.ai_score.toFixed(3) 
+                                : 'N/A'
+                              }
+                            </span>
+                            {page.ai_category && (
+                              <span className="ml-1 text-gray-500">({page.ai_category})</span>
+                            )}
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">Rules Score:</span>
+                            <span className="ml-1">
+                              {page.rules_score !== null && page.rules_score !== undefined 
+                                ? page.rules_score.toFixed(3) 
+                                : 'N/A'
+                              }
+                            </span>
+                            {page.rules_category && (
+                              <span className="ml-1 text-gray-500">({page.rules_category})</span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {page.ai_success !== undefined && (
+                          <div className="mt-1">
+                            <span className="font-medium">AI Success:</span>
+                            <span className={`ml-1 ${page.ai_success ? 'text-green-600' : 'text-red-600'}`}>
+                              {page.ai_success ? 'Yes' : 'No'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {page.secondary_categories.length > 0 && (
+                        <div className="mt-2">
+                          <span className="text-xs text-gray-500">Secondary: </span>
+                          {page.secondary_categories.map((cat, i) => (
+                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded mr-1">
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {page.signals.length > 0 && (
+                        <div className="mt-2">
+                          <span className="text-xs text-gray-500">Signals: </span>
+                          {page.signals.map((signal, i) => (
+                            <span key={i} className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded mr-1">
+                              {signal}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {page.ai_reasoning && (
+                        <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800">
+                          <span className="font-medium">AI Reasoning:</span> {page.ai_reasoning}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Summary Statistics - Always Visible */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-gray-500">AI Scored</div>
+                <div className="font-semibold text-blue-600">
+                  {processingState.discoveredPages.filter(p => p.scoring_method === 'ai').length}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Rules Scored</div>
+                <div className="font-semibold text-gray-600">
+                  {processingState.discoveredPages.filter(p => p.scoring_method === 'rules').length}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Avg Score</div>
+                <div className="font-semibold">
+                  {(processingState.discoveredPages.reduce((sum, p) => sum + p.score, 0) / processingState.discoveredPages.length).toFixed(3)}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">High Value</div>
+                <div className="font-semibold text-green-600">
+                  {processingState.discoveredPages.filter(p => p.score >= 0.7).length}
+                </div>
+              </div>
+            </div>
+            
+            {!showDebugView && (
+              <div className="mt-3 text-center">
+                <p className="text-xs text-gray-500">
+                  Click "Show Details" to see individual page scores, categories, and AI reasoning
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
