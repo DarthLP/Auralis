@@ -247,7 +247,7 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
                 # First delete page fingerprints, then crawled pages, then crawl sessions
                 try:
                     # Delete page fingerprints first
-                    from app.models.fingerprint import PageFingerprint
+                    from app.models.core_crawl import PageFingerprint
                     db.query(PageFingerprint).delete()
                     db.flush()
                     
