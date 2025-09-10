@@ -47,13 +47,8 @@ export default function CompaniesIndex() {
     }
   };
 
-  const getCompanyInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const getCompanyMonogram = (name: string) => {
+    return name.replace(/\s+/g, '').toUpperCase().slice(0, 3);
   };
 
   if (loading) {
@@ -76,19 +71,11 @@ export default function CompaniesIndex() {
           >
             <div className="mb-4">
               <div className="flex items-start space-x-3 mb-3">
-                {/* Company Logo */}
+                {/* Company Monogram (first 3 letters) */}
                 <div className="flex-shrink-0">
-                  {company.logoUrl ? (
-                    <img
-                      src={company.logoUrl}
-                      alt={`${company.name} logo`}
-                      className="w-12 h-12 rounded-full object-cover border border-gray-200"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-sm">
-                      {getCompanyInitials(company.name)}
-                    </div>
-                  )}
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-sm">
+                    {getCompanyMonogram(company.name)}
+                  </div>
                 </div>
                 
                 {/* Company Name and Badge */}

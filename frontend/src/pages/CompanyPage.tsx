@@ -104,13 +104,8 @@ export default function CompanyPage() {
     navigate(`/companies/${companyId}/products/${productId}`);
   };
 
-  const getCompanyInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const getCompanyMonogram = (name: string) => {
+    return name.replace(/\s+/g, '').toUpperCase().slice(0, 3);
   };
 
   if (loading) {
@@ -188,19 +183,11 @@ export default function CompanyPage() {
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-start space-x-4 mb-4">
-              {/* Company Logo */}
+              {/* Company Monogram (first 3 letters) */}
               <div className="flex-shrink-0">
-                {companyData.logoUrl ? (
-                  <img
-                    src={companyData.logoUrl}
-                    alt={`${companyData.name} logo`}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xl">
-                    {getCompanyInitials(companyData.name)}
-                  </div>
-                )}
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xl">
+                  {getCompanyMonogram(companyData.name)}
+                </div>
               </div>
               
               {/* Company Name and Badge */}

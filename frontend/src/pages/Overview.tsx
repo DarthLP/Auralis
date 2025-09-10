@@ -165,19 +165,11 @@ export default function Overview() {
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                {/* Company Logo */}
+                {/* Company Monogram (first 3 letters) */}
                 <div className="flex-shrink-0">
-                  {yourCompany.logoUrl ? (
-                    <img
-                      src={yourCompany.logoUrl}
-                      alt={`${yourCompany.name} logo`}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-xl">
-                      {yourCompany.name.charAt(0)}
-                    </div>
-                  )}
+                  <div className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-xl">
+                    {yourCompany.name.replace(/\s+/g, '').toUpperCase().slice(0, 3)}
+                  </div>
                 </div>
                 
                 {/* Company Info */}
