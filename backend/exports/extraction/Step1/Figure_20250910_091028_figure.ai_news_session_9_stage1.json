@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-10T09:10:28.330732",
+  "session_id": "9",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Figure's humanoid robot designed for logistics.\nCATEGORY: Humanoid robotics.\nFEATURES: Vision-language-action model, real-world logistics applications.\nCAPABILITIES: Humanoid walking, object manipulation, autonomous navigation.\nUSERS: Companies in logistics, manufacturing, and robotics.\nMARKETS: Global, focusing on industrial applications."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: Not explicitly mentioned\nLOCATION: Based in San Francisco\nPOSITIONING: Leader in AI-driven robotics and humanoid development\nCOMPLIANCE: Not explicitly mentioned\nLINKS: Not provided\nNOTE: Figure is the sole owner and developer of Helix."
+    },
+    "source": {
+      "url": "https://figure.ai/news"
+    }
+  },
+  "prompt_length": 2641,
+  "response_size": 723
+}

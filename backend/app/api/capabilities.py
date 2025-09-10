@@ -6,7 +6,7 @@ import logging
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, String
 
 from app.core.db import get_db
 from app.models.product import Capability
@@ -36,7 +36,7 @@ async def get_capabilities(
                 or_(
                     Capability.name.ilike(search_term),
                     Capability.definition.ilike(search_term),
-                    Capability.tags.any(lambda tag: tag.ilike(search_term))
+                    Capability.tags.cast(String).ilike(search_term)
                 )
             )
         

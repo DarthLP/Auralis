@@ -1,0 +1,109 @@
+[
+  {
+    "crawl_session_id": 9,
+    "url": "https://neura-robotics.com/",
+    "canonical_url": "https://neura-robotics.com/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "release",
+      "news",
+      "company"
+    ],
+    "score": 0.9,
+    "signals": [
+      "product_specs",
+      "release_notes",
+      "company_info"
+    ],
+    "depth": 0,
+    "size_bytes": 534794,
+    "mime_type": null,
+    "content_hash": "5f8f3acb6d188ea5398147beb7021315613364ccf0092023b9d2ed68742bb6f4",
+    "crawled_at": "2025-09-10T08:29:49.958953"
+  },
+  {
+    "crawl_session_id": 9,
+    "url": "https://neura-robotics.com/products/maira",
+    "canonical_url": "https://neura-robotics.com/products/maira",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product_specs",
+      "technical_details"
+    ],
+    "score": 0.81,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 1,
+    "size_bytes": 625270,
+    "mime_type": null,
+    "content_hash": "8536f153857eda27f93c2caa7a65d561b984368cd7bf4cbdc7ea8502b3b3d46e",
+    "crawled_at": "2025-09-10T08:29:49.959021"
+  },
+  {
+    "crawl_session_id": 9,
+    "url": "https://neura-robotics.com/products/lara",
+    "canonical_url": "https://neura-robotics.com/products/lara",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "release"
+    ],
+    "score": 0.81,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 656159,
+    "mime_type": null,
+    "content_hash": "b48f3401e9d3382b2ed40071ec845dbe181959d2aad971a8b4e68fc7ea61bd92",
+    "crawled_at": "2025-09-10T08:29:49.959048"
+  },
+  {
+    "crawl_session_id": 9,
+    "url": "https://neura-robotics.com/products/4ne1",
+    "canonical_url": "https://neura-robotics.com/products/4ne1",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product_specs",
+      "release",
+      "news",
+      "company_info",
+      "other"
+    ],
+    "score": 0.81,
+    "signals": [
+      "product_specs",
+      "release",
+      "company_info",
+      "competitive_intel"
+    ],
+    "depth": 1,
+    "size_bytes": 580543,
+    "mime_type": null,
+    "content_hash": "bdfff03c37be4abe8dc395cf160052820ca6465ca164c67d6a3e3f637a59a29a",
+    "crawled_at": "2025-09-10T08:29:49.959068"
+  },
+  {
+    "crawl_session_id": 9,
+    "url": "https://neura-robotics.com/products/mav",
+    "canonical_url": "https://neura-robotics.com/products/mav",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details"
+    ],
+    "score": 0.63,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 1,
+    "size_bytes": 648075,
+    "mime_type": null,
+    "content_hash": "336e9e15eb37329b7e207e5bb09a7d23dce4c00c82ac8b3763f03692e4303874",
+    "crawled_at": "2025-09-10T08:29:49.959089"
+  }
+]

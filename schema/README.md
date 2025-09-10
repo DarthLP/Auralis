@@ -158,7 +158,6 @@ interface Seed {
   capabilities: Capability[];
   product_capabilities: ProductCapability[];
   signals: Signal[];
-  releases: Release[];
   sources: Source[];
 }
 ```

@@ -102,16 +102,6 @@ export const zSignal = z.object({
   source_id: z.string().optional(),
 });
 
-// Release schema
-export const zRelease = z.object({
-  id: z.string(),
-  company_id: z.string(),
-  product_id: z.string(),
-  version: z.string().optional(),
-  notes: z.string().optional(),
-  released_at: z.string().datetime(),
-  source_id: z.string().optional(),
-});
 
 // Source schema
 export const zSource = z.object({
@@ -130,6 +120,5 @@ export const zSeed = z.object({
   capabilities: z.array(zCapability),
   product_capabilities: z.array(zProductCapability),
   signals: z.array(zSignal),
-  releases: z.array(zRelease),
   sources: z.array(zSource),
 });

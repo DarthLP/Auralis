@@ -6,7 +6,7 @@ import logging
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, String
 
 from app.core.db import get_db
 from app.models.product import Product, ProductCapability, Capability
@@ -40,7 +40,7 @@ async def get_products(
                 or_(
                     Product.name.ilike(search_term),
                     Product.short_desc.ilike(search_term),
-                    Product.tags.any(lambda tag: tag.ilike(search_term))
+                    Product.tags.cast(String).ilike(search_term)
                 )
             )
         

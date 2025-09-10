@@ -9,7 +9,6 @@ const CompaniesIndex = React.lazy(() => import('./pages/CompaniesIndex'))
 const CompanyPage = React.lazy(() => import('./pages/CompanyPage'))
 const ProductPage = React.lazy(() => import('./pages/ProductPage'))
 const SignalsPage = React.lazy(() => import('./pages/SignalsPage'))
-const ReleasesPage = React.lazy(() => import('./pages/ReleasesPage'))
 const AddCompetitor = React.lazy(() => import('./pages/AddCompetitor'))
 const Settings = React.lazy(() => import('./pages/Settings'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
@@ -65,14 +64,6 @@ function App() {
             element={
               <Suspense fallback={<LoadingFallback />}>
                 <SignalsPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="releases"
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <ReleasesPage />
               </Suspense>
             }
           />

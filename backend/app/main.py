@@ -13,7 +13,6 @@ from app.api.companies import router as companies_router
 from app.api.products import router as products_router
 from app.api.capabilities import router as capabilities_router
 from app.api.signals import router as signals_router
-from app.api.releases import router as releases_router
 from app.api.sources import router as sources_router
 
 # Import all models to ensure they are registered with SQLAlchemy
@@ -46,7 +45,6 @@ app.include_router(companies_router)
 app.include_router(products_router)
 app.include_router(capabilities_router)
 app.include_router(signals_router)
-app.include_router(releases_router)
 app.include_router(sources_router)
 
 # Initialize database tables on startup

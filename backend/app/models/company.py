@@ -35,7 +35,6 @@ class Company(Base):
     summaries = relationship("CompanySummary", back_populates="company")
     products = relationship("Product", back_populates="company")
     signals = relationship("Signal", secondary="signal_companies", back_populates="companies")
-    releases = relationship("Release", back_populates="company")
 
 
 class CompanySummary(Base):

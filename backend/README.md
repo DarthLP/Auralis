@@ -155,7 +155,6 @@ Crawls a competitor website starting from the provided URL and discovers pages t
     "product": ["https://competitor.example.com/products/widget-x"],
     "docs": ["https://competitor.example.com/docs/api"],
     "pricing": ["https://competitor.example.com/pricing"],
-    "releases": [],
     "datasheet": [],
     "news": []
   },
@@ -167,9 +166,8 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 - `product`: Product pages, solutions, hardware specifications
 - `datasheet`: Documentation, datasheets, PDFs, technical guides  
 - `docs`: General documentation and developer resources
-- `releases`: Release notes, updates, changelogs, firmware
 - `pricing`: Pricing pages and subscription plans
-- `news`: News, blog posts, press releases
+- `news`: News, blog posts
 - `other`: Other interesting pages
 
 **Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.
@@ -249,7 +247,6 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
     "companies_found": 0,
     "products_found": 0,
     "capabilities_found": 0,
-    "releases_found": 0,
     "documents_found": 0,
     "signals_found": 0,
     "changes_detected": 0
@@ -270,7 +267,7 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 **AI-Powered Page Scoring:**
 - **Intelligent Classification**: DeepSeek analyzes page content to determine relevance for competitive analysis
 - **Comprehensive Scoring**: Pages scored 0.0-1.0 based on business value, technical depth, and competitive intelligence potential
-- **Category Detection**: Automatically classifies pages as product, pricing, datasheet, release, news, company, or other
+- **Category Detection**: Automatically classifies pages as product, pricing, datasheet, news, company, or other
 - **Signal Extraction**: Identifies specific signals like product_specs, pricing_info, technical_details, competitive_intel
 - **Confidence Scoring**: Each AI assessment includes confidence level and reasoning
 - **100% JSON Consistency**: Improved prompt structure achieving 100% success rate for valid JSON responses
@@ -302,7 +299,6 @@ Monitor extraction progress and view detailed results for a specific session.
     "companies_found": 1,
     "products_found": 5,
     "capabilities_found": 12,
-    "releases_found": 3,
     "documents_found": 7,
     "signals_found": 2,
     "changes_detected": 4
@@ -628,12 +624,6 @@ The backend now includes a complete set of business intelligence endpoints for m
 - `PUT /api/signals/{id}` - Update signal information
 - `DELETE /api/signals/{id}` - Delete signal
 
-**Releases Tracking:**
-- `GET /api/releases/` - List all product releases with filtering
-- `GET /api/releases/{id}` - Get detailed release information
-- `POST /api/releases/` - Create new release
-- `PUT /api/releases/{id}` - Update release information
-- `DELETE /api/releases/{id}` - Delete release
 
 **Capabilities & Sources:**
 - `GET /api/capabilities/` - List all technical capabilities
@@ -649,7 +639,6 @@ The backend includes comprehensive database models for business intelligence:
 - **Company**: Company profiles with metadata and summaries
 - **Product**: Product lifecycle management with specifications
 - **Signal**: Industry intelligence with impact scoring
-- **Release**: Product release tracking with version history
 - **Capability**: Technical capabilities with maturity assessment
 - **Source**: Data provenance and credibility tracking
 
@@ -723,7 +712,6 @@ npm run build  # Generates JSON schemas in backend/app/schema/json/
 - `Capability` - Technical capabilities
 - `Signal` - Market signals and events
 - `Source` - Data source tracking
-- `Release` - Product releases
 - And more...
 
 ## 🧠 Extraction Pipeline Architecture
@@ -772,7 +760,7 @@ Raw Page Text → Stage 1: Simple Extraction → Stage 2A: Company → Stage 2B:
 #### 5. Advisory Locks (`app/services/advisory_locks.py`)
 - **PostgreSQL Advisory Locks**: Distributed coordination across processes
 - **Per-Competitor Locking**: Prevent merge conflicts during concurrent extractions
-- **Automatic Cleanup**: Session-scoped locks with automatic release
+- **Automatic Cleanup**: Session-scoped locks with automatic cleanup
 
 ### Multi-Stage Extraction Process
 
@@ -838,7 +826,6 @@ Authority-based conflict resolution:
 2. **Pricing tables** (rank: 9)
 3. **Technical datasheets** (rank: 8)
 4. **API documentation** (rank: 8)
-5. **Release notes** (rank: 7)
 6. **General documentation** (rank: 6)
 7. **Blog posts** (rank: 4)
 8. **News articles** (rank: 3)
@@ -1098,7 +1085,6 @@ alembic downgrade -1
 - `crawl_data.companies` - Extracted company entities
 - `crawl_data.products` - Extracted product entities
 - `crawl_data.capabilities` - Extracted capability entities
-- `crawl_data.releases` - Extracted release entities
 - `crawl_data.documents` - Extracted document entities
 - `crawl_data.signals` - Extracted signal entities
 - `crawl_data.extraction_sources` - Source tracking with field-level provenance
@@ -1183,7 +1169,7 @@ Planned testing setup:
 
 ### Phase 2: Database & Models ✅
 - [x] PostgreSQL integration with Docker Compose
-- [x] Database models (Company, Product, Capability, Signal, Release, Source)
+- [x] Database models (Company, Product, Capability, Signal, Source)
 - [x] Database seeding with comprehensive seed data
 - [x] Foreign key constraints and data integrity
 - [x] Automatic seed data loading on startup
@@ -1193,7 +1179,7 @@ Planned testing setup:
 - [x] Hybrid crawling strategy for optimal performance
 - [x] Intelligent page classification and scoring
 - [x] Anti-bot protection and respectful crawling
-- [x] Data extraction for products, features, releases
+- [x] Data extraction for products, features
 - [x] Error handling and retry logic
 - [x] Session-specific logging and data persistence
 
@@ -1202,7 +1188,7 @@ Planned testing setup:
 - [x] JSON response format with categorized pages
 - [x] Comprehensive logging and data export
 - [x] Docker integration with volume mounting
-- [x] Business Intelligence API endpoints (Companies, Products, Signals, Releases, Capabilities, Sources)
+- [x] Business Intelligence API endpoints (Companies, Products, Signals, Capabilities, Sources)
 - [x] Complete CRUD operations for all entities
 - [x] Database integration with SQLAlchemy ORM
 - [x] **Frontend-Backend integration** with real API endpoints
@@ -1290,7 +1276,6 @@ Smart resource allocation and targeted discovery:
     "max_per_category": {
       "product": 10,    // Find up to 10 product pages
       "docs": 8,        // Up to 8 documentation pages  
-      "releases": 6,    // Up to 6 release pages
       "pricing": 3,     // Up to 3 pricing pages
       "news": 5         // Up to 5 news/blog pages
     }
@@ -1380,7 +1365,7 @@ class CrawlRequest(BaseModel):
 SCRAPER_MAX_PAGES=20
 SCRAPER_MAX_DEPTH=2  
 SCRAPER_MAX_TIME=15
-SCRAPER_MAX_PER_CATEGORY={"product":10,"docs":8,"releases":6,"pricing":3,"news":5}
+SCRAPER_MAX_PER_CATEGORY={"product":10,"docs":8,"pricing":3,"news":5}
 ```
 
 ### 📊 Expected Benefits

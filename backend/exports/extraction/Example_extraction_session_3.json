@@ -1,0 +1,23 @@
+{
+  "extraction_session_id": 3,
+  "fingerprint_session_id": 3,
+  "competitor": "Example",
+  "schema_version": "v1",
+  "started_at": "2025-09-09T18:40:48.855214",
+  "completed_at": "2025-09-09T18:40:48.864308",
+  "total_pages": 0,
+  "processed_pages": 0,
+  "skipped_pages": 0,
+  "failed_pages": 0,
+  "cache_hits": 0,
+  "companies_found": 0,
+  "products_found": 0,
+  "capabilities_found": 0,
+  "releases_found": 0,
+  "documents_found": 0,
+  "signals_found": 0,
+  "changes_detected": 0,
+  "error_summary": {
+    "batch_error": "No valid Stage 1 results obtained. Errors: []"
+  }
+}

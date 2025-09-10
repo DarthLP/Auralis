@@ -1,0 +1,296 @@
+[
+  {
+    "crawl_session_id": 7,
+    "url": "https://dexmate.ai/vega",
+    "canonical_url": "https://dexmate.ai/vega",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details"
+    ],
+    "score": 0.9,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 0,
+    "size_bytes": 446259,
+    "mime_type": null,
+    "content_hash": "cb0ee582e751e8928a899d3f55b45b99e342eb25da7c99e7c0ed934984f353ff",
+    "crawled_at": "2025-09-10T08:11:03.282321"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/products/vega",
+    "canonical_url": "https://shop.dexmate.ai/products/vega",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [
+      "company_info"
+    ],
+    "score": 0.765,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 1,
+    "size_bytes": 262481,
+    "mime_type": null,
+    "content_hash": "be9f86793ba6d7874e777827dcdb1a698b206423d4f3fcb0592c765129bd19cc",
+    "crawled_at": "2025-09-10T08:11:03.282484"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/pages/return-policy",
+    "canonical_url": "https://shop.dexmate.ai/pages/return-policy",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [
+      "product",
+      "customer_support"
+    ],
+    "score": 0.6885,
+    "signals": [
+      "product_specs",
+      "customer_support"
+    ],
+    "depth": 2,
+    "size_bytes": 188415,
+    "mime_type": null,
+    "content_hash": "e4060f40161e47e58c4914ced2e5af537a7f30394466f3ecd91b695779d97745",
+    "crawled_at": "2025-09-10T08:11:03.282553"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/all/products/vega",
+    "canonical_url": "https://shop.dexmate.ai/collections/all/products/vega",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product_specs"
+    ],
+    "score": 0.6561000000000001,
+    "signals": [
+      "product_specs"
+    ],
+    "depth": 3,
+    "size_bytes": 262477,
+    "mime_type": null,
+    "content_hash": "6e29cdefb769a01e70b8cc5f6345f262ed6f99630f63e99bbe396e5f38f25000",
+    "crawled_at": "2025-09-10T08:11:03.282599"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/vendors/products/vega",
+    "canonical_url": "https://shop.dexmate.ai/collections/vendors/products/vega",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details"
+    ],
+    "score": 0.61965,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 3,
+    "size_bytes": 262432,
+    "mime_type": null,
+    "content_hash": "f1185f7b2600e70f944da5b0c10aa62a5d968e2a2c3ffbe51c645412292ad453",
+    "crawled_at": "2025-09-10T08:11:03.282648"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/robots/products/vega",
+    "canonical_url": "https://shop.dexmate.ai/collections/robots/products/vega",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "technical_details"
+    ],
+    "score": 0.5904900000000001,
+    "signals": [
+      "product_specs",
+      "technical_details"
+    ],
+    "depth": 4,
+    "size_bytes": 262538,
+    "mime_type": null,
+    "content_hash": "e287938cf3a476b6fb9f38f2eb0038f75adf19dd09d2a15085a0281eeaf45202",
+    "crawled_at": "2025-09-10T08:11:03.282689"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/frontpage/products/vega",
+    "canonical_url": "https://shop.dexmate.ai/collections/frontpage/products/vega",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "release"
+    ],
+    "score": 0.5904900000000001,
+    "signals": [
+      "product_specs",
+      "technical_details",
+      "release_notes"
+    ],
+    "depth": 4,
+    "size_bytes": 262551,
+    "mime_type": null,
+    "content_hash": "1a15b423e992f6dd0935d592d458292cb968fee4f0f02d61daea5434d221396a",
+    "crawled_at": "2025-09-10T08:11:03.282726"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/frontpage",
+    "canonical_url": "https://shop.dexmate.ai/collections/frontpage",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [
+      "product_specs"
+    ],
+    "score": 0.5467500000000001,
+    "signals": [
+      "product_specs"
+    ],
+    "depth": 3,
+    "size_bytes": 224621,
+    "mime_type": null,
+    "content_hash": "f9cb4458c24f5f0716602f63dc70744cf6f2014d261a3acdf1fbdbdfb406bae3",
+    "crawled_at": "2025-09-10T08:11:03.282766"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://dexmate.ai/",
+    "canonical_url": "https://dexmate.ai/",
+    "status_code": 200,
+    "primary_category": "company",
+    "secondary_categories": [],
+    "score": 0.5,
+    "signals": [
+      "company_info"
+    ],
+    "depth": 0,
+    "size_bytes": 257106,
+    "mime_type": null,
+    "content_hash": "0825afff4bf23580616010f633f341ee5e5d4db5cf67b93e149b86f38d971f65",
+    "crawled_at": "2025-09-10T08:11:03.282810"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/robots",
+    "canonical_url": "https://shop.dexmate.ai/collections/robots",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.36450000000000005,
+    "signals": [],
+    "depth": 3,
+    "size_bytes": 224274,
+    "mime_type": null,
+    "content_hash": "230de8e5f7490a33810c75d30e7971b722deedcac24e6e683b9b0f5cfe7c3929",
+    "crawled_at": "2025-09-10T08:11:03.282874"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/vendors?q=Dexmate%20Store",
+    "canonical_url": "https://shop.dexmate.ai/collections/vendors?q=Dexmate%20Store",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.32400000000000007,
+    "signals": [
+      "low_value"
+    ],
+    "depth": 2,
+    "size_bytes": 222444,
+    "mime_type": null,
+    "content_hash": "f7fa2619899675b9e4c5b43a2f702e869cafdb76d59d8ab15704ecbca626ec28",
+    "crawled_at": "2025-09-10T08:11:03.282922"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections",
+    "canonical_url": "https://shop.dexmate.ai/collections",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [
+      "other"
+    ],
+    "score": 0.243,
+    "signals": [
+      "low_value"
+    ],
+    "depth": 2,
+    "size_bytes": 189805,
+    "mime_type": null,
+    "content_hash": "1c125b3fa930d33e0cfeb992093b3ccf16a691f2f73eeb699b9380eaaa101661",
+    "crawled_at": "2025-09-10T08:11:03.282965"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/cart",
+    "canonical_url": "https://shop.dexmate.ai/cart",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.243,
+    "signals": [
+      "low_value"
+    ],
+    "depth": 2,
+    "size_bytes": 102348,
+    "mime_type": null,
+    "content_hash": "66dfcb127d8cffb9d01ccda71f971d08a8434add30dc884cc2cee65c384a6354",
+    "crawled_at": "2025-09-10T08:11:03.283001"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/",
+    "canonical_url": "https://shop.dexmate.ai/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.18000000000000002,
+    "signals": [
+      "minimal"
+    ],
+    "depth": 1,
+    "size_bytes": 197732,
+    "mime_type": null,
+    "content_hash": "49990286ffb5e2cf0e340a058758d18aaed5e444e35e58fc118f6469db2ea620",
+    "crawled_at": "2025-09-10T08:11:03.283039"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://shop.dexmate.ai/collections/all",
+    "canonical_url": "https://shop.dexmate.ai/collections/all",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.16200000000000003,
+    "signals": [
+      "low_value"
+    ],
+    "depth": 2,
+    "size_bytes": 223954,
+    "mime_type": null,
+    "content_hash": "66a873018b0b8497a33e8d6cd8f9d8b98c084f6ae3affdca518594af1be2378a",
+    "crawled_at": "2025-09-10T08:11:03.283075"
+  },
+  {
+    "crawl_session_id": 7,
+    "url": "https://forum.dexmate.ai/",
+    "canonical_url": "https://forum.dexmate.ai/",
+    "status_code": null,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.0,
+    "signals": [],
+    "depth": 1,
+    "size_bytes": 0,
+    "mime_type": null,
+    "content_hash": null,
+    "crawled_at": "2025-09-10T08:11:03.283112"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-10T09:59:14.591915",
+  "session_id": "12",
+  "stage": "1",
+  "competitor": "Pollen Robotics",
+  "url": "https://pollen-robotics.com/personal-data-protection-charter",
+  "llm_response": {
+    "products": {},
+    "company": {
+      "text": "NAME: Pollen Robotics SAS\n\nCONTACT: contact@pollen-robotics.com\n\nLOCATION: 2 Place Jean Jaurès, 33000 Bordeaux, France\n\nPOSITIONING: We take the respect for each individual’s privacy very seriously. During your navigation on our website, you may be required to provide us with certain personal data, fragments of your private life, when you fill out our forms. Pollen Robotics SAS is committed to informing you and handling your data with full transparency, in a concise manner, using clear and simple terms.\n\nWe use this file for statistical purposes and to contact or offer relevant content to those who request it. If you submit your resume for an unsolicited application, we will use the personal data contained in this document for recruitment purposes.\n\nFor recruitment requests or unsolicited applications, https://www.pollen-robotics.com may retain your personal data for some time to contact you for future job opportunities within the company.\n\nPollen Robotics SAS is committed to not sharing your personal data with anyone outside the company. We take all necessary measures to protect your data from both a technical and organizational standpoint, particularly to safeguard its integrity against accidental loss, unauthorized access, or disclosure.\n\nMore generally, Pollen Robotics SAS is committed to using your data in full compliance with the General Data Protection Regulation (GDPR).\n\nThe data collected on https://www.pollen-robotics.com is hosted by Pollen Robotics SAS, OVH, and IP Développement. Only individuals involved in IT, communications, or HR at Pollen Robotics SAS and its partners have access to the information via secure personal access to the previously mentioned platforms.\n\nWhen you visit our website, we may store and use cookies in your browser to analyze your behavior on https://www.pollen-robotics.com and improve our content and your user experience.\n\nOnly the cookie issuer can read or modify the information it contains. If you share the use of your device with others, we cannot guarantee that the services and ads intended for your device will correspond to your own usage rather than that of another user.\n\nThe cookies we issue The cookies we set allow us to recognize the browser you are using on your device (computer, tablet, phone) when you log in to our website. To best serve our customers, we issue cookies for:\n\nThird-party cookies When you access https://www.pollen-robotics.com, one or more cookies from partner companies may be placed in your browser via our pages. The setup and use of these cookies are subject to the privacy policies of these third parties. Pollen Robotics SAS uses them in accordance with the French Data Protection Act and GDPR. We neither access nor control third-party cookies.\n\nThe site https://www.pollen-robotics.com uses numerous external links. Pollen Robotics SAS is not responsible for potential malfunctions, damage, or other consequences, even if we have been informed of them."
+    },
+    "source": {
+      "url": "https://pollen-robotics.com/personal-data-protection-charter"
+    }
+  },
+  "prompt_length": 8197,
+  "response_size": 3133
+}

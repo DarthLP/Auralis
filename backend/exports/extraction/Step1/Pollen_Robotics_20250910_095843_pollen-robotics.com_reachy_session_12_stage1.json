@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-09-10T09:58:43.741890",
+  "session_id": "12",
+  "stage": "1",
+  "competitor": "Pollen Robotics",
+  "url": "https://pollen-robotics.com/reachy",
+  "llm_response": {
+    "products": {
+      "Reachy 2 Dual Arm + Mobile Base": {
+        "text": "WHAT: A compact, modular robot arm with dual reach and precision.\nCATEGORY: Industrial automation equipment.\nFEATURES: 7 DOFs, 3 kg lifting capacity, seamless AI integration.\nCAPABILITIES: Human-like arm movements, advanced machine learning support.\nUSERS: Industrial automation professionals.\nMarkets: Manufacturing, logistics, robotics.\nLIMITATIONS: Requires a mobile base for extended use.\nNOTE: Available with or without a mobile base."
+      },
+      "Reachy 2 Single Arm + Mobile Base": {
+        "text": "WHAT: A compact, modular robot arm with single reach and precision.\nCATEGORY: Industrial automation equipment.\nFEATURES: 7 DOFs, 3 kg lifting capacity, seamless AI integration.\nCAPABILITIES: Human-like arm movements, advanced machine learning support.\nUSERS: Industrial automation professionals.\nMarkets: Manufacturing, logistics, robotics.\nLIMITATIONS: Requires a mobile base for extended use.\nNOTE: Available with or without a mobile base."
+      },
+      "Reachy 2 Dual Arm": {
+        "text": "WHAT: A compact, modular robot arm with dual reach and precision.\nCATEGORY: Industrial automation equipment.\nFEATURES: 7 DOFs, 3 kg lifting capacity, seamless AI integration.\nCAPABILITIES: Human-like arm movements, advanced machine learning support.\nUSERS: Industrial automation professionals.\nMarkets: Manufacturing, logistics, robotics.\nLIMITATIONS: Requires a mobile base for extended use.\nNOTE: Available with or without a mobile base."
+      },
+      "Reachy 2 Single Arm": {
+        "text": "WHAT: A compact, modular robot arm with single reach and precision.\nCATEGORY: Industrial automation equipment.\nFEATURES: 7 DOFs, 3 kg lifting capacity, seamless AI integration.\nCAPABILITIES: Human-like arm movements, advanced machine learning support.\nUSERS: Industrial automation professionals.\nMarkets: Manufacturing, logistics, robotics.\nLIMITATIONS: Requires a mobile base for extended use.\nNOTE: Available with or without a mobile base."
+      }
+    },
+    "company": {
+      "text": "NAME: Pollen Robotics\nCONTACT: [Not provided]\nLOCATION: [Not provided]\nPOSITIONING: Provider of advanced industrial automation equipment focusing on human-like robotic solutions."
+    },
+    "source": {
+      "url": "https://pollen-robotics.com/reachy"
+    }
+  },
+  "prompt_length": 3241,
+  "response_size": 2237
+}

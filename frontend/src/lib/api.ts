@@ -6,7 +6,6 @@ import {
   ProductCapability,
   Capability,
   Signal,
-  Release,
   Source,
 } from '@schema/types';
 import {
@@ -16,9 +15,9 @@ import {
   zProductCapability,
   zCapability,
   zSignal,
-  zRelease,
   zSource,
 } from '@schema/zod';
+
 
 /**
  * Generic API fetch function with schema validation
@@ -125,14 +124,7 @@ export async function signals(qs: string = ''): Promise<Signal[]> {
   return fetchAs(`/api/signals${qs}`, z.array(zSignal));
 }
 
-/**
- * Fetch releases with optional query string
- * @param qs - Query string parameters (e.g., "?company_id=123&product_id=456")
- * @returns Promise<Release[]> - Array of releases
- */
-export async function releases(qs: string = ''): Promise<Release[]> {
-  return fetchAs(`/api/releases${qs}`, z.array(zRelease));
-}
+
 
 /**
  * Fetch a specific source by ID
@@ -350,6 +342,7 @@ export async function startExtraction(request: ExtractionRequest): Promise<Extra
   return response.json();
 }
 
+// Get extraction status with releases_found support
 export async function getExtractionStatus(sessionId: number): Promise<ExtractionResponse> {
   const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const response = await fetch(`${baseUrl}/api/extract/status/${sessionId}`);
@@ -437,5 +430,141 @@ export class ExtractionProgressTracker {
       this.eventSource = null;
     }
   }
+}
+
+// ===== SCRAPER JOB TYPES =====
+
+export type ScraperJobStatus = 'queued' | 'processing' | 'done' | 'error';
+
+// ===== SEARCH API =====
+
+// Search result types for global search
+export interface SearchResult {
+  id: string;
+  type: 'company' | 'product' | 'signal';
+  title: string;
+  subtitle?: string;
+  description?: string;
+  companyId?: string;
+  productId?: string;
+  signalId?: string;
+  date?: string;
+  tags?: string[];
+  score: number;
+}
+
+export interface SearchResults {
+  companies: SearchResult[];
+  products: SearchResult[];
+  signals: SearchResult[];
+}
+
+/**
+ * Search companies with query
+ * @param query - Search query string
+ * @returns Promise<SearchResult[]> - Array of search results
+ */
+export async function searchCompanies(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return [];
+  
+  const companies = await fetchAs(`/api/companies?search=${encodeURIComponent(query)}`, z.array(zCompany));
+  
+  return companies.map(company => ({
+    id: company.id,
+    type: 'company' as const,
+    title: company.name,
+    subtitle: company.hq_country || undefined,
+    description: company.tags?.join(', '),
+    companyId: company.id,
+    date: undefined, // Company doesn't have created_at in the schema
+    tags: company.tags,
+    score: 100 // Backend already does the filtering, so we give all results the same score
+  }));
+}
+
+/**
+ * Search products with query
+ * @param query - Search query string
+ * @returns Promise<SearchResult[]> - Array of search results
+ */
+export async function searchProducts(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return [];
+  
+  const products = await fetchAs(`/api/products?search=${encodeURIComponent(query)}`, z.array(zProduct));
+  
+  return products.map(product => ({
+    id: product.id,
+    type: 'product' as const,
+    title: product.name,
+    subtitle: product.category,
+    description: product.short_desc,
+    companyId: product.company_id,
+    productId: product.id,
+    tags: product.tags,
+    score: 100
+  }));
+}
+
+/**
+ * Search signals with query
+ * @param query - Search query string
+ * @returns Promise<SearchResult[]> - Array of search results
+ */
+export async function searchSignals(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return [];
+  
+  const signals = await fetchAs(`/api/signals?search=${encodeURIComponent(query)}`, z.array(zSignal));
+  
+  return signals.map(signal => ({
+    id: signal.id,
+    type: 'signal' as const,
+    title: signal.headline,
+    subtitle: signal.type,
+    description: signal.summary,
+    signalId: signal.id,
+    date: signal.published_at,
+    score: 100
+  }));
+}
+
+/**
+ * Global search function that searches all categories
+ * @param query - Search query string
+ * @returns Promise<SearchResults> - Combined search results
+ */
+export async function globalSearch(query: string): Promise<SearchResults> {
+  if (!query.trim()) {
+    return { companies: [], products: [], signals: [] };
+  }
+  
+  // Check for search operators
+  const lowerQuery = query.toLowerCase().trim();
+  
+  if (lowerQuery.startsWith('company:')) {
+    const searchTerm = query.substring(8).trim();
+    const companies = await searchCompanies(searchTerm);
+    return { companies, products: [], signals: [] };
+  }
+  
+  if (lowerQuery.startsWith('product:')) {
+    const searchTerm = query.substring(8).trim();
+    const products = await searchProducts(searchTerm);
+    return { companies: [], products, signals: [] };
+  }
+  
+  if (lowerQuery.startsWith('signal:')) {
+    const searchTerm = query.substring(7).trim();
+    const signals = await searchSignals(searchTerm);
+    return { companies: [], products: [], signals };
+  }
+  
+  // Search all categories
+  const [companies, products, signals] = await Promise.all([
+    searchCompanies(query),
+    searchProducts(query),
+    searchSignals(query)
+  ]);
+  
+  return { companies, products, signals };
 }
 

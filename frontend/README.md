@@ -45,14 +45,12 @@ frontend/
 │   │   ├── ProductPage.tsx
 │   │   ├── AddCompetitor.tsx
 │   │   ├── SignalsPage.tsx
-│   │   ├── ReleasesPage.tsx
 │   │   ├── Settings.tsx
 │   │   └── NotFound.tsx
 │   ├── layouts/          # Layout components
 │   │   └── AppLayout.tsx
 │   ├── lib/              # API client and utilities
 │   │   ├── api.ts
-│   │   ├── mockData.ts
 │   │   ├── date.ts
 │   │   └── avatar.ts
 │   ├── utils/            # Utility functions
@@ -81,15 +79,14 @@ frontend/
 
 ### Core Features ✅
 
-- **Overview Dashboard**: Real-time signals and releases tracking with impact scoring
+- **Overview Dashboard**: Real-time signals tracking with impact scoring
 - **Your Company Profile**: Special "Your Company" profile with dedicated dashboard section and comparison capabilities
 - **Companies Management**: Comprehensive company listing with search and filtering
 - **Company Detail Views**: Drill-down into specific competitor information with products and recent activity
 - **Product Analysis**: View competitor products, capabilities, and maturity tracking
 - **Add Competitor**: URL-based competitor ingestion with smart validation and deduplication
 - **Signals Analysis**: Advanced filtering and analysis of industry signals and news
-- **Releases Tracking**: Product release monitoring with company and date filtering
-- **Global Search**: Command palette style search across companies, products, signals, and releases
+- **Global Search**: Command palette style search across companies, products, and signals
 
 ### User Interface ✅
 
@@ -182,7 +179,7 @@ The Add Competitor functionality provides a comprehensive URL-based competitor i
 - **Session Management**: Active crawl session tracking and management
 - **Type Safety**: Full TypeScript integration
 - **Error Handling**: Graceful error states with helpful messages
-- **Mock Integration**: Seamless integration with existing mock data system
+- **API Integration**: Seamless integration with backend API
 
 ## 🔍 Global Search Feature
 
@@ -192,13 +189,13 @@ The Global Search provides a comprehensive command palette style search experien
 
 - **GlobalSearchModal**: Full-screen search modal with keyboard navigation
 - **useGlobalSearch**: Custom hook for managing search state and keyboard shortcuts
-- **Search API Functions**: `searchCompanies()`, `searchProducts()`, `searchSignals()`, `searchReleases()`, `globalSearch()`
+- **Search API Functions**: `searchCompanies()`, `searchProducts()`, `searchSignals()`, `globalSearch()`
 
 ### Search Features
 
-- **Multi-category Search**: Search across companies, products, signals, and releases simultaneously
+- **Multi-category Search**: Search across companies, products, and signals simultaneously
 - **Smart Ranking**: Prioritizes exact matches, then prefix matches, then substring matches
-- **Search Operators**: Use `company:`, `product:`, `signal:`, `release:` to narrow results
+- **Search Operators**: Use `company:`, `product:`, `signal:` to narrow results
 - **Keyboard Navigation**: Arrow keys to navigate, Enter to select, Esc to close
 - **Recent Searches**: Stores last 5 searches in localStorage
 - **Text Highlighting**: Highlights matching text in search results
@@ -215,12 +212,11 @@ The Global Search provides a comprehensive command palette style search experien
 - **Companies** → `/companies/:companyId`
 - **Products** → `/companies/:companyId/products/:productId`
 - **Signals** → `/signals?highlight=<signalId>`
-- **Releases** → `/companies/:companyId/products/:productId`
 
 ### Technical Implementation
 
 - **Debounced Search**: 250ms debounce for smooth real-time search
-- **Mock Data Integration**: Uses existing mock data system with realistic delays
+- **API Integration**: Uses real backend API with proper error handling
 - **Type Safety**: Full TypeScript integration with proper interfaces
 - **Accessibility**: Focus management, ARIA semantics, keyboard navigation
 - **Performance**: Efficient rendering with result limits (5 per category)
@@ -261,7 +257,7 @@ A comprehensive mock user session system with persistent preferences and a dedic
 - **Consistent Formatting**: All date displays use user preferences
 - **Timezone Support**: Proper timezone handling with Intl API
 - **Format Options**: Multiple date format choices
-- **Applied Everywhere**: Overview, Signals, Releases, Company pages, and Source drawer
+- **Applied Everywhere**: Overview, Signals, Company pages, and Source drawer
 
 ### Technical Implementation
 
@@ -324,8 +320,6 @@ The frontend now communicates with the backend API:
 | `GET` | `/api/products/{id}` | Get detailed product information |
 | `GET` | `/api/signals/` | List all signals with advanced filtering |
 | `GET` | `/api/signals/{id}` | Get detailed signal information |
-| `GET` | `/api/releases/` | List all product releases with filtering |
-| `GET` | `/api/releases/{id}` | Get detailed release information |
 | `GET` | `/api/capabilities/` | List all technical capabilities |
 | `GET` | `/api/sources/` | List all data sources |
 | `POST` | `/api/crawl/discover` | Website discovery and crawling |
@@ -397,16 +391,15 @@ The frontend now communicates with the backend API:
 
 ### Phase 2: Core UI ✅
 - [x] AppLayout with navigation and header
-- [x] Overview dashboard with signals and releases
+- [x] Overview dashboard with signals
 - [x] Companies listing with search and filtering
 - [x] Responsive design and mobile support
 
 ### Phase 3: Data Features ✅
-- [x] Mock data system with realistic delays
+- [x] Seed data system with comprehensive sample data
 - [x] Company detail views with products and activity
 - [x] Product detail pages with capabilities
 - [x] Advanced signals filtering and analysis
-- [x] Releases tracking with company and date filtering
 - [x] **Real API integration** with backend endpoints
 - [x] **Live data fetching** from database
 
@@ -427,9 +420,9 @@ The frontend now communicates with the backend API:
 
 ### Phase 6: Global Search ✅
 - [x] Command palette style search modal with keyboard navigation
-- [x] Search across companies, products, signals, and releases
+- [x] Search across companies, products, and signals
 - [x] Smart ranking system with exact match prioritization
-- [x] Search operators (company:, product:, signal:, release:)
+- [x] Search operators (company:, product:, signal:)
 - [x] Recent searches with localStorage persistence
 - [x] Interactive search button in header with ⌘K/Ctrl+K shortcut
 - [x] Text highlighting and grouped results display

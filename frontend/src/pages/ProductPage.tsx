@@ -207,11 +207,9 @@ export default function ProductPage() {
               >
                 {companyData.name}
               </Link>
-              {productData.spec_profile && (
-                <span className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
-                  Spec profile: {productData.spec_profile}
-                </span>
-              )}
+              <span className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
+                Spec profile: {productData.spec_profile || 'Not specified'}
+              </span>
             </div>
 
             {/* Category, Markets, Tags */}
@@ -219,22 +217,34 @@ export default function ProductPage() {
               <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
                 {productData.category}
               </span>
-              {productData.markets.map((market) => (
-                <span
-                  key={market}
-                  className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
-                >
-                  {market}
+              {productData.markets.length > 0 ? (
+                productData.markets.map((market) => (
+                  <span
+                    key={market}
+                    className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
+                  >
+                    {market}
+                  </span>
+                ))
+              ) : (
+                <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                  Markets: Not specified
                 </span>
-              ))}
-              {productData.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-block px-2 py-1 bg-gray-50 text-gray-500 text-sm rounded"
-                >
-                  {tag}
+              )}
+              {productData.tags.length > 0 ? (
+                productData.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-block px-2 py-1 bg-gray-50 text-gray-500 text-sm rounded"
+                  >
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="inline-block px-2 py-1 bg-gray-50 text-gray-500 text-sm rounded">
+                  Tags: Not specified
                 </span>
-              ))}
+              )}
             </div>
           </div>
 
@@ -319,12 +329,16 @@ export default function ProductPage() {
       </div>
 
       {/* Specifications Section */}
-      {productData.specs && Object.keys(productData.specs).length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
+        {productData.specs && Object.keys(productData.specs).length > 0 ? (
           <SpecsGroup product={productData} profile={specProfileData} />
-        </div>
-      )}
+        ) : (
+          <div className="bg-gray-50 rounded-lg p-6 text-center">
+            <p className="text-gray-500">No specifications available</p>
+          </div>
+        )}
+      </div>
 
       {/* Source Drawer */}
       <SourceDrawer

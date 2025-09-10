@@ -726,15 +726,28 @@ class NormalizationService:
             "ExtractedCapability": ExtractedCapability,
             "ExtractedRelease": ExtractedRelease,
             "ExtractedDocument": ExtractedDocument,
-            "ExtractedSignalEntity": ExtractedSignalEntity
+            "ExtractedSignalEntity": ExtractedSignalEntity,
+            # Handle both short and long entity type names for backward compatibility
+            "Company": ExtractedCompany,
+            "Product": ExtractedProduct,
+            "Capability": ExtractedCapability,
+            "Release": ExtractedRelease,
+            "ExtractedDocument": ExtractedDocument,
+            "Signal": ExtractedSignalEntity
         }
         
         model = model_map.get(entity_type)
         if not model:
             raise ValueError(f"Unknown entity type: {entity_type}")
         
+        # Handle field mapping for specific entity types
+        mapped_data = entity_data.copy()
+        if entity_type in ["Capability", "ExtractedCapability"] and "definition" in mapped_data:
+            # Map "definition" field to "description" for capabilities
+            mapped_data["description"] = mapped_data.pop("definition")
+        
         # Create entity instance
-        entity = model(**entity_data)
+        entity = model(**mapped_data)
         
         # Set natural key in normalized_name field (temporary approach)
         if hasattr(entity, 'normalized_name'):

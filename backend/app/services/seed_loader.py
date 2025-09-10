@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.models.company import Company, CompanySummary
 from app.models.product import Product, Capability, ProductCapability
-from app.models.signal import Signal, Release, Source
+from app.models.signal import Signal, Source
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,6 @@ def load_seed_data(db: Session, seed_file_path: str = "data/seed.json") -> Dict[
             'capabilities': 0,
             'product_capabilities': 0,
             'signals': 0,
-            'releases': 0,
             'sources': 0
         }
         
@@ -157,21 +156,6 @@ def load_seed_data(db: Session, seed_file_path: str = "data/seed.json") -> Dict[
             db.add(signal)
             counts['signals'] += 1
         
-        # Load releases (skip those with empty product_id)
-        for release_data in seed_data.get('releases', []):
-            product_id = release_data.get('product_id', '').strip()
-            if product_id:  # Only load releases with valid product_id
-                release = Release(
-                    id=release_data['id'],
-                    company_id=release_data['company_id'],
-                    product_id=product_id,
-                    version=release_data.get('version'),
-                    notes=release_data.get('notes'),
-                    released_at=datetime.fromisoformat(release_data['released_at'].replace('Z', '+00:00')),
-                    source_id=release_data.get('source_id')
-                )
-                db.add(release)
-                counts['releases'] += 1
         
         # Commit all changes
         db.commit()

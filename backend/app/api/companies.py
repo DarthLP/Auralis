@@ -6,14 +6,13 @@ import logging
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, String
 from datetime import datetime, timezone
 
 from app.core.db import get_db
 from app.models.company import Company, CompanySummary
 from app.models.product import Product
 from app.models.signal import Signal
-from app.models.signal import Release
 from app.models.extraction import ExtractedCompany
 
 logger = logging.getLogger(__name__)
@@ -64,8 +63,8 @@ async def get_companies(
             query = query.filter(
                 or_(
                     Company.name.ilike(search_term),
-                    Company.aliases.any(lambda alias: alias.ilike(search_term)),
-                    Company.tags.any(lambda tag: tag.ilike(search_term))
+                    Company.aliases.cast(String).ilike(search_term),
+                    Company.tags.cast(String).ilike(search_term)
                 )
             )
         
@@ -320,43 +319,3 @@ async def get_company_signals(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{company_id}/releases")
-async def get_company_releases(
-    company_id: str,
-    db: Session = Depends(get_db),
-    limit: int = Query(50, description="Maximum number of releases to return")
-) -> List[dict]:
-    """
-    Get releases for a specific company.
-    """
-    try:
-        # Check if company exists
-        company = db.query(Company).filter(Company.id == company_id).first()
-        if not company:
-            raise HTTPException(status_code=404, detail="Company not found")
-        
-        releases = db.query(Release).filter(
-            Release.company_id == company_id
-        ).order_by(Release.released_at.desc()).limit(limit).all()
-        
-        result = []
-        for release in releases:
-            release_dict = {
-                "id": release.id,
-                "company_id": release.company_id,
-                "product_id": release.product_id,
-                "version": release.version,
-                "notes": release.notes,
-                "released_at": format_datetime_for_api(release.released_at),
-                "source_id": release.source_id
-            }
-            result.append(release_dict)
-        
-        logger.info(f"Retrieved {len(result)} releases for company {company_id}")
-        return result
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error retrieving company releases for {company_id}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
