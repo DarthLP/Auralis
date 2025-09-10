@@ -31,14 +31,22 @@ class Settings(BaseSettings):
     
     # Theta EdgeCloud Configuration
     ON_DEMAND_API_ACCESS_TOKEN: str = ""
-    THETA_REQUEST_TIMEOUT: int = 20
+    THETA_REQUEST_TIMEOUT: int = 300
     THETA_MAX_RETRIES: int = 2
-    THETA_JSON_MODE: bool = False
+    THETA_JSON_MODE: bool = True
     THETA_RATE_PER_MIN: int = 20
     THETA_RATE_BURST: int = 10
     THETA_SESSION_RATE_PER_MIN: int = 5
     THETA_SESSION_RATE_BURST: int = 5
     THETA_MAX_OUTPUT_TOKENS: int = 12000  # Conservative for Qwen 7B
+
+    # Llama (OpenAI-compatible) Deployment Configuration
+    LLAMA_ENDPOINT: str = ""
+    LLAMA_MODEL: str = ""
+
+    # LLM generation controls
+    LLM_TEMPERATURE: float = 0.1
+    LLM_TOP_P: float = 0.5
     
     # Extraction Configuration
     SCHEMA_VERSION: str = "v1"
@@ -51,7 +59,7 @@ class Settings(BaseSettings):
     # Scraper Configuration
     SCRAPER_MAX_PAGES: int = 100
     SCRAPER_MAX_DEPTH: int = 2
-    SCRAPER_TIMEOUT: int = 10
+    SCRAPER_TIMEOUT: int = 100
     SCRAPER_RATE_SLEEP: float = 0.3
     SCRAPER_USER_AGENT: str = "AuralisBot/0.1 (+contact)"
     SCRAPER_MAX_RETRIES: int = 2
