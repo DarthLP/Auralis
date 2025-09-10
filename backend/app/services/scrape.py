@@ -94,6 +94,103 @@ def _should_skip_url(url: str) -> tuple[bool, str]:
         if url_lower.endswith(ext):
             return True, f"URL has skip extension: {ext}"
     
+    # Language path patterns to skip (non-English)
+    # Common language codes and names in URL paths
+    non_english_lang_codes = [
+        # Major European languages
+        '/de/', '/german/', '/deutsch/',
+        '/es/', '/spanish/', '/espanol/',
+        '/fr/', '/french/', '/francais/',
+        '/it/', '/italian/', '/italiano/',
+        '/pt/', '/portuguese/', '/portugues/',
+        '/ru/', '/russian/', '/russkiy/',
+        '/nl/', '/dutch/', '/nederlands/',
+        '/sv/', '/swedish/', '/svenska/',
+        '/no/', '/norwegian/', '/norsk/',
+        '/da/', '/danish/', '/dansk/',
+        '/fi/', '/finnish/', '/suomi/',
+        '/pl/', '/polish/', '/polski/',
+        '/cs/', '/czech/', '/cesky/',
+        '/hu/', '/hungarian/', '/magyar/',
+        '/ro/', '/romanian/', '/romana/',
+        '/bg/', '/bulgarian/', '/bulgarski/',
+        '/hr/', '/croatian/', '/hrvatski/',
+        '/sk/', '/slovak/', '/slovensky/',
+        '/sl/', '/slovenian/', '/slovenski/',
+        '/et/', '/estonian/', '/eesti/',
+        '/lv/', '/latvian/', '/latviesu/',
+        '/lt/', '/lithuanian/', '/lietuviu/',
+        '/el/', '/greek/', '/ellinika/',
+        '/tr/', '/turkish/', '/turkce/',
+        '/he/', '/hebrew/', '/ivrit/',
+        '/uk/', '/ukrainian/', '/ukrayinska/',
+        '/be/', '/belarusian/', '/belaruski/',
+        
+        # Asian languages
+        '/zh/', '/chinese/', '/zhongwen/',
+        '/ja/', '/japanese/', '/nihongo/',
+        '/ko/', '/korean/', '/hangugeo/',
+        '/th/', '/thai/',
+        '/vi/', '/vietnamese/', '/tieng-viet/',
+        '/id/', '/indonesian/', '/bahasa-indonesia/',
+        '/ms/', '/malay/', '/bahasa-melayu/',
+        '/tl/', '/filipino/', '/tagalog/',
+        '/hi/', '/hindi/', '/hindustani/',
+        '/bn/', '/bengali/', '/bangla/',
+        '/ta/', '/tamil/',
+        '/te/', '/telugu/',
+        '/ml/', '/malayalam/',
+        '/kn/', '/kannada/',
+        '/gu/', '/gujarati/',
+        '/pa/', '/punjabi/',
+        '/or/', '/odia/',
+        '/as/', '/assamese/',
+        '/mr/', '/marathi/',
+        '/ur/', '/urdu/',
+        '/fa/', '/persian/', '/farsi/',
+        '/ar/', '/arabic/', '/arabiya/',
+        
+        # Other languages
+        '/af/', '/afrikaans/',
+        '/sw/', '/swahili/', '/kiswahili/',
+        '/am/', '/amharic/',
+        '/so/', '/somali/', '/soomaali/',
+        '/ka/', '/georgian/', '/kartuli/',
+        '/hy/', '/armenian/', '/hayeren/',
+        '/az/', '/azerbaijani/', '/azerbaycan/',
+        '/kk/', '/kazakh/', '/qazaq/',
+        '/ky/', '/kyrgyz/', '/kyrgyzcha/',
+        '/uz/', '/uzbek/', '/o\'zbek/',
+        '/tg/', '/tajik/', '/tojiki/',
+        '/mn/', '/mongolian/', '/mongol/',
+        '/my/', '/burmese/', '/myanmar/',
+        '/km/', '/khmer/',
+        '/lo/', '/lao/',
+        '/si/', '/sinhala/',
+        '/ne/', '/nepali/',
+        '/bo/', '/tibetan/', '/bod-skad/',
+        '/dz/', '/dzongkha/',
+        '/ti/', '/tigrinya/',
+        '/om/', '/oromo/',
+        '/ps/', '/pashto/',
+        '/sd/', '/sindhi/',
+        '/sa/', '/sanskrit/',
+        '/zu/', '/zulu/',
+        '/xh/', '/xhosa/',
+        '/st/', '/sesotho/',
+        '/tn/', '/setswana/',
+        '/ss/', '/swati/',
+        '/ve/', '/venda/',
+        '/ts/', '/tsonga/',
+        '/nr/', '/ndebele/',
+        '/nso/', '/northern-sotho/', '/sesotho-sa-leboa/'
+    ]
+    
+    # Check for non-English language paths
+    for lang_code in non_english_lang_codes:
+        if lang_code in url_lower:
+            return True, f"URL contains non-English language path: {lang_code}"
+
     # Query parameter patterns to skip
     skip_query_params = [
         'utm_', 'utm_source', 'utm_medium', 'utm_campaign',
