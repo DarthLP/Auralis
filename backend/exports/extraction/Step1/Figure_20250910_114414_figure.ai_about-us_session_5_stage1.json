@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-10T11:44:14.562963",
+  "session_id": "5",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/about-us",
+  "llm_response": {
+    "products": {},
+    "company": {
+      "text": "WHAT: Designing robots for the real world \nNAME: Figure \nPOSITIONING: Building a commercially viable humanoid robot \nVALUES: Move Fast & Be Technically Fearless, Product First, Mission Focused, Aggressively Optimistic, Maximize Future Impact, Championship Mindset"
+    },
+    "source": {
+      "url": "https://figure.ai/about-us"
+    }
+  },
+  "prompt_length": 3815,
+  "response_size": 356
+}

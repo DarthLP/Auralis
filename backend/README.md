@@ -761,6 +761,7 @@ Raw Page Text → Stage 1: Simple Extraction → Stage 2A: Company → Stage 2B:
 - **Caching**: DB-based response caching with TTL and deduplication
 - **Circuit Breaker**: Automatic failure detection and recovery
 - **Retry Logic**: Exponential backoff with jittered delays
+- **Timeout**: 300s request timeout for large Step 2B consolidations
 
 #### 4. Entity Normalization (`app/services/normalize.py`)
 - **Natural Key Generation**: Deterministic keys for entity deduplication
@@ -913,10 +914,10 @@ EntityChange(
 
 ```env
 # Theta EdgeCloud
-ON_DEMAND_API_ACCESS_TOKEN=your_token_here
-THETA_REQUEST_TIMEOUT=20
+ON_DEMAND_API_ACCESS_TOKEN=your_token_here  # Not used for dedicated Llama deployment
+THETA_REQUEST_TIMEOUT=300
 THETA_MAX_RETRIES=2
-THETA_JSON_MODE=false
+THETA_JSON_MODE=true
 THETA_RATE_PER_MIN=20
 
 # Extraction Pipeline
@@ -925,6 +926,25 @@ EXTRACTOR_PROMPT_VERSION=1.0
 EXTRACTOR_MAX_TEXT_CHARS=450000
 EXTRACTOR_FAIL_THRESHOLD=0.3
 EXTRACTOR_MAX_CONCURRENT_SESSIONS=4
+
+# Dedicated Llama Deployment (OpenAI-compatible)
+LLAMA_ENDPOINT=https://llama3170bw7zbqs6c8y-b1bc359ff991240d.tec-s20.onthetaedgecloud.com/v1
+LLAMA_MODEL=meta-llama/Llama-3.1-70B-Instruct
+LLM_TEMPERATURE=0.1
+LLM_TOP_P=0.5
+```
+
+### Llama Integration Notes
+
+- The system now uses a dedicated Llama 3.1 70B deployment via an OpenAI-compatible HTTP endpoint.
+- Requests are sent to `/v1/chat/completions` with `model`, `messages`, `max_tokens`, and (if enabled) `response_format: {"type": "json_object"}`.
+- No Authorization header is required for this deployment.
+- Prompts and extraction pipeline remain unchanged.
+
+Run a guarded live test (skips automatically if LLAMA_* are not configured):
+
+```bash
+pytest backend/tests/test_llama_integration.py -q
 ```
 
 This architecture provides a robust, cost-effective solution for transforming unstructured web content into structured competitive intelligence at scale.

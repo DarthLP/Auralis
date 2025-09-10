@@ -122,8 +122,8 @@ class ThetaClient:
     
     def __init__(self, db_session: Session):
         self.db = db_session
-        self.base_url = "https://ondemand.thetaedgecloud.com"
-        self.model = "deepseek_r1"
+        self.base_url = settings.LLAMA_ENDPOINT or "https://ondemand.thetaedgecloud.com"
+        self.model = settings.LLAMA_MODEL or "deepseek_r1"
         self.timeout = settings.THETA_REQUEST_TIMEOUT
         self.max_retries = settings.THETA_MAX_RETRIES
         
@@ -234,7 +234,7 @@ class ThetaClient:
                 session_limiter.consume()  # Should succeed now
     
     def _build_request_payload(self, prompt: str, use_json_mode: bool = True) -> Dict[str, Any]:
-        """Build request payload for Theta EdgeCloud."""
+        """Build request payload for OpenAI-compatible chat completions endpoint."""
         messages = [
             {
                 "role": "system",
@@ -246,30 +246,27 @@ class ThetaClient:
             }
         ]
         
-        payload = {
-            "input": {
-                "max_tokens": settings.THETA_MAX_OUTPUT_TOKENS,
-                "messages": messages,
-                "stream": False,  # Never stream for structured output
-                "temperature": 0.1,  # Very low for consistency
-                "top_p": 0.5
-            }
+        payload: Dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": settings.THETA_MAX_OUTPUT_TOKENS,
+            "temperature": settings.LLM_TEMPERATURE,
+            "top_p": settings.LLM_TOP_P
         }
         
         # Add JSON mode if supported and requested
         if use_json_mode and settings.THETA_JSON_MODE:
-            payload["input"]["response_format"] = {"type": "json_object"}
+            payload["response_format"] = {"type": "json_object"}
             
         return payload
     
     async def _make_request(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Make HTTP request to Theta EdgeCloud."""
         headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {settings.ON_DEMAND_API_ACCESS_TOKEN}"
+            "Content-Type": "application/json"
         }
         
-        url = f"{self.base_url}/infer_request/{self.model}/completions"
+        url = f"{self.base_url}/chat/completions"
         
         try:
             response = await self.client.post(url, json=payload, headers=headers)
@@ -345,14 +342,6 @@ class ThetaClient:
         """Extract content from Theta EdgeCloud response."""
         try:
             content = None
-            
-            # Handle Theta EdgeCloud response format
-            if "body" in response and "infer_requests" in response["body"]:
-                infer_requests = response["body"]["infer_requests"]
-                if len(infer_requests) > 0:
-                    infer_request = infer_requests[0]
-                    if "output" in infer_request and "message" in infer_request["output"]:
-                        content = infer_request["output"]["message"]
             
             # Handle standard OpenAI-style response formats
             if not content and "choices" in response and len(response["choices"]) > 0:

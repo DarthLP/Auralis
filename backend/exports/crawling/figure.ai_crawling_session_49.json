@@ -1,6 +1,6 @@
 [
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/",
     "canonical_url": "https://figure.ai/",
     "status_code": 200,
@@ -11,13 +11,13 @@
       "product_h1"
     ],
     "depth": 0,
-    "size_bytes": 154582,
+    "size_bytes": 154572,
     "mime_type": null,
-    "content_hash": "552bbe9a01e812a3433bacf1835e578a872550adc256eab920235c709de5e05b",
-    "crawled_at": "2025-09-10T08:28:56.236187"
+    "content_hash": "01dd6828c2019d889986f34b78f1cef6a0130c38d456d7da83cf2d5f0cf3cbd8",
+    "crawled_at": "2025-09-10T11:39:39.909499"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news",
     "canonical_url": "https://figure.ai/news",
     "status_code": 200,
@@ -30,13 +30,13 @@
       "news_title"
     ],
     "depth": 0,
-    "size_bytes": 40215,
+    "size_bytes": 40217,
     "mime_type": null,
-    "content_hash": "11da13727ca5464c753550de9560b25b78536a47b36929305766c58a67601f9e",
-    "crawled_at": "2025-09-10T08:28:56.236533"
+    "content_hash": "40b9bb733024b663bcb5ada4fa9685027e57f2b7dae372884563786f0a58e616",
+    "crawled_at": "2025-09-10T11:39:39.909769"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/botq",
     "canonical_url": "https://figure.ai/news/botq",
     "status_code": 200,
@@ -49,13 +49,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 54008,
+    "size_bytes": 54014,
     "mime_type": null,
-    "content_hash": "60aa849724d8a030ffb92d1bda97eeeebc8a4e20b6ded5d1bdc07e8e577f84c9",
-    "crawled_at": "2025-09-10T08:28:56.236628"
+    "content_hash": "d96c63d710452212f3abd77e125eb53abc07588451a8bde591f39e0342a2faab",
+    "crawled_at": "2025-09-10T11:39:39.909865"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/helix",
     "canonical_url": "https://figure.ai/news/helix",
     "status_code": 200,
@@ -68,13 +68,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 87383,
+    "size_bytes": 87379,
     "mime_type": null,
-    "content_hash": "3e275880b7a85b8c993a157f35801811735b68c12d3d031a552aeaeb520842dc",
-    "crawled_at": "2025-09-10T08:28:56.236692"
+    "content_hash": "c5f0785c072798a3c922d052b30010eaddd05ad2ed4a1d7dbfb4e8ad589fddd4",
+    "crawled_at": "2025-09-10T11:39:39.909945"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/about-us",
     "canonical_url": "https://figure.ai/about-us",
     "status_code": 200,
@@ -85,13 +85,13 @@
       "product_h1"
     ],
     "depth": 0,
-    "size_bytes": 54212,
+    "size_bytes": 54214,
     "mime_type": null,
-    "content_hash": "307c541b3be996aa4a710a3243b6b5479f2ba2800c4028d51d5099e299dd2664",
-    "crawled_at": "2025-09-10T08:28:56.236745"
+    "content_hash": "37ba54606ee808a7c9ef8562ee7f7f615f9e7e0af45fee891f46383a3a593bda",
+    "crawled_at": "2025-09-10T11:39:39.910005"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/ai",
     "canonical_url": "https://figure.ai/ai",
     "status_code": 200,
@@ -102,13 +102,13 @@
       "product_h1"
     ],
     "depth": 0,
-    "size_bytes": 20381735,
+    "size_bytes": 20381725,
     "mime_type": null,
-    "content_hash": "1766919219b43820c958593f3304b570739e34a72641db4fb82ad2204be3f177",
-    "crawled_at": "2025-09-10T08:28:56.236793"
+    "content_hash": "41a3f8afb9c034513936c668fc6c26d019b68040e69919eefe323ef16b34ff77",
+    "crawled_at": "2025-09-10T11:39:39.910056"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/culture",
     "canonical_url": "https://figure.ai/culture",
     "status_code": 200,
@@ -119,13 +119,13 @@
       "product_h1"
     ],
     "depth": 0,
-    "size_bytes": 65814,
+    "size_bytes": 65816,
     "mime_type": null,
-    "content_hash": "1e56fe05f17f3f6107c113e582ec5fe569d96b4eec5c4129e01557f02609b63f",
-    "crawled_at": "2025-09-10T08:28:56.236903"
+    "content_hash": "3611b5df1b88aceed3772a8464dfd9bcf70092c76269c708732747b3d4f10f09",
+    "crawled_at": "2025-09-10T11:39:39.910182"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/scaling-helix-logistics",
     "canonical_url": "https://figure.ai/news/scaling-helix-logistics",
     "status_code": 200,
@@ -138,11 +138,11 @@
     "depth": 0,
     "size_bytes": 82684,
     "mime_type": null,
-    "content_hash": "04eb41a790ffdd714b8ce8b7a885c78606362bd2beeeacb373ba37419fab57fb",
-    "crawled_at": "2025-09-10T08:28:56.237042"
+    "content_hash": "f2e3eb1ce16bb15bd26031740017b0de34ab18142741937ed60fdbd228ec6f78",
+    "crawled_at": "2025-09-10T11:39:39.910230"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/helix-loads-the-dishwasher",
     "canonical_url": "https://figure.ai/news/helix-loads-the-dishwasher",
     "status_code": 200,
@@ -153,13 +153,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 35747,
+    "size_bytes": 35751,
     "mime_type": null,
-    "content_hash": "995e2d0eb187845327b057dd819b82d47a49f69a6c6692bbc0d3682bed7e2ba3",
-    "crawled_at": "2025-09-10T08:28:56.237152"
+    "content_hash": "c11a8e8d21a16570ba5fbe5332d3c8e98009b22ce3b3d6bd905a713157801456",
+    "crawled_at": "2025-09-10T11:39:39.910279"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/helix-learns-to-fold-laundry",
     "canonical_url": "https://figure.ai/news/helix-learns-to-fold-laundry",
     "status_code": 200,
@@ -170,13 +170,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 37480,
+    "size_bytes": 37478,
     "mime_type": null,
-    "content_hash": "b39dbd0e49411ec5be543c0977a3170c011b2ea4fd8eb96f89896c0864093033",
-    "crawled_at": "2025-09-10T08:28:56.237218"
+    "content_hash": "f7e1c3cbe48660d61f93dfea0e3a387b3d60f1e01a08e9e6621a9ad6ad873feb",
+    "crawled_at": "2025-09-10T11:39:39.910352"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/f-03-battery-development",
     "canonical_url": "https://figure.ai/news/f-03-battery-development",
     "status_code": 200,
@@ -187,13 +187,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 63316,
+    "size_bytes": 63320,
     "mime_type": null,
-    "content_hash": "1c3b8a2f1c2e71f07e4d917684e1166b4e3d379348ae8a8c3f5478151a1ab4cb",
-    "crawled_at": "2025-09-10T08:28:56.237627"
+    "content_hash": "a622019711fdd567a27961783a51a5a7979eb0a11951c2e7f88a357da6bb4455",
+    "crawled_at": "2025-09-10T11:39:39.910399"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/reinforcement-learning-walking",
     "canonical_url": "https://figure.ai/news/reinforcement-learning-walking",
     "status_code": 200,
@@ -206,11 +206,11 @@
     "depth": 0,
     "size_bytes": 45055,
     "mime_type": null,
-    "content_hash": "965be602fe532dd954604a09b7227e0f12c9d80f3ee093e393b86870c4c3e965",
-    "crawled_at": "2025-09-10T08:28:56.237734"
+    "content_hash": "1f5d6398a970a2bcbc53c64ded128887d8326dbc8580ae667f54dfc91502b047",
+    "crawled_at": "2025-09-10T11:39:39.910425"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/news/helix-logistics",
     "canonical_url": "https://figure.ai/news/helix-logistics",
     "status_code": 200,
@@ -221,13 +221,13 @@
       "news_url"
     ],
     "depth": 0,
-    "size_bytes": 93518,
+    "size_bytes": 93534,
     "mime_type": null,
-    "content_hash": "5b972414a5f6985bd2901d39531a38d85212889907efcab84035af1087e4c7e1",
-    "crawled_at": "2025-09-10T08:28:56.237870"
+    "content_hash": "0c596e2a1e4afd7486039b73545603e530050135672f80c29b26dd4bcf997e31",
+    "crawled_at": "2025-09-10T11:39:39.910485"
   },
   {
-    "crawl_session_id": 40,
+    "crawl_session_id": 49,
     "url": "https://figure.ai/master-plan",
     "canonical_url": "https://figure.ai/master-plan",
     "status_code": 200,
@@ -240,7 +240,7 @@
     "depth": 0,
     "size_bytes": 63029,
     "mime_type": null,
-    "content_hash": "4d67fbfe8911e3aafca319f874439740f6eb89521050351a8edea1adb4c03147",
-    "crawled_at": "2025-09-10T08:28:56.239530"
+    "content_hash": "cbffc5c9af5473e8ba1c58a796349151de8342d021748edd2f57194aedcfa7e9",
+    "crawled_at": "2025-09-10T11:39:39.910543"
   }
 ]

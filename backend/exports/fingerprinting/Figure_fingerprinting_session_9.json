@@ -1,9 +1,9 @@
 [
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/helix",
     "key_url": "https://figure.ai/news/helix",
-    "page_type": "news",
+    "page_type": "product",
     "content_hash": "0c706078665a2438a4825da8e0219f1b063bcc50804a73264eeac2bf315ec527",
     "normalized_text_len": 14003,
     "extracted_text_preview": "Introducing Helix\nWe're introducing Helix, a generalist Vision-Language-Action (VLA) model that unifies perception, language understanding, and learned control to overcome multiple longstanding challenges in robotics. Helix is a series of firsts:\nFull-upper-body control: Helix is the first VLA to output high-rate continuous control of the entire humanoid upper body, including wrists, torso, head, and individual fingers.\nMulti-robot collaboration: Helix is the first VLA to operate simultaneously on two robots, enabling them to solve a shared, long-horizon manipulation task with items they have never seen before.\nPick up anything: Figure robots equipped with Helix can now pick up virtually any small household object, including thousands of items they have never encountered before, simply by following natural language prompts.\nOne neural network: Unlike prior approaches, Helix uses a single set of neural network weights to learn all behaviors—picking and placing items, using drawers and refrigerators, and cross-robot interaction—without any task-specific fine-tuning.\nCommercial-ready: Helix is the first VLA that runs entirely onboard embedded low-power-consumption GPUs, making it immediately ready for commercial deployment.\nNew Scaling for Humanoid Robotics\nThe home presents robotics' greatest challenge. Unlike controlled industrial settings, homes are filled with countless objects–delicate glassware, crumpled clothing, scattered toys–each with unpredictable shapes, sizes, colors, and textures. For robots to be useful in households, they will need to be capable of generating intelligent new behaviors on-demand, especially for objects they've never seen before.\nThe current state of robotics will not scale to the home without a step change. Teaching robots even a single new behavior currently requires substantial human effort: either hours of PhD-level expert manual programming or thousands of demonstrations. Both are prohibitively expensive when we consider how vast the problem of the home truly is.\nBut other domains of AI have mastered this kind of instant generalization. What if we could simply translate the rich semantic knowledge captured in Vision Language Models (VLMs) directly into robot actions? This new capability would fundamentally alter robotics' scaling trajectory (Figure 1). Suddenly, new skills that once took hundreds of demonstrations could be obtained instantly just by talking to robots in natural language. The key problem becomes: how do we extract all this common-sense knowledge from VLMs and translate it into generalizable robot control? We built Helix to bridge this gap.\nHelix: A \"System 1, System 2\" VLA for Whole Upper Body Control\nHelix is a first-of-its-kind \"System 1, System 2\" VLA model for high-rate, dexterous control of the entire humanoid upper body.\nPrior approaches face a fundamental tradeoff: VLM backbones are general, but not fast, and robot visuomotor policies are fast but not general. Helix resolves this tradeoff through two complementary systems, trained end-to-end to communicate:\nSystem 2 (S2): An onboard internet-pretrained VLM operating at 7-9 Hz for scene understanding and language comprehension, enabling broad generalization across objects and contexts.\nSystem 1 (S1): A fast reactive visuomotor policy that translates the latent semantic representations produced by S2 into precise continuous robot actions at 200 Hz.\nThis decoupled architecture allows each system to operate at its optimal timescale. S2 can \"think slow\" about high-level goals, while S1 can \"think fast\" to execute and adjust actions in real-time. For example, during collaborative behavior (see Video 2), S1 quickly adapts to the changing motions of a partner robot while maintaining S2's semantic objectives.\nHelix's design offers several key advantages over existing approaches:\nSpeed and Generalization: Helix matches the speed of specialized single-task behavioral cloning policies while generalizing zero-shot to thousands of novel test objects.\nScalability: Helix directly outputs continuous control for high-dimensional action spaces, avoiding complex action tokenization schemes used in prior VLA approaches, which have shown some success in low-dimensional control setups (e.g. binarized parallel grippers) but face scaling challenges with high-dimensional humanoid control.\nArchitectural Simplicity: Helix uses standard architectures - an open source, open weight VLM for System 2 and a simple transformer-based visuomotor policy for S1.\nSeparation of concerns: Decoupling S1 and S2 allows us to iterate on each system separately, without constraints of finding unified observation space or action representations.\nModel and Training Details\nData\nWe collect a high quality, multi-robot, multi-operator dataset of diverse teleoperated behaviors, ~500 hours in total. To generate natural language-conditioned training pairs, we use an auto-labeling VLM to generate hindsight instructions. The VLM processes segmented video clip",
@@ -11,14 +11,14 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 86147,
-    "processed_at": "2025-09-10T09:08:29.660034"
+    "content_length": 86143,
+    "processed_at": "2025-09-10T11:41:35.497791"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/scaling-helix-logistics",
     "key_url": "https://figure.ai/news/scaling-helix-logistics",
-    "page_type": "news",
+    "page_type": "product",
     "content_hash": "551afe9a55286db691c5fe8e10c6dc018ed3578e19d3c480097d58283eb0fff8",
     "normalized_text_len": 13139,
     "extracted_text_preview": "In just three months since our initial deployment of Helix in a logistics environment, the system’s capabilities and performance have leapt forward. Helix can now handle a wider variety of packaging and is approaching human-level dexterity and speed, bringing us closer to fully autonomous package sorting. This rapid progress underscores the scalability of Helix’s learning-based approach to robotics, translating quickly into real-world application.\nNew package types – Helix now manipulates deformable poly bags and flat envelopes as reliably as rigid boxes, adjusting its grasp and strategy for each form factor and handling objects dynamically.\nFaster throughput – Despite handling much more complex and varied package types, execution speed has also improved to 4.05 seconds per package (down from ~5.0s), achieving ~20% faster handling while maintaining accuracy.\nHigher barcode scanning success – Shipping labels are now correctly oriented for scanning ~95% of the time (up from ~70%), through better vision and control.\nAdaptive behaviors – The robot exhibits subtle behaviors learned from demonstration, such as gently patting down plastic mailers to flatten wrinkles and improve barcode reads.\nSmall package logistics, like the example shown here, is an ideal environment for AI learning, with constantly changing packages and scenes at every time step that make it perfectly suited for neural networks.\nThese improvements were achieved through both data scaling and model architectural improvements:\nTemporal memory – A new vision memory module gives Helix stateful perception. The policy now also incorporates a history of past states, enabling temporally extended behaviors and improved robustness to interruptions.\nForce feedback – Force sensing is integrated into the state input, providing a sense of touch proxy that leads to more precise grips and manipulation of packages.\nHere we analyze the sources of these gains, examining how increasing the demonstration training data (from 10 to 60 hours) affects performance, and how each of the above architectural enhancements contributes to Helix’s speed and accuracy in package handling.\nExpanded Package Variety and Adaptive Behaviors\nHelix’s logistics policy has broadened to handle a much wider diversity of packages. In addition to standard rigid boxes, the system now manages polyethylene bags (poly bags), padded envelopes, and other deformable or thin parcels that pose unique challenges. These items can fold, crumple, or flex, making it harder to grasp and locate labels. Helix addresses this by adjusting its grasp strategy on the fly – for example, flicking away a soft bag to flip it dynamically, or using pinch grips for flat mailers. Despite the greater variety in shape and texture, Helix increased its throughput, processing items in about 4.05 seconds each on average without bottlenecks.\nThe goal of this logistics task is to rotate the package so the barcode faces downward for scanning. One notable behavior is Helix’s tendency to pat down plastic packaging before attempting to scan it. If a shipping label lies on a curved or wrinkled surface (common with loosely filled poly bags or bubbled envelopes), the policy reacts by briefly pressing and smoothing the surface flat. This subtle “flattening” action, learned from demonstrations, ensures the barcode is fully visible to the scanner. Such adaptive behavior highlights the advantage of end-to-end learning – the robot learns from demonstration strategies that were never explicitly hard-coded, directly from the data, to overcome real-world imperfections in packaging.\nCrucially, these new capabilities did not compromise efficiency. Throughput has increased alongside versatility. Helix’s average handling time per package dropped from roughly 5.0 seconds on a simplified set of packages to 4.31 seconds, even as the task got harder with new package types. This speed-up brings performance closer to human operator speeds. Likewise, barcode orientation success climbed to ~95%. Together, these improvements indicate a more dexterous and reliable system, one that can approach human-level speed and accuracy across a broad spectrum of real-world parcels.\nArchitectural Enhancements to Helix’s Visuo-Motor Policy\nMany of the above gains were enabled by targeted improvements to Helix’s System 1 visuo-motor policy. Over the past two months, we introduced new modules for memory and sensing that make the control policy more context-aware and robust. These enhancements allow Helix to better perceive the state of the world over time and feel what it’s doing, complementing the vision and control foundation established in the initial deployment. Here we detail each improvement and how it contributes to Helix’s logistics performance.\nVision Memory\nHelix’s policy now maintains a short-term visual memory of its environment, rather than acting only on instantaneous camera frames. Concretely, the model is equipped with a module that composes features from a s",
@@ -26,14 +26,14 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 81311,
-    "processed_at": "2025-09-10T09:08:29.685124"
+    "content_length": 81307,
+    "processed_at": "2025-09-10T11:41:35.374601"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/botq",
     "key_url": "https://figure.ai/news/botq",
-    "page_type": "product",
+    "page_type": "news",
     "content_hash": "7e24f0941412ab7fc2880ed31abc2c0f9653bc4621be30ed562f09d41d5903b4",
     "normalized_text_len": 8587,
     "extracted_text_preview": "Introducing BotQ\nIntroducing BotQ, Figure’s new high-volume manufacturing facility for humanoid robots. BotQ’s first generation manufacturing line will be capable of manufacturing up to 12,000 humanoids per year. This is just the start and we will be scaling up considerably from here. Over the past eight months, the Figure hardware and manufacturing engineering teams have been building an efficient and scalable manufacturing process from the ground up, and we’re excited to share our progress to date.\nVertically Integrated Manufacturing: Figure has made the decision to bring the manufacturing of our humanoid robots in-house to control the build process, quality, and guarantee that we will deliver a high-functioning robot to market.\nBuilding Software Infrastructure: For the last six months, we’ve been building the underlying software infrastructure that can support volume manufacturing (MES, PLM, ERP, WMS).\nRobots Building Robots: Figure’s humanoid robots will be used in our manufacturing process to build other humanoid robots. This will take place this year. We project that the number of our humanoid robots involved will grow substantially over time to increase line automation.\nOur Roadmap To Scalable Manufacturing\nRethinking the robot architecture\nAchieving high production rate starts at the early stage of engineering design. After building and internally manufacturing Figure 02, the team recorded and analyzed cycle times for every process, from part fabrication to final assembly. The largest driver of assembly time started at the root: part count and manufacturing processes. Figure 02 was designed as a prototype and extensively used high complexity, tight tolerance, slow computer numerical control (CNC) machining processes. While CNC from billet is a great process for prototyping and holds value for high tolerance components, it does not scale well when trying to drastically reduce both part costs and time to make components. Part count was also heavily considered - if you have to join two parts, it takes time to perform that operation. Instead, if you can combine many parts into one, the cycle time goes down.\nWe have since completed the design of our next-generation robot, Figure 03, which is our production robot built for affordability and high-volume manufacturing. In order to achieve production manufacturing rates, we switched to tooled processes such as injection molding, diecasting, metal injection molding and stamping which enabled us to save thousands of hours on manufacturing. Parts that previously spent over a week on a CNC machine can now be manufactured in under 20 seconds with complex steel molds. Switching to these processes comes with a high capital cost, but the upfront investment is made back quickly when considering our robot volumes for 2025 and beyond. Rethinking the robot architecture also led us to stand up two new teams - a safety team and a reliability team.\nIn addition to manufacturing at high rates, we are also ramping up our focus on robot reliability. The reliability team, located at BotQ, is in charge of running highly accelerated lifecycle tests to help us understand the lifespan of the robot. The reliability team needs specialized equipment, including high temperature ovens, dedicated actuator testers, and failure analysis equipment to understand root cause failures. Using this data, we can inform the robot designers of improvements needed to ensure our reliability metrics are met.\nBuilding the supply chain\nHumanoid robots, unlike most other industries, do not have well established supply chains with various tiers of manufacturers building modules of the system. This has ultimately led us to design almost the entire robot from scratch including the actuators, motors, sensors, battery pack, and electronics. The lack of a mature supply chain has been one of the biggest hurdles our team has faced when defining how parts would be made and where. What would we vertically integrate, what would we choose to tackle in house? We made the decision to focus heavily on the assembly of our core technology in-house (actuators, hands, batteries, final assembly) and when needed, leverage outside vendors for piece part manufacturing. In addition, we hired a team of world-class global supply managers to help form strong partnerships with vendors who have the expertise to produce our complex components. Our robot has over 3 dozen unique commodities, many of which require unique processes such as motor winding, flexible OLED screens, or precise optical designs. All of our external partners were selected to be able to scale with us: our supply chain can easily scale to 100,000 robots or 3,000,000 actuators in the next four years.\nBuilding the manufacturing team\nThe next organization that we needed to develop was the manufacturing team. Over the last six months, we’ve hired experts who spent their careers designing lines, optimizing those lines and understanding how to optimize the process of turn",
@@ -41,11 +41,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 52406,
-    "processed_at": "2025-09-10T09:08:29.591044"
+    "content_length": 52408,
+    "processed_at": "2025-09-10T11:41:35.348549"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/helix-logistics",
     "key_url": "https://figure.ai/news/helix-logistics",
     "page_type": "news",
@@ -56,11 +56,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 91922,
-    "processed_at": "2025-09-10T09:08:30.149003"
+    "content_length": 91908,
+    "processed_at": "2025-09-10T11:41:36.117876"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/f-03-battery-development",
     "key_url": "https://figure.ai/news/f-03-battery-development",
     "page_type": "product",
@@ -71,11 +71,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 61666,
-    "processed_at": "2025-09-10T09:08:29.985040"
+    "content_length": 61662,
+    "processed_at": "2025-09-10T11:41:35.975744"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/master-plan",
     "key_url": "https://figure.ai/master-plan",
     "page_type": "pricing",
@@ -86,14 +86,14 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 61537,
-    "processed_at": "2025-09-10T09:08:30.179179"
+    "content_length": 61531,
+    "processed_at": "2025-09-10T11:41:36.144178"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/reinforcement-learning-walking",
     "key_url": "https://figure.ai/news/reinforcement-learning-walking",
-    "page_type": "product",
+    "page_type": "other",
     "content_hash": "629af3f18a11f837209bc5e05ec2fd55ac5bcbfec0375a4dc98cd64d845aab3b",
     "normalized_text_len": 5018,
     "extracted_text_preview": "Introducing Learned Natural Walking\nWe are excited to introduce our end-to-end neural network, trained with reinforcement learning (RL), for humanoid locomotion.\nLeveraging Reinforcement Learning: RL uses trial-and-error in simulation to teach Figure 02 humanoid robot how to walk like a human.\nTrained in Simulation: Our robot learns to walk similar to a human via a high fidelity physics simulator. We simulate years of data in only a few hours.\nSim-to-Real Transfer: By combining domain randomization in simulation with high-frequency torque feedback on the robot, policies trained in sim transfer zero-shot to real hardware without additional tuning.\nOur Approach\nReinforcement Learning (RL) is an AI approach where a controller learns through trial and error, optimizing behaviors based on a reward signal.\nFigure trained our RL controller in high-fidelity simulations, running thousands of virtual humanoids with varied parameters and scenarios. This diverse exposure allows our trained policy to transfer directly (“zero-shot”) from simulation to Figure 02 robots, providing robust and human-like walking. Figure’s RL-driven training shortens development cycles and consistently delivers robust real-world performance.\nBelow we will dive into engineering our robots to walk like humans, the training process in simulation, and how we zero-shot to the real robot.\nReinforcement Learning Training\nWe trained our new walking controller fully in a GPU accelerated physics simulation using reinforcement learning, collecting years worth of simulated demonstrations in a few hours.\nIn our simulator, thousands of Figure 02 robots are simulated in parallel, each with unique physical parameters. These robots are then exposed to a wide range of scenarios they might encounter, and a single neural network policy learns to operate them all. This includes encountering various terrains, changes in actuator dynamics, and responses to trips, slips, and shoves.\nEngineering Robots That Walk Like Humans\nThe benefit of a humanoid robot is one general hardware platform that can do human-like applications. And over time, we want our robot to move more like a human through the world.\nA policy learned using RL might converge to sub-optimal control strategies that do not capture the stylistic attributes that define human walking. This includes walking with a human-like gait, with heel-strikes, toe-offs and arm-swing synchronized with leg movement. We inject this preference into our learning framework by rewarding the robot to mimic human walking reference trajectories. These trajectories establish a prior over the walking styles the policy is allowed to generate, while additional reward terms optimize for velocity tracking, power consumption and robustness to external perturbations and variations in terrain.\nSim-to-Real Transfer\nThe final step is getting the policy out of simulation and into a real humanoid robot. A simulated robot is, at best, only an approximation of a high-dimensional electro-mechanical system, and a policy trained in simulation is guaranteed to work only on these simulated robots.\nTo bridge this “sim-to-real gap” we use a combination of domain randomization in simulation and a kHz-rate torque feedback control on the robot. Domain randomization bridges the sim-to-real gap by randomizing the physical properties of each robot, simulating a breadth of systems the policy may have to run on. This helps the policy to generalize zero-shot to a physical robot without any additional fine-tuning.\nWe additionally run the policy output through kHz-rate closed-loop torque control to compensate for errors in actuator modeling. The policy is robust to robot-to-robot variations, changes in surface friction and external pushes, producing repeatable human-like walking across the entire fleet of Figure 02 robots. This is highly encouraging, as it indicates our technology can scale effectively across the entire fleet, without any additional engineering effort, supporting broader commercial operations.\nHere you can see 10 Figure 02 robots that are all operating on the same RL neural network with no tweaks or changes. This gives us hope this process can scale to thousands of Figure robots in the near future.\nConclusion\nWe have presented a natural walking controller learned purely in simulation using end-to-end reinforcement learning. This enables the fleet of Figure robots to quickly learn robust, proprioceptive locomotion strategies and enables rapid engineering iteration cycles.\nThese initial results are exciting, but we believe they only hint at the full potential of our technology. We’re committed to extending our learned policy to handle every human-like scenario the robot might face in the real world. If you’re intrigued by the possibilities of scaling reinforcement learning and the future of dexterous humanoid robotics, we invite you to join us on this journey.\nConsider joining our team to help scale Embodied AI to millions of robots. Check out ou",
@@ -101,11 +101,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 43387,
-    "processed_at": "2025-09-10T09:08:30.194831"
+    "content_length": 43381,
+    "processed_at": "2025-09-10T11:41:36.066666"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/helix-learns-to-fold-laundry",
     "key_url": "https://figure.ai/news/helix-learns-to-fold-laundry",
     "page_type": "news",
@@ -116,11 +116,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 35834,
-    "processed_at": "2025-09-10T09:08:29.944190"
+    "content_length": 35830,
+    "processed_at": "2025-09-10T11:41:36.086281"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news/helix-loads-the-dishwasher",
     "key_url": "https://figure.ai/news/helix-loads-the-dishwasher",
     "page_type": "news",
@@ -132,10 +132,10 @@
     "fetch_status": 200,
     "content_type": "text/html",
     "content_length": 34077,
-    "processed_at": "2025-09-10T09:08:29.482943"
+    "processed_at": "2025-09-10T11:41:35.386172"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/about-us",
     "key_url": "https://figure.ai/about-us",
     "page_type": "company",
@@ -146,11 +146,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 52255,
-    "processed_at": "2025-09-10T09:08:29.574712"
+    "content_length": 52253,
+    "processed_at": "2025-09-10T11:41:35.515569"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/",
     "key_url": "https://figure.ai/",
     "page_type": "product",
@@ -161,11 +161,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 152578,
-    "processed_at": "2025-09-10T09:08:29.557086"
+    "content_length": 152580,
+    "processed_at": "2025-09-10T11:41:35.320136"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/news",
     "key_url": "https://figure.ai/news",
     "page_type": "product",
@@ -176,11 +176,11 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 38591,
-    "processed_at": "2025-09-10T09:08:29.606182"
+    "content_length": 38589,
+    "processed_at": "2025-09-10T11:41:35.531382"
   },
   {
-    "fingerprint_session_id": 6,
+    "fingerprint_session_id": 9,
     "url": "https://figure.ai/ai",
     "key_url": "https://figure.ai/ai",
     "page_type": "product",
@@ -191,7 +191,7 @@
     "needs_render": false,
     "fetch_status": 200,
     "content_type": "text/html",
-    "content_length": 144601,
-    "processed_at": "2025-09-10T09:08:29.723712"
+    "content_length": 144603,
+    "processed_at": "2025-09-10T11:41:35.469375"
   }
 ]
