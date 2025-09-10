@@ -271,67 +271,6 @@ docker compose -f infra/docker-compose.yml config
 - **Database**: Use external database service for production
 - **Storage**: Use persistent volumes for data storage
 
-## 📋 Future Infrastructure Plans
-
-### Phase 1: Core Services ✅
-- [x] Backend service containerization
-- [x] Docker Compose orchestration
-- [x] Environment management
-
-### Phase 2: Database Integration (Planned)
-- [ ] PostgreSQL service
-- [ ] Database initialization scripts
-- [ ] Data persistence volumes
-
-### Phase 3: Frontend Integration (Planned)
-- [ ] Frontend service containerization
-- [ ] Nginx reverse proxy
-- [ ] Static file serving
-
-### Phase 4: Production Deployment (Planned)
-- [ ] Kubernetes manifests
-- [ ] CI/CD pipeline configuration
-- [ ] Monitoring and observability
-- [ ] SSL/TLS termination
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Port Already in Use**
-   ```bash
-   # Check what's using port 8000
-   lsof -i :8000
-   
-   # Kill process or change port in docker-compose.yml
-   ```
-
-2. **Container Won't Start**
-   ```bash
-   # Check logs for errors
-   docker compose -f infra/docker-compose.yml logs backend
-   
-   # Rebuild container
-   docker compose -f infra/docker-compose.yml build --no-cache backend
-   ```
-
-3. **Environment Variables Not Loading**
-   ```bash
-   # Verify .env file exists and has correct format
-   cat backend/.env
-   
-   # Check container environment
-   docker compose -f infra/docker-compose.yml exec backend env
-   ```
-
-4. **Network Issues**
-   ```bash
-   # Check Docker networks
-   docker network ls
-   
-   # Inspect network configuration
-   docker network inspect infra_default
-   ```
 
 ### Cleanup Commands
 
@@ -345,10 +284,3 @@ docker system prune -a
 # Remove specific service
 docker compose -f infra/docker-compose.yml rm -f backend
 ```
-
-## 📚 Additional Resources
-
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-- [Container Security](https://docs.docker.com/engine/security/)
-- [Production Deployment Guide](https://docs.docker.com/compose/production/)
