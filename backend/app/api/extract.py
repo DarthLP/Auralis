@@ -7,6 +7,8 @@ with progress tracking and error handling.
 
 import asyncio
 import logging
+import subprocess
+import os
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
@@ -31,6 +33,55 @@ from app.api.extract_stream import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/extract", tags=["extraction"])
+
+
+async def import_extraction_data_to_main_db(extraction_session_id: int, competitor: str):
+    """
+    Import extracted data into the main database using the add_extraction_data.py script.
+    """
+    try:
+        # Find the latest extraction files for this competitor
+        exports_dir = "/app/exports/extraction"
+        
+        # Look for Step2A (company) and Step2B (products) files
+        step2a_files = []
+        step2b_files = []
+        
+        if os.path.exists(f"{exports_dir}/Step2A"):
+            for file in os.listdir(f"{exports_dir}/Step2A"):
+                if competitor.replace(" ", "_").lower() in file.lower() and file.endswith(".json"):
+                    step2a_files.append(f"{exports_dir}/Step2A/{file}")
+        
+        if os.path.exists(f"{exports_dir}/Step2B"):
+            for file in os.listdir(f"{exports_dir}/Step2B"):
+                if competitor.replace(" ", "_").lower() in file.lower() and file.endswith(".json"):
+                    step2b_files.append(f"{exports_dir}/Step2B/{file}")
+        
+        if not step2a_files or not step2b_files:
+            logger.warning(f"No extraction files found for competitor {competitor}")
+            return
+        
+        # Use the most recent files (assuming they are sorted by timestamp)
+        company_file = sorted(step2a_files)[-1]
+        products_file = sorted(step2b_files)[-1]
+        
+        logger.info(f"Importing data from {company_file} and {products_file}")
+        
+        # Run the add_extraction_data.py script
+        result = subprocess.run([
+            "python", "/app/add_extraction_data.py",
+            "--company-file", company_file,
+            "--products-file", products_file
+        ], capture_output=True, text=True, cwd="/app")
+        
+        if result.returncode == 0:
+            logger.info(f"Successfully imported extraction data: {result.stdout}")
+        else:
+            logger.error(f"Failed to import extraction data: {result.stderr}")
+            
+    except Exception as e:
+        logger.error(f"Error importing extraction data: {e}")
+        raise
 
 
 # Request/Response Models
@@ -576,10 +627,17 @@ async def _run_batch_extraction_background(
         
         # Export data
         try:
-            await export_extraction_data(db, extraction_session_id)
+            export_extraction_data(extraction_session_id, extraction_session.competitor)
             logger.info(f"Exported extraction data for session {extraction_session_id}")
         except Exception as e:
             logger.error(f"Failed to export extraction data: {e}")
+        
+        # Import extracted data into main database
+        try:
+            await import_extraction_data_to_main_db(extraction_session_id, extraction_session.competitor)
+            logger.info(f"Imported extraction data to main database for session {extraction_session_id}")
+        except Exception as e:
+            logger.error(f"Failed to import extraction data to main database: {e}")
         
         processing_time = (datetime.utcnow() - start_time).total_seconds()
         logger.info(f"Batch extraction session {extraction_session_id} completed in {processing_time:.2f}s")

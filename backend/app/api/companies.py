@@ -31,6 +31,19 @@ def format_datetime_for_api(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
+def normalize_website_url(website: str) -> str:
+    """Normalize website URL by adding https:// protocol if missing."""
+    if not website:
+        return website
+    
+    # If it already has a protocol, return as-is
+    if website.startswith(('http://', 'https://')):
+        return website
+    
+    # Add https:// protocol
+    return f"https://{website}"
+
+
 @router.get("/")
 async def get_companies(
     db: Session = Depends(get_db),
@@ -74,7 +87,7 @@ async def get_companies(
                 "name": company.name,
                 "aliases": company.aliases or [],
                 "hq_country": company.hq_country,
-                "website": company.website,
+                "website": normalize_website_url(company.website),
                 "status": company.status,
                 "tags": company.tags or [],
                 "short_desc": getattr(company, 'short_desc', None),
@@ -121,7 +134,7 @@ async def get_extracted_companies(
                 "name": company.name,
                 "normalized_name": company.normalized_name,
                 "aliases": company.aliases or [],
-                "website": company.website,
+                "website": normalize_website_url(company.website),
                 "hq_country": company.hq_country,
                 "status": company.status,
                 "tags": company.tags or [],
@@ -157,7 +170,7 @@ async def get_company(company_id: str, db: Session = Depends(get_db)) -> dict:
             "name": company.name,
             "aliases": company.aliases or [],
             "hq_country": company.hq_country,
-            "website": company.website,
+            "website": normalize_website_url(company.website),
             "status": company.status,
             "tags": company.tags or [],
             "short_desc": getattr(company, 'short_desc', None),

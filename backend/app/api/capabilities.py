@@ -48,7 +48,7 @@ async def get_capabilities(
             capability_dict = {
                 "id": capability.id,
                 "name": capability.name,
-                "definition": capability.definition,
+                "definition": capability.definition or "",  # Convert null to empty string
                 "tags": capability.tags or []
             }
             result.append(capability_dict)
@@ -75,7 +75,7 @@ async def get_capability(capability_id: str, db: Session = Depends(get_db)) -> d
         return {
             "id": capability.id,
             "name": capability.name,
-            "definition": capability.definition,
+            "definition": capability.definition or "",  # Convert null to empty string
             "tags": capability.tags or []
         }
         
