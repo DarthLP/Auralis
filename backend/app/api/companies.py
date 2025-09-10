@@ -43,6 +43,23 @@ def normalize_website_url(website: str) -> str:
     return f"https://{website}"
 
 
+def normalize_company_status(raw_status: Optional[str]) -> str:
+    """Return a safe, canonical company status for API responses.
+
+    Frontend expects one of {'active', 'dormant'}. Historical rows may contain
+    null or unexpected values. Default to 'active' to avoid client-side
+    validation errors while keeping behavior predictable.
+    """
+    try:
+        value = (raw_status or "").strip().lower()
+    except Exception:
+        value = ""
+
+    if value in {"active", "dormant"}:
+        return value
+    return "active"
+
+
 @router.get("/")
 async def get_companies(
     db: Session = Depends(get_db),
@@ -87,7 +104,7 @@ async def get_companies(
                 "aliases": company.aliases or [],
                 "hq_country": company.hq_country,
                 "website": normalize_website_url(company.website),
-                "status": company.status,
+                "status": normalize_company_status(company.status),
                 "tags": company.tags or [],
                 "short_desc": getattr(company, 'short_desc', None),
                 "logoUrl": company.logo_url,
@@ -100,6 +117,54 @@ async def get_companies(
         
     except Exception as e:
         logger.error(f"Error retrieving companies: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.delete("/{company_id}")
+async def delete_company(company_id: str, db: Session = Depends(get_db)) -> dict:
+    """
+    Delete a company and cascade related data (products, product_capabilities, summaries).
+    Returns a summary of deleted counts.
+    """
+    try:
+        company = db.query(Company).filter(Company.id == company_id).first()
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+
+        # Count and delete product_capabilities → products
+        products = db.query(Product).filter(Product.company_id == company_id).all()
+        product_ids = [p.id for p in products]
+
+        deleted_pc = 0
+        if product_ids:
+            deleted_pc = db.query(Product.__table__.metadata.tables['product_capabilities']).filter(
+                Product.__table__.metadata.tables['product_capabilities'].c.product_id.in_(product_ids)
+            ).delete(synchronize_session=False)
+
+        deleted_products = db.query(Product).filter(Product.company_id == company_id).delete(synchronize_session=False)
+
+        # Delete summaries
+        deleted_summaries = db.query(CompanySummary).filter(CompanySummary.company_id == company_id).delete(synchronize_session=False)
+
+        # Delete company
+        deleted_companies = db.query(Company).filter(Company.id == company_id).delete(synchronize_session=False)
+
+        db.commit()
+
+        return {
+            "deleted": {
+                "companies": int(deleted_companies or 0),
+                "products": int(deleted_products or 0),
+                "product_capabilities": int(deleted_pc or 0),
+                "summaries": int(deleted_summaries or 0)
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting company {company_id}: {e}")
+        db.rollback()
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -135,7 +200,7 @@ async def get_extracted_companies(
                 "aliases": company.aliases or [],
                 "website": normalize_website_url(company.website),
                 "hq_country": company.hq_country,
-                "status": company.status,
+                "status": normalize_company_status(company.status),
                 "tags": company.tags or [],
                 "short_desc": company.short_desc,
                 "competitor": company.competitor,
@@ -170,7 +235,7 @@ async def get_company(company_id: str, db: Session = Depends(get_db)) -> dict:
             "aliases": company.aliases or [],
             "hq_country": company.hq_country,
             "website": normalize_website_url(company.website),
-            "status": company.status,
+            "status": normalize_company_status(company.status),
             "tags": company.tags or [],
             "short_desc": getattr(company, 'short_desc', None),
             "logoUrl": company.logo_url,

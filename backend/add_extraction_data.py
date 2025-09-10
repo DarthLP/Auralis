@@ -16,9 +16,10 @@ from sqlalchemy.exc import IntegrityError
 sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 
 from app.core.config import settings
+# Ensure signal association tables are registered in SQLAlchemy metadata BEFORE importing Company
+from app.models import signal as _signal_models  # noqa: F401
 from app.models.company import Company
 from app.models.product import Product, ProductCapability, Capability
-from app.models.signal import Release
 
 def get_db_session():
     """Create a database session."""

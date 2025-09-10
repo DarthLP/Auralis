@@ -1,7 +1,8 @@
 """
-Theta EdgeCloud client for DeepSeek-R1 inference with structured output support.
+Theta EdgeCloud client for a dedicated Llama (OpenAI-compatible) deployment with
+structured output support.
 
-Implements JSON mode, rate limiting, caching, retry logic, and circuit breaker
+Implements JSON mode, rate limiting, caching, retry logic, and a circuit breaker
 for reliable AI extraction at scale.
 """
 
@@ -21,6 +22,8 @@ from fastapi import Depends
 
 from app.core.config import settings
 from app.core.db import get_db
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -122,8 +125,10 @@ class ThetaClient:
     
     def __init__(self, db_session: Session):
         self.db = db_session
+        # Default to Theta OnDemand root; supports both OnDemand and OpenAI-compatible endpoints
         self.base_url = settings.LLAMA_ENDPOINT or "https://ondemand.thetaedgecloud.com"
-        self.model = settings.LLAMA_MODEL or "deepseek_r1"
+        # Default to a reasonable Llama instruct model name if not configured
+        self.model = settings.LLAMA_MODEL or "meta-llama/Llama-3.1-70B-Instruct"
         self.timeout = settings.THETA_REQUEST_TIMEOUT
         self.max_retries = settings.THETA_MAX_RETRIES
         
@@ -234,7 +239,7 @@ class ThetaClient:
                 session_limiter.consume()  # Should succeed now
     
     def _build_request_payload(self, prompt: str, use_json_mode: bool = True) -> Dict[str, Any]:
-        """Build request payload for OpenAI-compatible chat completions endpoint."""
+        """Build request payload, adapting to Theta OnDemand or OpenAI-compatible APIs."""
         messages = [
             {
                 "role": "system",
@@ -246,6 +251,20 @@ class ThetaClient:
             }
         ]
         
+        is_theta_ondemand = "ondemand.thetaedgecloud.com" in (self.base_url or "")
+        if is_theta_ondemand:
+            # Theta OnDemand expects an "input" wrapper and a different route
+            return {
+                "input": {
+                    "messages": messages,
+                    "max_tokens": settings.THETA_MAX_OUTPUT_TOKENS,
+                    "temperature": settings.LLM_TEMPERATURE,
+                    "top_p": settings.LLM_TOP_P,
+                    "stream": False
+                }
+            }
+        
+        # OpenAI-compatible payload
         payload: Dict[str, Any] = {
             "model": self.model,
             "messages": messages,
@@ -254,19 +273,23 @@ class ThetaClient:
             "top_p": settings.LLM_TOP_P
         }
         
-        # Add JSON mode if supported and requested
         if use_json_mode and settings.THETA_JSON_MODE:
             payload["response_format"] = {"type": "json_object"}
-            
         return payload
     
     async def _make_request(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Make HTTP request to Theta EdgeCloud."""
         headers = {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + settings.ON_DEMAND_API_ACCESS_TOKEN
         }
         
-        url = f"{self.base_url}/chat/completions"
+        # Route selection: Theta OnDemand vs OpenAI-compatible
+        if "ondemand.thetaedgecloud.com" in (self.base_url or ""):
+            # Note: model id path component corresponds to deployed model; default to Llama 3.1 70B
+            url = f"{self.base_url.rstrip('/')}/infer_request/llama_3_1_70b/completions"
+        else:
+            url = f"{self.base_url.rstrip('/')}/chat/completions"
         
         try:
             response = await self.client.post(url, json=payload, headers=headers)

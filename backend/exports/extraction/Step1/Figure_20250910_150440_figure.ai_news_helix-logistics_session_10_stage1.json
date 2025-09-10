@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-09-10T15:04:40.952691",
+  "session_id": "10",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix-logistics",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Vision-Language-Action (VLA) model\nCATEGORY: AI model\nFEATURES: unifies perception, language understanding, and learned control\nCAPABILITIES: enables robots to learn from human demonstrations and adapt to new tasks\nUSERS: logistics and industrial applications\nMARKETS: logistics and industrial sectors\nINTEGRATIONS: can be integrated with various robots and systems\nPRICING: not specified\nSTAGE: active development\nLINKS: https://figure.ai/news/helix-logistics\nNOTE: used for logistics package manipulation and triaging"
+      },
+      "Figure Robots": {
+        "text": "WHAT: humanoid robots\nCATEGORY: robots\nFEATURES: designed for logistics and industrial applications\nCAPABILITIES: can perform tasks that require human-level speed, precision, and adaptability\nUSERS: logistics and industrial sectors\nMARKETS: logistics and industrial sectors\nINTEGRATIONS: can be integrated with Helix VLA model\nPRICING: not specified\nSTAGE: active development\nLINKS: https://figure.ai/news/helix-logistics\nNOTE: designed for use in logistics and industrial applications"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nPOSITIONING: bringing humanoid robots into the workforce\nINDUSTRIES: AI, robotics, logistics\nCUSTOMERS: not specified\nPARTNERS: not specified\nCOMPLIANCE: not specified\nLINKS: https://figure.ai/news/helix-logistics\nNOTE: focused on embodied AI and industrial applications"
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix-logistics"
+    }
+  },
+  "prompt_length": 10610,
+  "response_size": 1474
+}

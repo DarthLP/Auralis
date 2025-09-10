@@ -154,7 +154,7 @@ class TestAIExtractor:
                     "content_hash": "abc123",
                     "page_type": "product",
                     "method": "ai",
-                    "ai_model": "deepseek_r1",
+                    "ai_model": "meta-llama/Llama-3.1-70B-Instruct",
                     "extracted_at": "2024-01-15T10:00:00Z",
                     "confidence": 0.85
                 }

@@ -265,7 +265,7 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 - **Source Tracking**: Full provenance of extracted data with confidence scores
 
 **AI-Powered Page Scoring:**
-- **Intelligent Classification**: DeepSeek analyzes page content to determine relevance for competitive analysis
+- **Intelligent Classification**: Llama analyzes page content to determine relevance for competitive analysis
 - **Comprehensive Scoring**: Pages scored 0.0-1.0 based on business value, technical depth, and competitive intelligence potential
 - **Category Detection**: Automatically classifies pages as product, pricing, datasheet, news, company, or other
 - **Signal Extraction**: Identifies specific signals like product_specs, pricing_info, technical_details, competitive_intel
@@ -800,9 +800,9 @@ Combines multiple Stage 1 results into final structured entities:
 - Creates final product objects with nested capabilities
 
 **Model Configuration:**
-- **Model**: DeepSeek-R1 via Theta EdgeCloud
-- **Context**: 128k tokens (~500k characters)
-- **Output**: 8k tokens (conservative for Qwen 7B)
+- **Model**: Llama 3.1 70B Instruct via Theta EdgeCloud (OpenAI-compatible)
+- **Context**: 128k tokens
+- **Output**: 8k tokens
 - **Temperature**: 0.1 (very low for consistency)
 - **JSON Mode**: Provider-enforced structured output
 

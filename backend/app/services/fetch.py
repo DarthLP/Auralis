@@ -9,12 +9,13 @@ import os
 import random
 import re
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Set
 from urllib.parse import urljoin, urlparse, urlunparse
 from urllib.robotparser import RobotFileParser
 
 import requests
 from bs4 import BeautifulSoup
+import gzip
 
 # Import Playwright for JavaScript support
 try:
@@ -282,46 +283,141 @@ def get_robots_txt(base_url: str) -> Dict[str, List[str]]:
         return {'allow': [], 'disallow': []}
 
 
-def get_sitemap_urls(base_url: str) -> List[str]:
+def get_sitemap_urls(base_url: str, visited: Optional[Set[str]] = None, depth: int = 0, max_depth: int = 5) -> List[str]:
     """
     Fetch sitemap.xml and extract URLs.
     
     Args:
-        base_url: Base URL of the site
+        base_url: Either the base domain (e.g., https://example.com) or a direct sitemap URL
+        visited: Internal set to avoid revisiting the same sitemap URLs (prevents cycles)
+        depth: Current recursion depth (internal)
+        max_depth: Maximum allowed depth for nested sitemap indexes
         
     Returns:
         List of URLs found in sitemap
     """
-    sitemap_url = urljoin(base_url, '/sitemap.xml')
+    # Initialize visited set
+    if visited is None:
+        visited = set()
+    
+    # Determine the actual sitemap URL: if the input already looks like a sitemap, use as-is
+    try:
+        parsed = urlparse(base_url)
+        path_lower = (parsed.path or '').lower()
+        looks_like_sitemap = (
+            path_lower.endswith('.xml') or path_lower.endswith('.xml.gz') or 'sitemap' in path_lower
+        )
+        sitemap_url = base_url if looks_like_sitemap else urljoin(base_url, '/sitemap.xml')
+    except Exception:
+        # Fallback to original behavior on any parsing error
+        sitemap_url = urljoin(base_url, '/sitemap.xml')
+    
+    # Helper to normalize sitemap URLs to a scheme-agnostic, www-less key
+    def _sitemap_key(u: str) -> str:
+        try:
+            p = urlparse(u)
+            netloc = p.netloc.lower()
+            if netloc.startswith('www.'):
+                netloc = netloc[4:]
+            path = p.path or '/sitemap.xml'
+            if path == '' or path == '/':
+                path = '/sitemap.xml'
+            return f"{netloc}{path}"
+        except Exception:
+            return u
+    
+    current_key = _sitemap_key(sitemap_url)
+    
+    # Stop if we've seen this sitemap already (prevents infinite loops on self/cyclic references)
+    if current_key in visited:
+        return []
+    visited.add(current_key)
+    
+    # Enforce a reasonable maximum depth to avoid excessive recursion on deeply nested indexes
+    if depth >= max_depth:
+        logger.warning(f"Sitemap index depth exceeded for {sitemap_url} (depth={depth}, max={max_depth})")
+        return []
     
     try:
         response = requests.get(sitemap_url, timeout=10)
         if response.status_code != 200:
+            logger.debug(f"Sitemap fetch non-200: url={sitemap_url} status={response.status_code}")
             return []
             
-        soup = BeautifulSoup(response.content, 'xml')
-        urls = []
+        raw_content = response.content or b''
+        # Detect and decompress gzip by magic header
+        if len(raw_content) >= 2 and raw_content[:2] == b'\x1f\x8b':
+            try:
+                raw_content = gzip.decompress(raw_content)
+                logger.debug(f"Sitemap gzip decompressed: url={sitemap_url} bytes={len(raw_content)}")
+            except Exception as gz_e:
+                logger.debug(f"Sitemap gzip decompress failed: url={sitemap_url} err={gz_e}")
+        
+        logger.debug(f"Sitemap fetch ok: url={sitemap_url} depth={depth} visited={len(visited)} bytes={len(raw_content)}")
+        
+        # Parse XML with defensive fallback on recursion errors
+        try:
+            soup = BeautifulSoup(raw_content, 'xml')
+        except RecursionError as re_err:
+            logger.warning(f"XML parser recursion on sitemap: url={sitemap_url} err={re_err}. Falling back to regex extraction.")
+            # Fallback: extract <loc> values via regex
+            try:
+                import re as _re
+                loc_bytes = _re.findall(b'<loc[^>]*>(.*?)</loc>', raw_content, flags=_re.IGNORECASE | _re.DOTALL)
+                urls = []
+                for lb in loc_bytes:
+                    try:
+                        urls.append(lb.decode('utf-8', errors='replace').strip())
+                    except Exception:
+                        pass
+                # Dedup and cap
+                seen_fallback: Set[str] = set()
+                deduped_fallback: List[str] = []
+                for u in urls:
+                    if u and u not in seen_fallback:
+                        seen_fallback.add(u)
+                        deduped_fallback.append(u)
+                logger.debug(f"Sitemap regex extracted {len(deduped_fallback)} URLs: url={sitemap_url}")
+                return deduped_fallback[:100]
+            except Exception as rex_e:
+                logger.debug(f"Sitemap regex extraction failed: url={sitemap_url} err={rex_e}")
+                return []
+        urls: List[str] = []
         
         # Handle sitemap index files
+        is_index = soup.find('sitemapindex') is not None
         sitemap_tags = soup.find_all('sitemap')
-        if sitemap_tags:
+        if is_index and sitemap_tags:
             for sitemap in sitemap_tags[:5]:  # Limit to first 5 sitemaps
                 loc = sitemap.find('loc')
                 if loc:
-                    sub_urls = get_sitemap_urls(loc.text)
-                    urls.extend(sub_urls)
+                    next_url = (loc.text or '').strip()
+                    next_key = _sitemap_key(next_url)
+                    # Skip if same as current or already visited
+                    if next_url and next_key not in visited:
+                        sub_urls = get_sitemap_urls(next_url, visited=visited, depth=depth + 1, max_depth=max_depth)
+                        urls.extend(sub_urls)
+        logger.debug(f"Sitemap index={is_index} sitemaps_found={len(sitemap_tags)} urls_in_index_accum={len(urls)} url={sitemap_url}")
         
         # Handle direct URL entries
         url_tags = soup.find_all('url')
         for url_tag in url_tags:
             loc = url_tag.find('loc')
-            if loc:
-                urls.append(loc.text)
-                
-        return urls[:100]  # Cap at 100 URLs to prevent overload
+            if loc and loc.text:
+                urls.append(loc.text.strip())
+        logger.debug(f"Sitemap urlset urls_found={len(url_tags)} total_urls={len(urls)} url={sitemap_url}")
+        
+        # Deduplicate while preserving order, then cap to prevent overload
+        seen: Set[str] = set()
+        deduped: List[str] = []
+        for u in urls:
+            if u and u not in seen:
+                seen.add(u)
+                deduped.append(u)
+        return deduped[:100]
         
     except Exception as e:
-        logger.warning(f"Could not fetch sitemap from {sitemap_url}: {e}")
+        logger.exception(f"Could not fetch sitemap from {sitemap_url}: {e}")
         return []
 
 

@@ -94,14 +94,15 @@ CRITICAL RULES
   - If product ownership/partner status is unclear, still include and explain in NOTE.
   - Omit bullets if info not present.
   - Preserve exact wording for names, specs, numbers, certifications.
+  - If you are not sure about the product name mention it in the NOTE of that product.
 
 FORMATTING
   - All details are newline-bulleted strings.
   - Each bullet starts with a fixed LABEL + ": ".
-  - Allowed product labels: WHAT, CATEGORY, FEATURES, CAPABILITIES (high-level abilities / what the product enables, broader than individual features), USERS, MARKETS, INTEGRATIONS, PRICING, STAGE (alpha, beta, ga, discontinued), SPECS, COMPLIANCE, LINKS, LIMITATIONS (explicit constraints, requirements, or drawbacks), ALIASES, RELEASEDATE, NOTE (caveats not captured elsewhere, e.g. partner product, ownership unclear, image-only info)
+  - Allowed product labels: WHAT, CATEGORY, FEATURES, CAPABILITIES (high-level abilities / what the product enables, broader than individual features), USERS, MARKETS, INTEGRATIONS, PRICING, STAGE (alpha, beta, ga, discontinued), SPECS (e.g. weight, dimensions, repeatability, etc.), COMPLIANCE, LINKS, LIMITATIONS (explicit constraints, requirements, or drawbacks), ALIASES, RELEASEDATE, NOTE (caveats not captured elsewhere, e.g. partner product, ownership unclear, image-only info)
   - Allowed company labels:  WHAT, NAME, ALIASES, CONTACT, LOCATION, POSITIONING (how the company describes itself / value proposition), INDUSTRIES, CUSTOMERS, PARTNERS, COMPLIANCE, LINKS, NOTE (caveats not captured elsewhere)
 
-OUTPUT EXAMPLE
+OUTPUT SCHEMA:
 {{
   "products": {{
     "Product A": {{
@@ -138,7 +139,7 @@ Return JSON ONLY.
         company_items_json = json.dumps(company_items, ensure_ascii=False, indent=2)
         
         prompt = f"""
-You are a strict normalizer. Consolidate company information from multiple Stage-1 page outputs. All the company information should be from the same company - if there are multiple companies, focus on the main one.
+You are a strict normalizer. Consolidate company information from multiple Stage-1 page outputs and merge the information. All the company information should be from the SAME company.
 
 Input format:
   - "company_id": string (already determined earlier; use as-is)
@@ -155,6 +156,8 @@ CRITICAL RULES
   - If inputs disagree, choose the clearest official info and add a short note in company.notes.
   - If a field is unsupported by inputs, set it to null (or [] for arrays).
   - Extract ALL company information that fit the schema.
+  - Extract information ONLY from the main company if there are multiple companies mentioned (the main company should be in line with the URL link).
+  - Do not add any other field names to the output than the ones in the proposed output schema.
 
 EXTRACTION
   - name: canonical NAME (prefer homepage/about/contact/legal over blog/press).
@@ -167,7 +170,7 @@ EXTRACTION
   - main_sources_used: include 3–6 URLs actually relied on.
   - notes: optional short conflict/caveat notes.
 
-OUTPUT EXAMPLE
+OUTPUT SCHEMA (including example text):
 {{
   "company": {{
     "short_desc": "AI-powered cloud platform for enterprise automation and data analytics.",
@@ -218,15 +221,9 @@ Input format:
 CRITICAL RULES
   - Output JSON ONLY (no markdown, no commentary).
   - Use ONLY facts present in Stage-1 product text (no invention).
-  - Extract ALL products. Each distinct product becomes its own key: <Exact Product Name A>, <Exact Product Name B>, ... up to 20. If >20 exist, include the 20 most prominent (prioritize official/core over incidental mentions).
+  - Extract ALL products that the company (do not mention products that are not from the company). Each distinct product becomes its own key: <Exact Product Name A>, <Exact Product Name B>, ... up to 20. If >20 exist, include the 20 most prominent (prioritize official/core over incidental mentions).
   - If no products are supported by inputs, return "products": {{}}.
   - Unknown/missing fields → null, [], or {{}} as appropriate.
-
-DEDUP & MERGE
-  - Identify duplicate products and merge information for matched products across items.
-  - Conflict resolution:
-    - STAGE: choose most conservative (alpha < beta < ga). Any explicit "discontinued" wins.
-    - CATEGORY: choose the most specific, concise phrasing.
 
 EXTRACTION (bullet → field mapping)
   - WHAT → short_desc (concise; keep useful brand phrasing)
@@ -251,15 +248,18 @@ EXTRACTION (bullet → field mapping)
   - LIMITATIONS → specs["limitations"]
   - NOTE → notes
 
-FORMATTING
+FORMATTING RULES
   - Per product include:
     - sources: ["https://...", "https://..."] (URLs actually used for that product)
 
-VOLUME & SELECTION
-  - If near-duplicate names resolve to the same product, merge under the most exact on-page name.
-  - Prefer official product pages over incidental mentions when choosing URLs.
+VOLUME & SELECTION RULES
+  - Unify duplicates/merge related info: 
+    - Merge related info across items: If information refers to the same product, combine them into one entry!
+    - If product names are near-duplicates (e.g., variations, abbreviations), consolidate them under the exact name used on the official page.
+      - Conflict resolution: 1. STAGE: choose most conservative (alpha < beta < ga). Any explicit "discontinued" wins. 2. CATEGORY: choose the most specific, concise phrasing.
+  - Prioritize sources: When multiple URLs are available, prefer the official product page over incidental mentions, blog posts, or third-party references.
 
-OUTPUT EXAMPLE
+OUTPUT SCHEMA (including example text):
 {{
   "products": {{
     "Exact Product Name A": {{

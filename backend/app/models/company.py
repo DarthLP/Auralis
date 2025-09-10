@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.core.db import Base
+from app.models.signal import signal_companies  # ensure association table is registered
 
 
 class Company(Base):
@@ -34,7 +35,7 @@ class Company(Base):
     # Relationships
     summaries = relationship("CompanySummary", back_populates="company")
     products = relationship("Product", back_populates="company")
-    signals = relationship("Signal", secondary="signal_companies", back_populates="companies")
+    signals = relationship("Signal", secondary=signal_companies, back_populates="companies")
 
 
 class CompanySummary(Base):

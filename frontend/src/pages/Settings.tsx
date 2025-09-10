@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { formatDate, getCommonTimezones, getBrowserTimezone } from '../lib/date';
-import { generateInitials, generateAvatarColor } from '../lib/avatar';
+import { generateInitials, getAvatarStyle } from '../lib/avatar';
 import { UserPreferences } from '../types/user';
 
 export default function Settings() {
@@ -56,7 +56,6 @@ export default function Settings() {
   if (!user) return null;
 
   const initials = generateInitials(user.name);
-  const avatarColor = generateAvatarColor(user.name);
 
   return (
     <div className="max-w-4xl mx-auto py-8">
@@ -73,7 +72,7 @@ export default function Settings() {
           <div className="space-y-6">
             {/* Avatar */}
             <div className="flex items-center space-x-4">
-              <div className={`w-16 h-16 ${avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-lg`}>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-semibold text-lg" style={getAvatarStyle(user.name)}>
                 {initials}
               </div>
               <div>
@@ -109,7 +108,7 @@ export default function Settings() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Joined</label>
               <input
                 type="text"
-                value={formatDate(user.joinedAt, { timezone: preferences.timezone, format: preferences.dateFormat })}
+                value={formatDate(user.joinedAt)}
                 disabled
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
               />
@@ -164,7 +163,7 @@ export default function Settings() {
                 <option value="yyyy-MM-dd">yyyy-MM-dd (e.g., 2024-01-15)</option>
               </select>
               <p className="text-sm text-gray-500 mt-1">
-                Preview: {formatDate(new Date(), { timezone: preferences.timezone, format: preferences.dateFormat })}
+                Preview: {formatDate(new Date())}
               </p>
             </div>
 

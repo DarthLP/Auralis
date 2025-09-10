@@ -318,7 +318,7 @@ class ExtractionSource(Base):
     
     # Extraction metadata
     method = Column(String, nullable=False)  # rules, ai
-    ai_model = Column(String, nullable=True)  # deepseek_r1, etc.
+    ai_model = Column(String, nullable=True)  # e.g., meta-llama/Llama-3.1-70B-Instruct
     extracted_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     confidence = Column(Float, nullable=False, default=0.0)
     

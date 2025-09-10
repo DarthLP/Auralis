@@ -22,6 +22,7 @@ from app.services.extract import ExtractionService
 from app.services.theta_client import ThetaClient
 from app.services.export_utils import ensure_exports_directory, export_extraction_data
 from app.services.normalize import NormalizationService
+from app.services.promotion import promote_extracted_entities_to_main
 from app.services.advisory_locks import competitor_lock
 from app.models.core_crawl import PageFingerprint, FingerprintSession
 from app.models.extraction import ExtractionSession
@@ -584,6 +585,13 @@ async def _run_batch_extraction_background(
                         extraction_session_id=extraction_session_id,
                         source_metadata=source_metadata
                     )
+
+                    # Automatically promote extracted entities into main tables
+                    try:
+                        _ = promote_extracted_entities_to_main(db, batch_result.entities)
+                        logger.info("Promoted extracted entities into main tables")
+                    except Exception as e:
+                        logger.error(f"Promotion to main tables failed: {e}")
                     
                     # Emit merge completion for all pages
                     for page_data in page_data_list:
@@ -751,7 +759,7 @@ async def _run_extraction_background(
                                 "content_hash": fingerprint.content_hash,
                                 "page_type": fingerprint.page_type,
                                 "method": result.method,
-                                "ai_model": "deepseek_r1" if result.method == "ai" else None,
+                                "ai_model": settings.LLAMA_MODEL if result.method != "rules" else None,
                                 "confidence": result.confidence,
                                 "tokens_input": result.tokens_input,
                                 "tokens_output": result.tokens_output,

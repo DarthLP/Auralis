@@ -8,17 +8,12 @@ export function useDateFormat() {
   const { preferences } = useUser();
 
   const formatDateWithPreferences = (date: string | Date) => {
-    return formatDate(date, {
-      timezone: preferences.timezone,
-      format: preferences.dateFormat,
-    });
+    // Current date utilities accept a locale string only; ignore timezone for now
+    return formatDate(date);
   };
 
   const formatDateTimeWithPreferences = (date: string | Date) => {
-    return formatDateTime(date, {
-      timezone: preferences.timezone,
-      format: preferences.dateFormat,
-    });
+    return formatDateTime(date);
   };
 
   return {

@@ -143,6 +143,7 @@ export default function AddCompetitor() {
   });
   const [progressTracker, setProgressTracker] = useState<ExtractionProgressTracker | null>(null);
   const [showDebugView, setShowDebugView] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   // Load existing companies for deduplication
   useEffect(() => {
@@ -237,6 +238,33 @@ export default function AddCompetitor() {
       setIsAnalyzing(false);
     });
     
+    // Treat session_finished as a completion signal and finalize UI before closing
+    tracker.on('session_finished', async () => {
+      try {
+        const status = await getExtractionStatus(extractionSessionId);
+        setProcessingState(prev => ({
+          ...prev,
+          phase: 'completed',
+          stepsCompleted: { ...prev.stepsCompleted, extraction: true },
+          progress: {
+            ...prev.progress,
+            entitiesFound: {
+              companies: status.stats?.companies_found || 0,
+              products: status.stats?.products_found || 0,
+              capabilities: status.stats?.capabilities_found || 0,
+              documents: status.stats?.documents_found || 0,
+              signals: status.stats?.signals_found || 0
+            }
+          }
+        }));
+      } catch (error) {
+        console.error('Failed to fetch final extraction status:', error);
+      } finally {
+        setIsAnalyzing(false);
+        tracker.close();
+      }
+    });
+    
     tracker.on('error', (data: any) => {
       setProcessingState(prev => ({
         ...prev,
@@ -247,6 +275,7 @@ export default function AddCompetitor() {
     });
     
     tracker.subscribe(extractionSessionId);
+    setIsStreaming(true);
     setProgressTracker(tracker);
     
     // Fallback: Check extraction status every 5 seconds in case SSE doesn't work
@@ -306,6 +335,7 @@ export default function AddCompetitor() {
     const originalClose = tracker.close.bind(tracker);
     tracker.close = () => {
       clearInterval(statusCheckInterval);
+      setIsStreaming(false);
       originalClose();
     };
   };
@@ -459,7 +489,6 @@ export default function AddCompetitor() {
       
       setProcessingState(prev => ({
         ...prev,
-        phase: 'extracting',
         fingerprintSessionId: fingerprintResult.fingerprint_session_id,
         stepsCompleted: { ...prev.stepsCompleted, scoring: true, fingerprinting: true },
         progress: {
@@ -934,7 +963,7 @@ export default function AddCompetitor() {
                 </button>
               )}
 
-              {processingState.phase === 'extracting' && !processingState.stepsCompleted.extraction && (
+              {Boolean(processingState.fingerprintSessionId) && processingState.phase !== 'completed' && !processingState.stepsCompleted.extraction && (
                 <div className="flex space-x-2">
                   <button
                     onClick={handleStartExtraction}
@@ -1020,7 +1049,7 @@ export default function AddCompetitor() {
           </div>
 
           {/* Real-time Metrics */}
-          {processingState.phase === 'extracting' && (
+          {processingState.phase === 'extracting' && isStreaming && (
             <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div className="text-center">
                 <div className="text-gray-500">Speed</div>
@@ -1029,7 +1058,7 @@ export default function AddCompetitor() {
               <div className="text-center">
                 <div className="text-gray-500">ETA</div>
                 <div className="font-semibold">
-                  {processingState.metrics.etaSeconds 
+                  {processingState.metrics.etaSeconds !== null 
                     ? `${Math.ceil(processingState.metrics.etaSeconds / 60)}m ${processingState.metrics.etaSeconds % 60}s`
                     : 'Calculating...'
                   }

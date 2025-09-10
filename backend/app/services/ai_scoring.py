@@ -1,8 +1,9 @@
 """
 AI-powered page scoring service for discovery stage.
 
-Uses DeepSeek (via Theta EdgeCloud) to provide comprehensive scoring and classification
-of pages based on their content relevance for competitive analysis.
+Uses a dedicated Llama deployment (OpenAI-compatible via Theta EdgeCloud) to provide
+comprehensive scoring and classification of pages based on their content relevance
+for competitive analysis.
 """
 
 import json
@@ -11,7 +12,7 @@ import time
 import asyncio
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from app.core.config import settings
 from app.services.theta_client import ThetaClient, ThetaClientError
@@ -29,19 +30,19 @@ class AIScoringResult:
     secondary_categories: List[str]
     confidence: float
     reasoning: str
-    signals: List[str]
     processing_time_ms: int
+    signals: List[str] = field(default_factory=list)
     tokens_input: Optional[int] = None
     tokens_output: Optional[int] = None
     cache_hit: bool = False
     error: Optional[str] = None
     retry_count: int = 0
-    retry_errors: List[str] = None
+    retry_errors: List[str] = field(default_factory=list)
 
 
 class AIScoringService:
     """
-    AI-powered page scoring service using DeepSeek for comprehensive analysis.
+    AI-powered page scoring service using Llama for comprehensive analysis.
     """
     
     def __init__(self, theta_client: ThetaClient):
@@ -214,12 +215,15 @@ class AIScoringService:
                 if attempt < max_retries:
                     # For unsuccessful results, check if the error is retryable
                     # Check for parsing errors or other retryable conditions
+                    # Normalize optional fields before checks
+                    _signals = result.signals or []
+                    _reason = result.reasoning or ""
                     is_retryable = (
                         result.error and (
                             self._is_retryable_error(Exception(result.error)) or
-                            "parse_error" in result.signals or
-                            "Failed to parse AI response" in result.reasoning or
-                            (result.confidence == 0.0 and "parse" in result.reasoning.lower())
+                            "parse_error" in _signals or
+                            "Failed to parse AI response" in _reason or
+                            (result.confidence == 0.0 and "parse" in _reason.lower())
                         )
                     )
                     
@@ -239,7 +243,7 @@ class AIScoringService:
                     result.retry_count = attempt
                     result.retry_errors = retry_errors.copy() if retry_errors else []
                     # Add retry_exhausted signal if not already present
-                    if "retry_exhausted" not in result.signals:
+                    if (result.signals or []) and "retry_exhausted" not in result.signals:
                         result.signals.append("retry_exhausted")
                     return result
                     
@@ -355,10 +359,12 @@ class AIScoringService:
             processing_time = int((time.time() - start_time) * 1000)
             
             # Check if parsing failed by looking for parse_error signal or specific error patterns
+            signals_list = result.get("signals") or []
+            reasoning_text = result.get("reasoning") or ""
             parsing_failed = (
-                "parse_error" in result.get("signals", []) or
-                "Failed to parse AI response" in result.get("reasoning", "") or
-                result.get("confidence", 0) == 0.0 and "parse" in result.get("reasoning", "").lower()
+                "parse_error" in signals_list or
+                "Failed to parse AI response" in reasoning_text or
+                (result.get("confidence", 0) == 0.0 and "parse" in reasoning_text.lower())
             )
             
             return AIScoringResult(
@@ -522,101 +528,22 @@ class AIScoringService:
         return "\n\n".join(analysis_parts)
     
     async def _call_scoring_api(self, prompt: str, competitor: str, session_id: Optional[str] = None) -> str:
-        """Call the scoring API directly with raw text response."""
-        import httpx
-        import json
-        
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {settings.ON_DEMAND_API_ACCESS_TOKEN}"
-        }
-        
-        url = "https://ondemand.thetaedgecloud.com/infer_request/deepseek_r1/completions"
-        
-        data = {
-            "input": {
-                "max_tokens": 500,  # Reduced for faster response
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "You are an expert competitive intelligence analyst. Analyze webpage content and provide scoring in JSON format. IMPORTANT: Respond ONLY in English. Do not use any other languages."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "stream": False,
-                "temperature": 0.2,  # Lower temperature for more consistent results
-                "top_p": 0.8
-            }
-        }
-        
-        try:
-            # Use shorter timeout for faster failure detection
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                response = await client.post(url, headers=headers, json=data)
-                response.raise_for_status()
-                
-                result = response.json()
-                
-                # Debug: Log the response structure
-                logger.debug(f"API Response structure: {list(result.keys()) if isinstance(result, dict) else 'Not a dict'}")
-                if isinstance(result, dict) and "body" in result:
-                    logger.debug(f"Body structure: {list(result['body'].keys()) if isinstance(result['body'], dict) else 'Not a dict'}")
-                
-                # Extract content from Theta EdgeCloud response format
-                if "body" in result and "infer_requests" in result["body"]:
-                    infer_requests = result["body"]["infer_requests"]
-                    if len(infer_requests) > 0:
-                        infer_request = infer_requests[0]
-                        logger.debug(f"Infer request structure: {list(infer_request.keys()) if isinstance(infer_request, dict) else 'Not a dict'}")
-                        if "output" in infer_request and "message" in infer_request["output"]:
-                            message = infer_request["output"]["message"]
-                            logger.debug(f"Message content: {message[:200]}...")
-                            logger.debug(f"Message content (last 500 chars): ...{message[-500:]}")
-                            
-                            # Check for empty or whitespace-only message
-                            if not message or not message.strip():
-                                logger.warning(f"AI API returned empty message content")
-                                raise ThetaClientError("AI API returned empty message content")
-                            
-                            # Extract JSON from the message if it contains JSON
-                            extracted_json = self._extract_json_from_text(message)
-                            logger.debug(f"Extracted JSON: {extracted_json}")
-                            
-                            # Check if extraction actually found valid content
-                            if extracted_json == message and not message.strip().startswith('{'):
-                                logger.warning(f"AI API message does not contain JSON: {message[:100]}...")
-                                logger.warning(f"Full message content: {message}")
-                                raise ThetaClientError("AI API message does not contain valid JSON")
-                            
-                            return extracted_json
-                
-                # Fallback: try to extract from other possible locations
-                if "message" in result:
-                    message = result["message"]
-                    logger.debug(f"Direct message content: {message[:200]}...")
-                    if not message or not message.strip():
-                        logger.warning(f"Direct message is empty")
-                        raise ThetaClientError("AI API returned empty direct message")
-                    return self._extract_json_from_text(message)
-                elif "content" in result:
-                    content = result["content"]
-                    logger.debug(f"Direct content: {content[:200]}...")
-                    if not content or not str(content).strip():
-                        logger.warning(f"Direct content is empty")
-                        raise ThetaClientError("AI API returned empty direct content")
-                    return self._extract_json_from_text(str(content))
-                else:
-                    # Debug: Log the full response for analysis
-                    logger.debug(f"Full API response: {json.dumps(result, indent=2)}")
-                    logger.warning(f"No recognizable content found in API response")
-                    raise ThetaClientError("AI API response contains no recognizable content fields")
-                    
-        except Exception as e:
-            logger.error(f"Scoring API call failed: {e}")
-            raise ThetaClientError(f"Scoring API call failed: {e}")
+        """Call the Llama (OpenAI-compatible) endpoint via ThetaClient and return raw JSON string."""
+        # Reuse the shared ThetaClient used elsewhere for LLM calls
+        # Prompt is already built by caller; pass through directly.
+        response = await self.theta_client.complete(
+            prompt=prompt,
+            schema_version=settings.SCHEMA_VERSION,
+            page_type="ai_scoring",
+            competitor=competitor,
+            session_id=session_id,
+            use_cache=True
+        )
+        # The shared client already extracts content and attempts JSON cleaning/parsing.
+        # For scoring we want the raw JSON string if possible.
+        if isinstance(response, dict):
+            return json.dumps(response)
+        return str(response)
 
     def _extract_json_from_text(self, text: str) -> str:
         """Extract JSON from text that may contain other content."""

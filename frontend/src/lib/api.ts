@@ -399,11 +399,16 @@ export class ExtractionProgressTracker {
     
     this.eventSource.addEventListener('session_finished', (event) => {
       this.emit('session_finished', JSON.parse(event.data));
-      this.close();
     });
     
     this.eventSource.addEventListener('error', (event: MessageEvent) => {
-      this.emit('error', JSON.parse(event.data));
+      try {
+        // Some browsers deliver non-JSON error payloads for SSE
+        const data = (event && (event as any).data) ? JSON.parse((event as any).data) : { message: 'Stream error' };
+        this.emit('error', data);
+      } catch {
+        this.emit('error', { message: 'Stream error' });
+      }
     });
     
     this.eventSource.onerror = (error) => {
