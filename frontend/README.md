@@ -179,7 +179,7 @@ The Add Competitor functionality provides a comprehensive URL-based competitor i
 - **Session Management**: Active crawl session tracking and management
 - **Type Safety**: Full TypeScript integration
 - **Error Handling**: Graceful error states with helpful messages
-- **Mock Integration**: Seamless integration with existing mock data system
+- **API Integration**: Seamless integration with backend API
 
 ## 🔍 Global Search Feature
 
@@ -216,7 +216,7 @@ The Global Search provides a comprehensive command palette style search experien
 ### Technical Implementation
 
 - **Debounced Search**: 250ms debounce for smooth real-time search
-- **Mock Data Integration**: Uses existing mock data system with realistic delays
+- **API Integration**: Uses real backend API with proper error handling
 - **Type Safety**: Full TypeScript integration with proper interfaces
 - **Accessibility**: Focus management, ARIA semantics, keyboard navigation
 - **Performance**: Efficient rendering with result limits (5 per category)
@@ -396,7 +396,7 @@ The frontend now communicates with the backend API:
 - [x] Responsive design and mobile support
 
 ### Phase 3: Data Features ✅
-- [x] Mock data system with realistic delays
+- [x] Seed data system with comprehensive sample data
 - [x] Company detail views with products and activity
 - [x] Product detail pages with capabilities
 - [x] Advanced signals filtering and analysis

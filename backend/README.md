@@ -155,7 +155,6 @@ Crawls a competitor website starting from the provided URL and discovers pages t
     "product": ["https://competitor.example.com/products/widget-x"],
     "docs": ["https://competitor.example.com/docs/api"],
     "pricing": ["https://competitor.example.com/pricing"],
-    "releases": [],
     "datasheet": [],
     "news": []
   },
@@ -168,7 +167,7 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 - `datasheet`: Documentation, datasheets, PDFs, technical guides  
 - `docs`: General documentation and developer resources
 - `pricing`: Pricing pages and subscription plans
-- `news`: News, blog posts, press releases
+- `news`: News, blog posts
 - `other`: Other interesting pages
 
 **Database Integration:** All discovered pages are automatically saved to PostgreSQL as `CrawlSession` and `CrawledPage` records.

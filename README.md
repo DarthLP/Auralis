@@ -200,7 +200,7 @@ Auralis/
 │   ├── tailwind.config.js # Tailwind CSS configuration
 │   └── vite.config.ts # Vite build configuration
 ├── data/             # Sample data and seed files
-│   ├── seed.json     # Comprehensive mock data for development and demo
+│   ├── seed.json     # Comprehensive seed data for development and demo
 │   └── competitor_mock_data_pal_and_peers.json  # Additional competitor data
 ├── schema/           # Shared data models and validation
 │   ├── enums.ts      # Core enumeration types
@@ -294,7 +294,7 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - **TanStack Query**: Powerful data fetching and caching
 - **TypeScript**: Full type safety throughout the application
 - **Responsive Design**: Mobile-first approach with responsive navigation
-- **Mock Data System**: Comprehensive seed data with PAL Robotics example
+- **Seed Data System**: Comprehensive seed data with PAL Robotics example
 - **Overview Dashboard**: Real-time signals tracking
 - **Loading States**: Comprehensive loading indicators and skeleton screens
 - **Global Search**: Command palette style search across companies, products, and signals
@@ -500,9 +500,9 @@ npm run dev
 
 Access the application at http://localhost:3000
 
-## 📊 Mock Data System
+## 📊 Seed Data System
 
-The application includes a comprehensive mock data system for development and demonstration purposes:
+The application includes comprehensive seed data for development and demonstration purposes:
 
 ### Seed Data (`data/seed.json`)
 
@@ -978,8 +978,8 @@ Re-crawl → Detect Changes → Show What's New
 - [x] TanStack Query for data fetching
 - [x] Lazy loading and Suspense boundaries
 - [x] Responsive design and mobile support
-- [x] Overview dashboard with signals and releases
-- [x] Mock data system with seed data
+- [x] Overview dashboard with signals tracking
+- [x] Seed data system with comprehensive sample data
 - [x] Companies index page with search and filtering
 - [x] Company detail pages with products and recent activity
 - [x] Product detail pages with capabilities and maturity tracking
