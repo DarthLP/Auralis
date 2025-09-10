@@ -1,48 +1,8 @@
 # Backend Service
 
-## 🔮 Performance & Enhancement Opportunities
-
-### Caching & Optimization
-- **HTTP Conditional Requests**: Implement If-Modified-Since/ETag headers to reduce bandwidth usage by 50-80%
-- **Smart Change Detection**: Binary hash pre-checks before full content download
-- **Session-Based Caching**: Only re-process pages that have changed since last fingerprinting
-
-### Enhanced Text Extraction
-- **OCR Integration**: Add Tesseract for image text extraction (product specifications, charts)
-- **Office Document Support**: Excel, Word, PowerPoint text extraction with pandas/python-docx
-- **Improved PDF Processing**: Better table and structure preservation
-
-### Production Readiness
-- **Rate Limiting**: Per-domain request throttling and retry logic
-- **Async Optimization**: Batch processing improvements and connection pooling
-- **Monitoring**: Content change alerts and processing metrics
-
----
-
 ## 🚀 Overview
 
 The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.12+ and designed as a single-tenant prototype.
-
-## 🔧 Recent Fixes & Improvements
-
-### Automatic Database Import
-- **Fixed file matching logic** in `import_extraction_data_to_main_db()` function
-- **Resolved case-sensitive file matching** issue that prevented automatic import
-- **Verified end-to-end flow** from extraction to database import
-
-### URL Validation & API Consistency
-- **Added URL normalization** in companies API to ensure all website URLs include `https://` protocol
-- **Fixed ZodError validation** issues in frontend by normalizing API responses
-- **Updated all company endpoints** to use consistent URL formatting
-
-### Discovery API Enhancements
-- **Added `max_pages` parameter** to discovery API for limited page crawling
-- **Maintained backward compatibility** with existing API calls
-- **Enhanced CrawlRequest model** with optional page limit functionality
-
-### API Response Improvements
-- **Fixed capabilities API** to return empty string instead of null for definition field
-- **Improved error handling** and response consistency across all endpoints
 
 ## 🏗️ Architecture
 
@@ -174,8 +134,6 @@ Crawls a competitor website starting from the provided URL and discovers pages t
 
 #### POST /api/crawl/stop
 
-**NEW**: Stop an active crawl session that is currently running. This endpoint allows users to cancel long-running crawl operations.
-
 **Request Body:**
 ```json
 {
@@ -270,7 +228,6 @@ Starts the schema-first extraction pipeline on a completed fingerprint session. 
 - **Category Detection**: Automatically classifies pages as product, pricing, datasheet, news, company, or other
 - **Signal Extraction**: Identifies specific signals like product_specs, pricing_info, technical_details, competitive_intel
 - **Confidence Scoring**: Each AI assessment includes confidence level and reasoning
-- **100% JSON Consistency**: Improved prompt structure achieving 100% success rate for valid JSON responses
 - **Enhanced Content Detection**: Improved minimal content detection including H1, H2, H3 headings and content length fallback
 - **Robust Error Handling**: Proper fallback mechanisms and parsing error detection with success/failure flags
 - **Fallback Strategy**: Gracefully falls back to rules-based scoring if AI is unavailable
@@ -371,17 +328,9 @@ eventSource.addEventListener('error', (event) => {
 - `session_completed` - Extraction session finished
 - `heartbeat` - Keep-alive message (every 30s)
 - `error` - Error occurred
-
-**Benefits:**
-- 📊 **Live Progress**: Real-time progress bars and completion estimates
-- 💰 **Cost Tracking**: Monitor AI usage, cache hits, and token consumption  
-- 🎯 **Method Insights**: See which pages use rules vs AI extraction
-- ❌ **Error Monitoring**: Immediate notification of failed pages
-- ⚡ **Performance**: No polling overhead, instant updates
+  
 
 #### POST /api/extract/stop/{session_id}
-
-**NEW**: Stop a running extraction session to prevent unnecessary LLM costs and resource usage.
 
 **Path Parameters:**
 - `session_id` (required): ID of the extraction session to stop
@@ -398,15 +347,7 @@ eventSource.addEventListener('error', (event) => {
 }
 ```
 
-**Use Cases:**
-- 🛑 **Cost Control**: Stop runaway LLM requests that are incurring high costs
-- 🔄 **Fresh Start**: Clear old sessions before starting new extractions
-- 🚨 **Error Recovery**: Stop sessions that are stuck or failing repeatedly
-- 📊 **Resource Management**: Free up processing resources for other tasks
-
 #### POST /api/extract/stop-all
-
-**NEW**: Stop all currently running extraction sessions in bulk. Optionally filter by competitor.
 
 **Query Parameters:**
 - `competitor` (optional): Only stop sessions for this specific competitor
@@ -433,12 +374,6 @@ eventSource.addEventListener('error', (event) => {
   ]
 }
 ```
-
-**Use Cases:**
-- 💰 **Emergency Stop**: Immediately halt all LLM processing to prevent costs
-- 🔄 **Pipeline Reset**: Clean slate before starting fresh extraction runs
-- 🎯 **Competitor Focus**: Stop only sessions for a specific competitor
-- 🚀 **Batch Management**: Efficiently manage multiple concurrent sessions
 
 #### POST /api/crawl/fingerprint
 
@@ -779,12 +714,6 @@ Extracts basic information from individual pages into a simple 3-key format:
 }
 ```
 
-**Advantages:**
-- 🎯 Simple, focused extraction per page
-- 📝 Structured bullet-point format for consistency
-- 🚫 No complex schema validation during extraction
-- 🔄 Easy to parse and consolidate
-
 #### Stage 2: Batch Consolidation
 Combines multiple Stage 1 results into final structured entities:
 
@@ -879,23 +808,6 @@ EntityChange(
 )
 ```
 
-### Performance Characteristics
-
-#### Throughput
-- **Rules extraction**: ~10 pages/second
-- **AI extraction**: ~0.2-0.5 pages/second (depending on text length)
-- **Combined pipeline**: ~1-2 pages/second average
-
-#### Cost Optimization
-- **Cache hit rate**: 60-80% for similar pages
-- **Rules-first success**: 40-60% (zero AI cost)
-- **Token efficiency**: 10-30 fields vs 100+ field full schemas
-
-#### Reliability
-- **Circuit breaker**: Auto-recovery from provider failures
-- **Advisory locks**: Prevent concurrent merge conflicts
-- **Graceful degradation**: Partial results on failures
-- **Idempotent operations**: Safe to retry/rerun
 
 ### Configuration
 
@@ -1151,359 +1063,3 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
         -H "Access-Control-Request-Method: GET" \
         -X OPTIONS http://localhost:8000/health
    ```
-
-### Automated Testing (Future)
-
-Planned testing setup:
-- pytest for unit tests
-- httpx for API testing
-- Coverage reporting
-
-## 📋 Development Roadmap
-
-### Phase 1: Core API ✅
-- [x] FastAPI setup with health endpoint
-- [x] CORS configuration
-- [x] Docker containerization
-- [x] Environment management
-
-### Phase 2: Database & Models ✅
-- [x] PostgreSQL integration with Docker Compose
-- [x] Database models (Company, Product, Capability, Signal, Source)
-- [x] Database seeding with comprehensive seed data
-- [x] Foreign key constraints and data integrity
-- [x] Automatic seed data loading on startup
-
-### Phase 3: Advanced Scraping Engine ✅
-- [x] JavaScript-enabled website crawling (Playwright + Requests)
-- [x] Hybrid crawling strategy for optimal performance
-- [x] Intelligent page classification and scoring
-- [x] Anti-bot protection and respectful crawling
-- [x] Data extraction for products, features
-- [x] Error handling and retry logic
-- [x] Session-specific logging and data persistence
-
-### Phase 4: API Development ✅
-- [x] Website discovery API endpoint
-- [x] JSON response format with categorized pages
-- [x] Comprehensive logging and data export
-- [x] Docker integration with volume mounting
-- [x] Business Intelligence API endpoints (Companies, Products, Signals, Capabilities, Sources)
-- [x] Complete CRUD operations for all entities
-- [x] Database integration with SQLAlchemy ORM
-- [x] **Frontend-Backend integration** with real API endpoints
-- [x] **Datetime formatting** for API responses with Zod compatibility
-- [x] **Schema validation** with proper nullable field handling
-
-### Phase 5: Progressive Discovery (Future Enhancement)
-- [ ] Multi-stage crawling with resume tokens
-- [ ] Strategy presets (quick/balanced/deep)
-- [ ] Category-specific filtering and quotas
-- [ ] Time-bounded crawling with partial results
-- [ ] Advanced user experience optimizations
-
-### Phase 6: Advanced Features (Planned)
-- [ ] Authentication system
-- [ ] Rate limiting
-- [ ] Caching layer
-- [ ] Background task processing
-
-## 🚀 Future Improvements: Progressive Discovery
-
-### Overview
-The current discovery system crawls websites comprehensively in a single operation. For better user experience and performance, we're planning a **progressive discovery system** that allows users to get quick results first, then optionally dive deeper.
-
-### 🎯 Progressive Discovery Architecture
-
-#### **Multi-Stage Strategy**
-Instead of one long crawl, break discovery into progressive stages:
-
-```javascript
-// Stage 1: Quick Overview (8 seconds)
-POST /api/crawl/discover {
-  "url": "https://competitor.com",
-  "strategy": "quick"  // 8 pages, depth 1, 8s timeout
-}
-
-// Stage 2: Balanced Discovery (15 seconds)  
-POST /api/crawl/discover {
-  "url": "https://competitor.com", 
-  "strategy": "balanced",        // 20 pages, depth 2, 15s timeout
-  "resume_token": {...}          // Continue from Stage 1
-}
-
-// Stage 3: Targeted Deep Dive
-POST /api/crawl/discover {
-  "url": "https://competitor.com",
-  "filters": {"categories": ["product"]},  // Only find more products
-  "resume_token": {...}                    // Continue from Stage 2
-}
-```
-
-#### **Strategy Presets**
-Pre-configured crawling strategies for different use cases:
-
-| Strategy | Pages | Depth | Time | Use Case |
-|----------|-------|-------|------|----------|
-| `quick` | 8 | 1 | 8s | Instant competitor overview |
-| `balanced` | 20 | 2 | 15s | Comprehensive first look |
-| `deep` | 80 | 3 | 40s | Thorough competitive analysis |
-
-#### **Resume Token System**
-Stateless continuation mechanism that remembers:
-- **Frontier**: Pages queued for next crawl
-- **Visited**: Already-crawled URLs (avoid duplicates)
-- **Stats**: Progress tracking and category counts
-
-```json
-{
-  "resume_token": {
-    "frontier": [
-      {"url": "https://site.com/products", "score": 0.9, "depth": 1}
-    ],
-    "visited": ["https://site.com/", "https://site.com/about"],
-    "stats": {"products_found": 3, "docs_found": 1}
-  }
-}
-```
-
-#### **Category Quotas & Filtering**
-Smart resource allocation and targeted discovery:
-
-```json
-{
-  "limits": {
-    "max_per_category": {
-      "product": 10,    // Find up to 10 product pages
-      "docs": 8,        // Up to 8 documentation pages  
-      "pricing": 3,     // Up to 3 pricing pages
-      "news": 5         // Up to 5 news/blog pages
-    }
-  },
-  "filters": {
-    "categories": ["product", "docs"],           // Only these types
-    "path_prefixes": ["/products/", "/api/"],   // Only these URL paths
-    "sitemap_only": true                        // Skip BFS, use sitemap only
-  }
-}
-```
-
-#### **Coverage Confidence**
-Real-time feedback on discovery completeness:
-
-```json
-{
-  "coverage": {
-    "total_seen": 25,
-    "total_emitted": 12,
-    "queued_remaining": 8,
-    "confidence": 0.7,  // 0-1 scale, higher = more complete
-    "category_counts": {"product": 4, "docs": 2, "other": 6}
-  }
-}
-```
-
-### 🔄 Implementation Options
-
-#### **Option 1: Manual Progression (Recommended)**
-User controls each stage through separate API calls:
-- **Pros**: User control, predictable costs, immediate feedback
-- **Cons**: Requires frontend integration for optimal UX
-- **Best for**: Interactive competitor analysis tools
-
-#### **Option 2: Auto-Progression**
-Backend automatically continues based on confidence thresholds:
-- **Pros**: Hands-off operation, simpler API usage
-- **Cons**: Less user control, potentially higher resource usage
-- **Best for**: Batch processing, background analysis
-
-#### **Option 3: Hybrid Approach**
-Support both manual and automatic progression:
-```json
-{
-  "strategy": "quick",
-  "auto_continue": true,      // Auto-progress if confidence < 0.5
-  "max_total_time": 30       // Stop after 30 seconds total
-}
-```
-
-### 🎨 User Experience Flow
-
-```
-User Input: "Analyze competitor.com"
-     ↓
-Stage 1: Quick (8s) → "Found 3 products, 2 solutions. More available?"
-     ↓ (user clicks "Find More")
-Stage 2: Balanced (15s) → "Found 8 products, 4 solutions. Want specific categories?"
-     ↓ (user clicks "More Products")  
-Stage 3: Product Focus (10s) → "Found 12 total products. Analysis complete."
-```
-
-### 🛠️ Technical Implementation
-
-#### **Core Changes Required**
-1. **Refactor `discover_interesting_pages()`** to support resume tokens
-2. **Add strategy presets** to API endpoint with time limits
-3. **Implement max-heap priority queue** for intelligent page ordering
-4. **Add category quotas and filtering** logic
-5. **Create resume token serialization** for stateless continuation
-
-#### **API Enhancements**
-```python
-class CrawlRequest(BaseModel):
-    url: str
-    strategy: Optional[str] = "quick"           # quick/balanced/deep
-    limits: Optional[dict] = None               # Override strategy defaults
-    filters: Optional[dict] = None              # Category/path filtering
-    resume_token: Optional[dict] = None         # Continue previous crawl
-    auto_continue: Optional[bool] = False       # Auto-progression mode
-```
-
-#### **Configuration Updates**
-```env
-# Progressive Discovery Defaults
-SCRAPER_MAX_PAGES=20
-SCRAPER_MAX_DEPTH=2  
-SCRAPER_MAX_TIME=15
-SCRAPER_MAX_PER_CATEGORY={"product":10,"docs":8,"pricing":3,"news":5}
-```
-
-### 📊 Expected Benefits
-
-- **⚡ 3x Faster Initial Response**: Quick results in 8 seconds vs 60+ seconds
-- **💰 Cost Efficiency**: Users pay only for the depth they need
-- **🎯 Better Targeting**: Category filters find specific content faster
-- **♻️ Zero Waste**: Resume tokens eliminate duplicate crawling
-- **📈 Improved UX**: Progressive disclosure keeps users engaged
-
-### 🚀 Implementation Priority
-
-1. **Phase 1**: Core progressive logic with manual progression
-2. **Phase 2**: Strategy presets and category quotas  
-3. **Phase 3**: Advanced filtering and auto-progression
-4. **Phase 4**: Frontend integration and UX optimization
-
-This progressive discovery system would transform the current "all-or-nothing" crawling into a flexible, user-controlled exploration tool that provides immediate value while supporting deep competitive analysis when needed.
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **ModuleNotFoundError: No module named 'app'**
-   - **Solution**: Run uvicorn from the backend directory, not the project root
-   - **Correct**: `cd backend && python3 -m uvicorn app.main:app --reload`
-
-2. **Port 8000 already in use**
-   - **Solution**: Kill existing processes or use a different port
-   - **Check**: `lsof -i :8000`
-   - **Kill**: `pkill -f uvicorn`
-
-3. **CORS errors from frontend**
-   - **Solution**: Ensure frontend is running on http://localhost:3000
-   - **Check**: CORS configuration in `app/main.py`
-
-### Logs and Debugging
-
-1. **View application logs**
-   ```bash
-   make logs  # From project root
-   ```
-
-2. **Debug mode**
-   ```bash
-   # Set in .env file
-   DEBUG=true
-   LOG_LEVEL=debug
-   ```
-
-## 🤝 Contributing
-
-1. Follow the existing code structure
-2. Add type hints to all functions
-3. Update this README for new features
-4. Test all endpoints manually
-5. Ensure Docker builds successfully
-
-## 📁 Automated Data Export System
-
-The backend includes a comprehensive automated export system that creates clean JSON files for each pipeline stage.
-
-### Features
-
-- **Automatic Triggers**: Exports happen automatically after each pipeline stage completes
-- **Proper JSON Formatting**: No manual cleaning required - all records properly formatted
-- **Complete Data**: All records included (no truncation or missing entries)
-- **Rich Text Content**: 5,000 character previews instead of 500
-- **Error Handling**: Robust datetime serialization and special character handling
-
-### Export Locations
-
-```
-backend/exports/
-├── crawling/
-│   └── {competitor}_crawling_session_{id}.json      # Discovered pages with scores
-├── fingerprinting/
-│   └── {competitor}_fingerprinting_session_{id}.json # Extracted text content
-└── extraction/
-    └── {competitor}_extraction_session_{id}.json     # Extraction metadata
-```
-
-### Usage
-
-**Automatic (Recommended):**
-```python
-# Exports happen automatically after:
-# - POST /api/crawl/discover completes
-# - POST /api/crawl/fingerprint completes  
-# - POST /api/extract/run completes
-```
-
-**Manual:**
-```python
-from app.services.export_utils import (
-    export_crawling_data,
-    export_fingerprinting_data,
-    export_extraction_data,
-    auto_export_pipeline_data
-)
-
-# Export specific sessions
-export_crawling_data(session_id=1, competitor="pudu_robotics")
-export_fingerprinting_data(fingerprint_session_id=1, competitor="pudu_robotics")
-
-# Export all latest sessions
-auto_export_pipeline_data("competitor_name")
-```
-
-### Data Quality
-
-- **All 42 fingerprinted pages** included (no missing records due to parsing errors)
-- **5,000 character text previews** for rich content analysis
-- **Proper JSON validation** - no parsing errors or malformed data
-- **Datetime serialization** handled automatically with ISO format
-- **Special characters** properly escaped (quotes, newlines, unicode)
-
-## ⚠️ Known Issues
-
-### JSON Serialization Bug (Extraction Pipeline)
-- **Status**: ❌ Blocking extraction pipeline
-- **Error**: `Object of type datetime is not JSON serializable`
-- **Impact**: 100% extraction failure rate (42/42 pages fail)
-- **Location**: Entity data processing during AI extraction
-- **Root Cause**: Datetime objects not converted to strings before JSON serialization
-- **Database Impact**: No corruption; crawling/fingerprinting data intact
-- **Workaround**: Rich structured data available in fingerprinting exports
-- **Analysis**: See `backend/exports/JSON_SERIALIZATION_BUG_ANALYSIS.md`
-
-### Current Pipeline Status
-- ✅ **Crawling**: Fully functional (62 pages discovered)
-- ✅ **Fingerprinting**: Fully functional (42 pages processed with text)
-- ❌ **Extraction**: Blocked by datetime serialization issue
-- ✅ **Data Export**: All stages export clean JSON automatically
-
-## 📚 Additional Resources
-
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Uvicorn Documentation](https://www.uvicorn.org/)
-- [Pydantic Documentation](https://docs.pydantic.dev/)
-- [Docker Python Best Practices](https://docs.docker.com/language/python/)
