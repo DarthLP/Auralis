@@ -48,6 +48,10 @@ Auralis is an AI-powered competitor analysis tool that helps businesses track an
 
 **Data Management**: Added options to clear old crawl data between jobs to prevent data persistence issues. Use `clear_old_data: true` in crawl requests or call the `/api/crawl/clear-data` endpoint.
 
+**Automatic Database Import**: Fixed automatic import of extracted data into the main database after extraction completion. The system now automatically imports companies and products without manual intervention.
+
+**URL Validation Fixes**: Resolved frontend ZodError validation issues by normalizing website URLs to include proper `https://` protocol in API responses.
+
 ## 🔄 Recent Improvements (Latest)
 
 ### Enhanced Discovery Process Visualization

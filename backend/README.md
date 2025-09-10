@@ -23,6 +23,27 @@
 
 The Auralis backend is a FastAPI-based REST API service that provides the core functionality for competitor analysis and website crawling. Built with Python 3.12+ and designed as a single-tenant prototype.
 
+## 🔧 Recent Fixes & Improvements
+
+### Automatic Database Import
+- **Fixed file matching logic** in `import_extraction_data_to_main_db()` function
+- **Resolved case-sensitive file matching** issue that prevented automatic import
+- **Verified end-to-end flow** from extraction to database import
+
+### URL Validation & API Consistency
+- **Added URL normalization** in companies API to ensure all website URLs include `https://` protocol
+- **Fixed ZodError validation** issues in frontend by normalizing API responses
+- **Updated all company endpoints** to use consistent URL formatting
+
+### Discovery API Enhancements
+- **Added `max_pages` parameter** to discovery API for limited page crawling
+- **Maintained backward compatibility** with existing API calls
+- **Enhanced CrawlRequest model** with optional page limit functionality
+
+### API Response Improvements
+- **Fixed capabilities API** to return empty string instead of null for definition field
+- **Improved error handling** and response consistency across all endpoints
+
 ## 🏗️ Architecture
 
 - **Framework**: FastAPI (modern, fast web framework for building APIs)
