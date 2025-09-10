@@ -43,7 +43,6 @@ interface ProcessingState {
       companies: number;
       products: number;
       capabilities: number;
-      releases: number;
       documents: number;
       signals: number;
     };
@@ -129,7 +128,7 @@ export default function AddCompetitor() {
       extractedPages: 0,
       totalPages: 0,
       skippedPages: 0,
-      entitiesFound: { companies: 0, products: 0, capabilities: 0, releases: 0, documents: 0, signals: 0 }
+      entitiesFound: { companies: 0, products: 0, capabilities: 0, documents: 0, signals: 0 }
     },
     extractedCompanies: [],
     metrics: { qps: 0, etaSeconds: null, cacheHits: 0, retries: 0 },
@@ -229,7 +228,6 @@ export default function AddCompetitor() {
             companies: data.stats?.companies_found || 0,
             products: data.stats?.products_found || 0,
             capabilities: data.stats?.capabilities_found || 0,
-            releases: data.stats?.releases_found || 0,
             documents: data.stats?.documents_found || 0,
             signals: data.stats?.signals_found || 0
           }
@@ -283,7 +281,6 @@ export default function AddCompetitor() {
                 companies: status.stats?.companies_found || 0,
                 products: status.stats?.products_found || 0,
                 capabilities: status.stats?.capabilities_found || 0,
-                releases: status.stats?.releases_found || 0,
                 documents: status.stats?.documents_found || 0,
                 signals: status.stats?.signals_found || 0
               }
@@ -986,7 +983,6 @@ export default function AddCompetitor() {
                                 companies: status.stats?.companies_found || 0,
                                 products: status.stats?.products_found || 0,
                                 capabilities: status.stats?.capabilities_found || 0,
-                                releases: status.stats?.releases_found || 0,
                                 documents: status.stats?.documents_found || 0,
                                 signals: status.stats?.signals_found || 0
                               }
@@ -1068,10 +1064,6 @@ export default function AddCompetitor() {
                   <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.capabilities}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-green-700">Releases:</span>
-                  <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.releases}</span>
-                </div>
-                <div className="flex justify-between">
                   <span className="text-green-700">Documents:</span>
                   <span className="font-semibold text-green-800">{processingState.progress.entitiesFound.documents}</span>
                 </div>
@@ -1112,7 +1104,6 @@ export default function AddCompetitor() {
                             companies: 0,
                             products: 0,
                             capabilities: 0,
-                            releases: 0,
                             documents: 0,
                             signals: 0
                           }

@@ -142,15 +142,6 @@ export default function Overview() {
               ))}
             </div>
           </div>
-          {/* Loading skeleton for releases */}
-          <div>
-            <div className="h-6 bg-gray-200 rounded w-48 mb-4 animate-pulse"></div>
-            <div className="space-y-3">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-100 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     );

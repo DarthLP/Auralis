@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { globalSearch, SearchResult } from '../lib/mockData';
+import { globalSearch, SearchResult, SearchResults } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
 
 interface GlobalSearchModalProps {
@@ -8,20 +8,13 @@ interface GlobalSearchModalProps {
   onClose: () => void;
 }
 
-interface SearchResults {
-  companies: SearchResult[];
-  products: SearchResult[];
-  signals: SearchResult[];
-  releases: SearchResult[];
-}
 
 export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResults>({
     companies: [],
     products: [],
-    signals: [],
-    releases: []
+    signals: []
   });
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -52,7 +45,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   // Debounced search
   useEffect(() => {
     if (!query.trim()) {
-      setResults({ companies: [], products: [], signals: [], releases: [] });
+      setResults({ companies: [], products: [], signals: [] });
       setIsLoading(false);
       return;
     }
@@ -65,7 +58,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
         setSelectedIndex(0);
       } catch (error) {
         console.error('Search error:', error);
-        setResults({ companies: [], products: [], signals: [], releases: [] });
+        setResults({ companies: [], products: [], signals: [] });
       } finally {
         setIsLoading(false);
       }
@@ -80,7 +73,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       ...results.companies,
       ...results.products,
       ...results.signals,
-      ...results.releases
     ];
     
     switch (e.key) {
@@ -129,9 +121,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       case 'signal':
         navigate(`/signals?highlight=${result.signalId}`);
         break;
-      case 'release':
-        navigate(`/companies/${result.companyId}/products/${result.productId}`);
-        break;
     }
     
     onClose();
@@ -146,8 +135,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   const allResults = [
     ...results.companies,
     ...results.products,
-    ...results.signals,
-    ...results.releases
+    ...results.signals
   ];
   
   // Format date for display
@@ -204,7 +192,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search companies, products, signals, releases..."
+                placeholder="Search companies, products, signals..."
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-lg"
               />
               {isLoading && (
@@ -238,7 +226,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
               <div className="p-8 text-center">
                 <div className="text-gray-500 mb-2">No results for "{query}"</div>
                 <div className="text-sm text-gray-400">
-                  Try searching with operators: <code className="bg-gray-100 px-1 rounded">company:</code>, <code className="bg-gray-100 px-1 rounded">product:</code>, <code className="bg-gray-100 px-1 rounded">signal:</code>, <code className="bg-gray-100 px-1 rounded">release:</code>
+                  Try searching with operators: <code className="bg-gray-100 px-1 rounded">company:</code>, <code className="bg-gray-100 px-1 rounded">product:</code>, <code className="bg-gray-100 px-1 rounded">signal:</code>
                 </div>
               </div>
             )}
@@ -399,61 +387,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                   </div>
                 )}
                 
-                {/* Releases */}
-                {results.releases.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-gray-900">Releases</h3>
-                      <span className="text-xs text-gray-500">{results.releases.length} result{results.releases.length !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="space-y-1">
-                      {results.releases.map((result, index) => {
-                        const globalIndex = results.companies.length + results.products.length + results.signals.length + index;
-                        return (
-                          <button
-                            key={result.id}
-                            onClick={() => handleResultClick(result)}
-                            className={`w-full text-left p-3 rounded-md transition-colors ${
-                              globalIndex === selectedIndex
-                                ? 'bg-blue-50 border border-blue-200'
-                                : 'hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-900 truncate">
-                                  {highlightText(result.title, query)}
-                                </div>
-                                <div className="flex items-center gap-2 mt-1">
-                                  {result.subtitle && (
-                                    <div className="text-xs text-gray-500 truncate">
-                                      {result.subtitle}
-                                    </div>
-                                  )}
-                                  {result.date && (
-                                    <div className="text-xs text-gray-400">
-                                      {formatDate(result.date)}
-                                    </div>
-                                  )}
-                                </div>
-                                {result.description && (
-                                  <div className="text-xs text-gray-600 mt-1 line-clamp-2">
-                                    {result.description}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="ml-2 flex-shrink-0">
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                  Release
-                                </span>
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>

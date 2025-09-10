@@ -4,8 +4,7 @@ import {
   company, 
   companySummaries, 
   productsByCompany,
-  signals as fetchSignals,
-  releases as fetchReleases
+  signals as fetchSignals
 } from '../lib/api';
 import { Company, CompanySummary, Product } from '@schema/types';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -18,13 +17,12 @@ interface CompanyData {
   summary?: CompanySummary;
   products: Product[];
   recentActivity: Array<{
-    type: 'signal' | 'release';
+    type: 'signal';
     id: string;
     title: string;
     date: string;
     summary?: string;
-    productId?: string;
-    signalId?: string;
+    signalId: string;
   }>;
 }
 
@@ -46,19 +44,18 @@ export default function CompanyPage() {
         setLoading(true);
         setError(null);
 
-        const [companyData, summaries, products, allSignals, allReleases] = await Promise.all([
+        const [companyData, summaries, products, allSignals] = await Promise.all([
           company(companyId),
           companySummaries(companyId),
           productsByCompany(companyId),
-          fetchSignals(),
-          fetchReleases()
+          fetchSignals()
         ]);
         
-        // Build recent activity from signals and releases
+        // Build recent activity from signals only
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - 60); // Last 60 days
         
-        const companySignals = allSignals
+        const recentActivity = allSignals
           .filter(signal => signal.company_ids.includes(companyId))
           .filter(signal => new Date(signal.published_at) >= cutoffDate)
           .map(signal => ({
@@ -68,21 +65,7 @@ export default function CompanyPage() {
             date: signal.published_at,
             summary: signal.summary,
             signalId: signal.id
-          }));
-        
-        const companyReleases = allReleases
-          .filter(release => release.company_id === companyId)
-          .map(release => ({
-            type: 'release' as const,
-            id: release.id,
-            title: `${release.version} - ${release.notes}`,
-            date: release.released_at,
-            summary: release.notes,
-            productId: release.product_id
-          }));
-        
-        // Combine and sort by date (newest first), limit to 10
-        const recentActivity = [...companySignals, ...companyReleases]
+          }))
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .slice(0, 10);
 
@@ -114,11 +97,7 @@ export default function CompanyPage() {
 
 
   const handleActivityClick = (item: CompanyData['recentActivity'][0]) => {
-    if (item.type === 'signal') {
-      navigate(`/signals?company_id=${companyId}&highlight=${item.signalId}`);
-    } else if (item.type === 'release' && item.productId) {
-      navigate(`/companies/${companyId}/products/${item.productId}`);
-    }
+    navigate(`/signals?company_id=${companyId}&highlight=${item.signalId}`);
   };
 
   const handleProductClick = (productId: string) => {
@@ -384,23 +363,19 @@ export default function CompanyPage() {
               </svg>
             }
             title="No recent activity"
-            description="No signals or releases in the last 60 days for this company."
+            description="No signals in the last 60 days for this company."
             className="bg-gray-50 rounded-lg"
           />
         ) : (
           <div className="space-y-3">
             {recentActivity.map((item) => (
               <div
-                key={`${item.type}-${item.id}`}
+                key={item.id}
                 onClick={() => handleActivityClick(item)}
                 className="flex items-start space-x-3 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-sm hover:border-blue-300 cursor-pointer transition-all duration-200"
               >
-                <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                  item.type === 'signal' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-blue-100 text-blue-800'
-                }`}>
-                  {item.type === 'signal' ? 'Signal' : 'Release'}
+                <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                  Signal
                 </span>
                 
                 <div className="flex-1 min-w-0">

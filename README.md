@@ -194,7 +194,7 @@ Auralis/
 │   │   ├── layouts/  # Layout components (AppLayout)
 │   │   ├── pages/    # Page components with routing
 │   │   ├── components/ # Reusable UI components
-│   │   ├── lib/      # API client and utilities (includes mockData.ts)
+│   │   ├── lib/      # API client and utilities
 │   │   └── hooks/    # Custom React hooks
 │   ├── package.json  # Dependencies and scripts
 │   ├── tailwind.config.js # Tailwind CSS configuration
@@ -515,41 +515,21 @@ The `data/seed.json` file contains comprehensive sample data based on PAL Roboti
 - **Sources**: Data provenance and credibility tracking with comprehensive source attribution
 - **Spec Profiles**: Flexible specification schemas for robotics, AI platforms, and general automation products
 
-### Mock API (`frontend/src/lib/mockData.ts`)
-
-The mock data system provides:
-
-- **Realistic Delays**: Simulated network latency for authentic user experience
-- **Data Validation**: Zod schema validation for type safety
-- **Filtered Queries**: Specialized functions for dashboard views (recent signals)
-- **Company-Specific Data**: Functions to fetch company products, summaries, and recent activity
-- **Product-Specific Data**: Functions to fetch individual products and their capabilities
-- **Capability Lookup**: Functions to fetch all capabilities for name resolution
-- **Scraper Job System**: Mock scraper jobs with status tracking (queued, processing, done)
-- **Data Extraction**: Heuristic company data extraction from URLs
-- **Deduplication**: Smart duplicate detection using domain and name matching
-- **Error Simulation**: Proper error handling and edge cases
-- **Type Safety**: Full TypeScript integration with schema types
-- **Extended Spec Profiles**: Support for AI platforms, general robotics, mobile humanoids, cobots, and service robots
-
 ### Usage
 
 ```typescript
-// Import mock API functions
+// Import API functions
 import { 
-  getThisWeekSignals, 
   companies, 
   company, 
   companySummaries, 
   productsByCompany, 
-  getCompanyRecentActivity,
   product,
   productCapabilities,
   capabilities,
-  startScraperJob,
-  getScraperJob,
-  saveCompetitor
-} from '@/lib/mockData';
+  signals,
+  globalSearch
+} from '@/lib/api';
 
 // Use in components
 const signals = await getThisWeekSignals(); // Top 5 signals from past week

@@ -1,4 +1,4 @@
-import { ScraperJobStatus } from '../lib/mockData';
+import { ScraperJobStatus } from '../lib/api';
 
 interface JobStatusBadgeProps {
   status: ScraperJobStatus;
