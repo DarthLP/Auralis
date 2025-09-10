@@ -41,7 +41,6 @@ class Product(Base):
     company = relationship("Company", back_populates="products")
     capabilities = relationship("ProductCapability", back_populates="product")
     signals = relationship("Signal", secondary="signal_products", back_populates="products")
-    releases = relationship("Release", back_populates="product")
 
 
 class Capability(Base):

@@ -12,7 +12,6 @@ export default function AppLayout() {
     { path: '/', label: 'Overview' },
     { path: '/companies', label: 'Companies' },
     { path: '/signals', label: 'Signals' },
-    { path: '/releases', label: 'Releases' },
   ]
 
   return (

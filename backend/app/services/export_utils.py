@@ -247,7 +247,9 @@ def export_extraction_data(extraction_session_id: int, competitor: str = "unknow
             'error_summary': row[18]
         }
         
-        filename = f"{competitor}_extraction_session_{extraction_session_id}.json"
+        # Sanitize competitor name for filename (same as other export functions)
+        safe_competitor = competitor.replace(" ", "_").replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_")
+        filename = f"{safe_competitor}_extraction_session_{extraction_session_id}.json"
         
         # Save to container filesystem
         container_filepath = container_exports_dir / "extraction" / filename

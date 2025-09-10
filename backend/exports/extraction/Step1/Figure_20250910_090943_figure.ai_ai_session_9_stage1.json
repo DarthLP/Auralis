@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-10T09:09:43.901429",
+  "session_id": "9",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/ai",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: A generalist humanoid Vision-Language-Action model that reasons like a human\nCATEGORY: N/A\nFEATURES: N/A\nCAPABILITIES: N/A\nUSERS: N/A\nMARKETS: N/A\nINTEGRATIONS: N/A\nPRICING: N/A\nSTAGE: N/A\nSPECS: N/A\nCOMPLIANCE: N/A\nLINKS: N/A\nLIMITATIONS: N/A\nNOTE: The text does not provide specific details about Helix's features, capabilities, pricing, or links, but mentions it as a humanoid model and its potential applications."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nALIAS: N/A\nCONTACT: N/A\nLOCATION: N/A\nPOSITIONING: Building robots that learn and reason like humans\nINDUSTRIES: N/A\nCUSTOMERS: N/A\nPARTNERS: N/A\nCOMPLIANCE: N/A\nLINKS: N/A\nNOTE: The text does not provide specific details about Figure's industries, customers, partners, or compliance."
+    },
+    "source": {
+      "url": "https://figure.ai/ai"
+    }
+  },
+  "prompt_length": 2628,
+  "response_size": 848
+}

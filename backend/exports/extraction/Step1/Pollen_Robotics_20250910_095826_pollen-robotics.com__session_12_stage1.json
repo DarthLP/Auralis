@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-10T09:58:26.430542",
+  "session_id": "12",
+  "stage": "1",
+  "competitor": "Pollen Robotics",
+  "url": "https://pollen-robotics.com/",
+  "llm_response": {
+    "products": {},
+    "company": {
+      "text": "NAME: Pollen Robotics\n\nCONTACT: info@pollen-robotics.com\n\nLOCATION: 1, Alserstrasse, Zürich, Switzerland\n\nPOSITIONING: Sharing knowledge and driving AI innovation collectively\n\nINDUSTRIES: Robotics\n\nCUSTOMERS: International community\n\nPARTNERS: Open source\n\nCOMPLIANCE: None specified\n\nLINKS: https://pollen-robotics.com/\n\nNOTE: None specified"
+    },
+    "source": {
+      "url": "https://pollen-robotics.com/"
+    }
+  },
+  "prompt_length": 3239,
+  "response_size": 458
+}

@@ -295,9 +295,9 @@ The `frontend/` directory contains a modern React application built with Vite, f
 - **TypeScript**: Full type safety throughout the application
 - **Responsive Design**: Mobile-first approach with responsive navigation
 - **Mock Data System**: Comprehensive seed data with PAL Robotics example
-- **Overview Dashboard**: Real-time signals and releases tracking
+- **Overview Dashboard**: Real-time signals tracking
 - **Loading States**: Comprehensive loading indicators and skeleton screens
-- **Global Search**: Command palette style search across companies, products, signals, and releases
+- **Global Search**: Command palette style search across companies, products, and signals
 - **Empty States**: Friendly empty state components for better UX
 - **Error Handling**: 404 pages and graceful error handling
 
@@ -328,22 +328,22 @@ The frontend includes several reusable components for consistent user experience
 
 ### Routes
 
-- `/` - Overview dashboard with signals and releases
+- `/` - Overview dashboard with signals
 - `/companies` - Companies listing with search and filtering
 - `/companies/:companyId` - Individual company details with products and recent activity
 - `/companies/:companyId/products/:productId` - Product details with capabilities
 - `/competitors/new` - Add new competitor via URL-based ingestion
 - `/signals` - Advanced signals filtering and analysis
-- `/releases` - Product releases tracking with company and date filtering
 
 ### Overview Dashboard
 
 The main dashboard (`/`) provides a comprehensive overview of the latest industry activity:
 
 - **This Week Signals**: Displays the top 5 most impactful signals from the past 7 days, sorted by impact score and recency
-- **Recent Releases**: Shows the 8 most recent product releases from the past 90 days
+- **Your Company**: Company information, stats, and product portfolio
+- **Your Products**: Up to 3 products displayed with quick access to product details
 - **Impact Scoring**: Visual indicators for signal impact levels (High, Medium, Neutral, Low, Very Low)
-- **Interactive Navigation**: Click-through links to detailed views for signals and product releases
+- **Interactive Navigation**: Click-through links to detailed views for signals and products
 - **Loading States**: Skeleton loading animations for better user experience
 - **Error Handling**: Graceful error states with user-friendly messages
 
@@ -360,7 +360,7 @@ The companies section provides comprehensive company management and analysis:
 #### Company Detail (`/companies/:companyId`)
 - **Company Header**: Name, one-liner description, meta information (founded year, HQ, employees), and website button
 - **Products Grid**: All company products with name, description, category, markets, and tags
-- **Recent Activity**: Mixed chronological list of signals (last 60 days) and releases (all), limited to 10 items
+- **Recent Activity**: Chronological list of signals (last 60 days), limited to 10 items
 - **Interactive Elements**: 
   - Product cards navigate to product detail pages
   - Recent activity items navigate to signals or product pages based on type
@@ -454,7 +454,7 @@ The backend provides a comprehensive 3-phase pipeline for competitor analysis:
 The signals page provides advanced filtering and analysis capabilities for industry signals and news:
 
 #### **Advanced Filtering System**
-- **Signal Type Filter**: Multi-select checkboxes for news, job postings, research papers, funding announcements, releases, and social media
+- **Signal Type Filter**: Multi-select checkboxes for news, job postings, research papers, funding announcements, and social media
 - **Company Filter**: Multi-select dropdown with all companies in the dataset
 - **Product Filter**: Multi-select dropdown with "Only with results" toggle to show only products that have associated signals
 - **Impact Filter**: Multiple selection buttons for all 5 impact levels (Very Low, Low, Neutral, Medium, High) with "All" reset option
@@ -489,41 +489,6 @@ The signals page provides advanced filtering and analysis capabilities for indus
 - **Empty States**: Helpful messages when no signals match filters
 - **Error Handling**: Graceful error states with retry options
 
-### Releases Page (`/releases`)
-
-The releases page provides comprehensive tracking and filtering of product releases across the industry:
-
-#### **Simplified Filtering System**
-- **Company Filter**: Multi-select checkboxes for all companies in the dataset
-- **Date Filter**: Preset buttons (7d, 30d, YTD, All) with visual feedback showing selected date range
-- **Clear Filters**: One-click reset to default state
-
-#### **Releases Table Layout**
-- **Chronological Ordering**: Releases sorted by date (newest first)
-- **Column Structure**: Date, Product & Version, Company, Notes, Source
-- **Product Links**: Clickable product names that navigate to nested product detail pages
-- **Company Tags**: Clickable company names that filter by that company
-- **Source Integration**: Source icons that open the Source Drawer for detailed source information
-- **Pagination**: 25 releases per page with navigation controls
-
-#### **Data Integration**
-- **Release Tracking**: Comprehensive product release history with version information
-- **Company Association**: Each release linked to its company and product
-- **Source Attribution**: Source tracking for release announcements
-- **Notes Field**: Short descriptions of release contents and changes
-
-#### **User Experience**
-- **Consistent Layout**: Matches SignalsPage design with sidebar filters and main content area
-- **Responsive Design**: Sidebar collapses on mobile, full-width on desktop
-- **Loading States**: Skeleton loading animations during data fetching
-- **Empty States**: Helpful messages when no releases match filters
-- **Navigation**: Seamless integration with product detail pages
-
-#### **Key Features**
-- **Product Navigation**: Direct links from release entries to product detail pages
-- **Source Verification**: Source drawer integration for release credibility
-- **Time-based Filtering**: Quick access to recent releases with preset date ranges
-- **Company Focus**: Easy filtering to track releases from specific companies
 
 ### Development
 
@@ -547,7 +512,6 @@ The `data/seed.json` file contains comprehensive sample data based on PAL Roboti
 - **Products**: Multiple product lines (TIAGo, TIAGo Pro, ARI, StockBot) with detailed specifications and capabilities
 - **Capabilities**: Technical capabilities with maturity assessments across robotics, AI, and automation domains
 - **Signals**: Industry news and events with impact scoring spanning multiple months
-- **Releases**: Product release history with version tracking and detailed notes
 - **Sources**: Data provenance and credibility tracking with comprehensive source attribution
 - **Spec Profiles**: Flexible specification schemas for robotics, AI platforms, and general automation products
 
@@ -557,7 +521,7 @@ The mock data system provides:
 
 - **Realistic Delays**: Simulated network latency for authentic user experience
 - **Data Validation**: Zod schema validation for type safety
-- **Filtered Queries**: Specialized functions for dashboard views (recent signals, releases)
+- **Filtered Queries**: Specialized functions for dashboard views (recent signals)
 - **Company-Specific Data**: Functions to fetch company products, summaries, and recent activity
 - **Product-Specific Data**: Functions to fetch individual products and their capabilities
 - **Capability Lookup**: Functions to fetch all capabilities for name resolution
@@ -574,7 +538,6 @@ The mock data system provides:
 // Import mock API functions
 import { 
   getThisWeekSignals, 
-  getRecentReleases, 
   companies, 
   company, 
   companySummaries, 
@@ -590,7 +553,6 @@ import {
 
 // Use in components
 const signals = await getThisWeekSignals(); // Top 5 signals from past week
-const releases = await getRecentReleases(); // Top 8 releases from past 90 days
 const companiesList = await companies(); // All companies
 const companyData = await company('cmp_pal'); // Specific company
 const products = await productsByCompany('cmp_pal'); // Company products
@@ -766,12 +728,6 @@ The backend provides a RESTful API built with FastAPI for competitor analysis wi
 - `PUT /api/signals/{id}` - Update signal information
 - `DELETE /api/signals/{id}` - Delete signal
 
-**Releases Tracking:**
-- `GET /api/releases/` - List all product releases with filtering
-- `GET /api/releases/{id}` - Get detailed release information
-- `POST /api/releases/` - Create new release
-- `PUT /api/releases/{id}` - Update release information
-- `DELETE /api/releases/{id}` - Delete release
 
 **Capabilities & Sources:**
 - `GET /api/capabilities/` - List all technical capabilities
@@ -785,7 +741,6 @@ The backend now includes a complete database schema with:
 - **Companies**: Company profiles with metadata and summaries
 - **Products**: Product lifecycle management with specifications
 - **Signals**: Industry intelligence with impact scoring
-- **Releases**: Product release tracking with version history
 - **Capabilities**: Technical capabilities with maturity assessment
 - **Sources**: Data provenance and credibility tracking
 
@@ -944,17 +899,17 @@ LOG_LEVEL=info
 ### Competitor Management
 - **Add Competitors**: Enter name and website URL
 - **Website Crawling**: Automated data collection from competitor sites
-- **Data Extraction**: Overview text, products, features, releases, documents
+- **Data Extraction**: Overview text, products, features, documents
 - **Change Detection**: Track updates and modifications over time
 
 ### Dashboard Views
 - **Competitor Overview**: List all competitors with last crawl and changes
 - **Competitor Detail**: Drill down into specific competitor information
-- **Product Detail**: View features, releases, and documents for each product
+- **Product Detail**: View features and documents for each product
 - **Change History**: Track and visualize changes over time
 
 ### Data Architecture
-- **Structured Models**: Competitor → Products → Features, Releases, Documents
+- **Structured Models**: Competitor → Products → Features, Documents
 - **Extensible Design**: Easy to add new artifact types (Pricing, News, etc.)
 - **Snapshot System**: Track changes and maintain historical data
 - **Clean Interfaces**: Swappable scraping engines (Requests/BeautifulSoup → Playwright)
@@ -984,7 +939,7 @@ View Dashboard (see Acme Corp with last crawl date)
     ↓
 Click Competitor → Product List → Product Detail
     ↓
-View Features, Releases, Documents
+View Features, Documents
     ↓
 Re-crawl → Detect Changes → Show What's New
 ```
@@ -1004,7 +959,7 @@ Re-crawl → Detect Changes → Show What's New
 - [x] Flexible specification system
 - [x] Source tracking and provenance
 - [ ] PostgreSQL integration
-- [ ] Database models (Competitor, Product, Feature, Release, Document)
+- [ ] Database models (Competitor, Product, Feature, Document)
 - [ ] Database migrations and seeding
 - [ ] Change tracking system
 
@@ -1026,7 +981,7 @@ Re-crawl → Detect Changes → Show What's New
 - [x] **Automated JSON Export System** with proper formatting and all records
 - [x] **Data persistence** (PostgreSQL database + JSON exports)
 - [x] **Data persistence** (JSON files with complete crawl data)
-- [x] **Business Intelligence API endpoints** (Companies, Products, Signals, Releases, Capabilities, Sources)
+- [x] **Business Intelligence API endpoints** (Companies, Products, Signals, Capabilities, Sources)
 - [x] **Complete CRUD operations** for all entities
 - [x] **Database integration** with SQLAlchemy ORM
 - [x] **Frontend-Backend integration** with real API endpoints

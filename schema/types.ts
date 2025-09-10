@@ -78,15 +78,6 @@ export interface Signal {
   source_id?: string;
 }
 
-export interface Release {
-  id: string;
-  company_id: string;
-  product_id: string;
-  version?: string;
-  notes?: string;
-  released_at: string; // ISO date string
-  source_id?: string;
-}
 
 export interface Source {
   id: string;
@@ -103,6 +94,5 @@ export interface Seed {
   capabilities: Capability[];
   product_capabilities: ProductCapability[];
   signals: Signal[];
-  releases: Release[];
   sources: Source[];
 }

@@ -6,7 +6,6 @@ import {
   ProductCapability,
   Capability,
   Signal,
-  Release,
   Source,
 } from '@schema/types';
 import {
@@ -16,7 +15,6 @@ import {
   zProductCapability,
   zCapability,
   zSignal,
-  zRelease,
   zSource,
 } from '@schema/zod';
 
@@ -125,14 +123,6 @@ export async function signals(qs: string = ''): Promise<Signal[]> {
   return fetchAs(`/api/signals${qs}`, z.array(zSignal));
 }
 
-/**
- * Fetch releases with optional query string
- * @param qs - Query string parameters (e.g., "?company_id=123&product_id=456")
- * @returns Promise<Release[]> - Array of releases
- */
-export async function releases(qs: string = ''): Promise<Release[]> {
-  return fetchAs(`/api/releases${qs}`, z.array(zRelease));
-}
 
 /**
  * Fetch a specific source by ID
@@ -236,7 +226,6 @@ export interface ExtractionResponse {
     companies_found: number;
     products_found: number;
     capabilities_found: number;
-    releases_found: number;
     documents_found: number;
     signals_found: number;
     changes_detected: number;

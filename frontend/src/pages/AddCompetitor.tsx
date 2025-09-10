@@ -8,8 +8,7 @@ import {
   stopCrawl,
   scorePagesWithAI,
   ExtractionProgressTracker,
-  companies,
-  extractedCompanies
+  companies
 } from '../lib/api';
 import { 
   ValidationResult, 
@@ -20,7 +19,7 @@ import UrlInputWithValidate from '../components/UrlInputWithValidate';
 import DedupAlert from '../components/DedupAlert';
 
 interface ProcessingState {
-  phase: 'idle' | 'discovering' | 'scoring' | 'fingerprinting' | 'extracting' | 'completed' | 'error';
+  phase: 'idle' | 'discovering' | 'discovery_complete' | 'scoring' | 'fingerprinting' | 'extracting' | 'completed' | 'error';
   crawlSessionId: number | null;
   fingerprintSessionId: number | null;
   extractionSessionId: number | null;
@@ -205,12 +204,19 @@ export default function AddCompetitor() {
     });
     
     tracker.on('session_completed', async (data: any) => {
-      // Fetch extracted companies for this competitor
+      // Fetch companies for this competitor (data is now in main companies table)
       let extractedCompaniesData: any[] = [];
       try {
-        extractedCompaniesData = await extractedCompanies(processingState.competitorName || undefined);
+        const allCompanies = await companies();
+        // Filter by competitor name to find the newly added company
+        extractedCompaniesData = allCompanies.filter(company => 
+          company.name.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '') ||
+          company.aliases?.some((alias: string) => 
+            alias.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '')
+          )
+        );
       } catch (error) {
-        console.error('Failed to fetch extracted companies:', error);
+        console.error('Failed to fetch companies:', error);
       }
       
       setProcessingState(prev => ({
@@ -245,15 +251,32 @@ export default function AddCompetitor() {
     tracker.subscribe(extractionSessionId);
     setProgressTracker(tracker);
     
-    // Fallback: Check extraction status every 10 seconds in case SSE doesn't work
+    // Fallback: Check extraction status every 5 seconds in case SSE doesn't work
     const statusCheckInterval = setInterval(async () => {
       try {
         const status = await getExtractionStatus(extractionSessionId);
         if (status.status === 'completed') {
           clearInterval(statusCheckInterval);
+          
+          // Fetch companies for this competitor (data is now in main companies table)
+          let extractedCompaniesData: any[] = [];
+          try {
+            const allCompanies = await companies();
+            // Filter by competitor name to find the newly added company
+            extractedCompaniesData = allCompanies.filter(company => 
+              company.name.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '') ||
+              company.aliases?.some((alias: string) => 
+                alias.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '')
+              )
+            );
+          } catch (error) {
+            console.error('Failed to fetch companies:', error);
+          }
+          
           setProcessingState(prev => ({
             ...prev,
             phase: 'completed',
+            stepsCompleted: { ...prev.stepsCompleted, extraction: true },
             progress: {
               ...prev.progress,
               entitiesFound: {
@@ -264,7 +287,8 @@ export default function AddCompetitor() {
                 documents: status.stats?.documents_found || 0,
                 signals: status.stats?.signals_found || 0
               }
-            }
+            },
+            extractedCompanies: extractedCompaniesData
           }));
           setIsAnalyzing(false);
         } else if (status.status === 'failed') {
@@ -279,7 +303,7 @@ export default function AddCompetitor() {
       } catch (error) {
         console.error('Failed to check extraction status:', error);
       }
-    }, 10000); // Check every 10 seconds
+    }, 5000); // Check every 5 seconds for faster response
     
     // Clean up interval when component unmounts or tracker is closed
     const originalClose = tracker.close.bind(tracker);
@@ -914,22 +938,75 @@ export default function AddCompetitor() {
               )}
 
               {processingState.phase === 'extracting' && !processingState.stepsCompleted.extraction && (
-                <button
-                  onClick={handleStartExtraction}
-                  disabled={isAnalyzing}
-                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Starting Extraction...
-                    </>
-                  ) : (
-                    'Start Extraction'
-                  )}
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleStartExtraction}
+                    disabled={isAnalyzing}
+                    className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Starting Extraction...
+                      </>
+                    ) : (
+                      'Start Extraction'
+                    )}
+                  </button>
+                  
+                  <button
+                    onClick={async () => {
+                      if (!processingState.extractionSessionId) return;
+                      try {
+                        const status = await getExtractionStatus(processingState.extractionSessionId);
+                        if (status.status === 'completed') {
+                          // Fetch companies for this competitor
+                          let extractedCompaniesData: any[] = [];
+                          try {
+                            const allCompanies = await companies();
+                            extractedCompaniesData = allCompanies.filter(company => 
+                              company.name.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '') ||
+                              company.aliases?.some((alias: string) => 
+                                alias.toLowerCase().includes(processingState.competitorName?.toLowerCase() || '')
+                              )
+                            );
+                          } catch (error) {
+                            console.error('Failed to fetch companies:', error);
+                          }
+                          
+                          setProcessingState(prev => ({
+                            ...prev,
+                            phase: 'completed',
+                            stepsCompleted: { ...prev.stepsCompleted, extraction: true },
+                            progress: {
+                              ...prev.progress,
+                              entitiesFound: {
+                                companies: status.stats?.companies_found || 0,
+                                products: status.stats?.products_found || 0,
+                                capabilities: status.stats?.capabilities_found || 0,
+                                releases: status.stats?.releases_found || 0,
+                                documents: status.stats?.documents_found || 0,
+                                signals: status.stats?.signals_found || 0
+                              }
+                            },
+                            extractedCompanies: extractedCompaniesData
+                          }));
+                          setIsAnalyzing(false);
+                        }
+                      } catch (error) {
+                        console.error('Failed to check extraction status:', error);
+                      }
+                    }}
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Check Status
+                  </button>
+                </div>
               )}
 
               {(processingState.phase === 'discovering' || processingState.phase === 'fingerprinting' || processingState.phase === 'extracting') && (

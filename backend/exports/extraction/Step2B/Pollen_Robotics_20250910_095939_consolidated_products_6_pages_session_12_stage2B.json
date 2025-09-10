@@ -1,0 +1,287 @@
+{
+  "timestamp": "2025-09-10T09:59:39.341233",
+  "session_id": "12",
+  "stage": "2B",
+  "competitor": "Pollen Robotics",
+  "url": "consolidated_products_6_pages",
+  "llm_response": {
+    "products": {
+      "Reachy 2": {
+        "name": "Reachy 2",
+        "category": "Industrial automation equipment",
+        "stage": "alpha",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "robotics platform",
+          "developers",
+          "researchers"
+        ],
+        "short_desc": "Humanoid robot platform for developers, researchers, and robotics enthusiasts.",
+        "product_url": "https://pollen-robotics.com/reachy-2s-online-documentation",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "setup",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Detailed information on setup and configuration."
+            },
+            {
+              "name": "basic controls",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Information on basic controls and navigation."
+            },
+            {
+              "name": "advanced features",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Comprehensive features like Jupyter Notebook, RViz, Gazebo, and MuJoCo integration."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy-2s-online-documentation"
+        ],
+        "notes": [
+          "Docker Desktop installation is a prerequisite."
+        ]
+      },
+      "Reachy Mini": {
+        "name": "Reachy Mini",
+        "category": "AI applications, open-source hardware and software integration",
+        "stage": "beta",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "open-source",
+          "desktop robot",
+          "human-robot interaction"
+        ],
+        "short_desc": "Open-source desktop robot designed for human-robot interaction and creative applications.",
+        "product_url": "https://pollen-robotics.com/reachy-mini",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "companion bot",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Self-assembly, rapid prototyping, simulation, and real-world intelligence."
+            },
+            {
+              "name": "beta tester notification",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Pre-order starting July 9, 2025, delivery in batches this fall through late 2026."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy-mini"
+        ],
+        "notes": [
+          "Beta version."
+        ]
+      },
+      "Reachy Mini Lite": {
+        "name": "Reachy Mini Lite",
+        "category": "AI applications, open-source hardware and software integration",
+        "stage": "beta",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "open-source",
+          "desktop robot",
+          "creative applications"
+        ],
+        "short_desc": "Version of the Reachy Mini with external compute, compatible with Mac and Linux.",
+        "product_url": "https://pollen-robotics.com/reachy-mini",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "external compute",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Wired power, 2 microphones, 5W speaker, wide angle camera."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy-mini"
+        ],
+        "notes": null
+      },
+      "Reachy 2 Dual Arm + Mobile Base": {
+        "name": "Reachy 2 Dual Arm + Mobile Base",
+        "category": "Industrial automation equipment",
+        "stage": "alpha",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "robotics platform",
+          "industrial automation"
+        ],
+        "short_desc": "Compact, modular robot arm with dual reach and precision.",
+        "product_url": "https://pollen-robotics.com/reachy",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "human-like arm movements",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Advanced machine learning support."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy"
+        ],
+        "notes": [
+          "Available with or without a mobile base."
+        ]
+      },
+      "Reachy 2 Single Arm + Mobile Base": {
+        "name": "Reachy 2 Single Arm + Mobile Base",
+        "category": "Industrial automation equipment",
+        "stage": "alpha",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "robotics platform",
+          "industrial automation"
+        ],
+        "short_desc": "Compact, modular robot arm with single reach and precision.",
+        "product_url": "https://pollen-robotics.com/reachy",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "human-like arm movements",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Advanced machine learning support."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy"
+        ],
+        "notes": [
+          "Available with or without a mobile base."
+        ]
+      },
+      "Reachy 2 Dual Arm": {
+        "name": "Reachy 2 Dual Arm",
+        "category": "Industrial automation equipment",
+        "stage": "alpha",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "robotics platform",
+          "industrial automation"
+        ],
+        "short_desc": "Compact, modular robot arm with dual reach and precision.",
+        "product_url": "https://pollen-robotics.com/reachy",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "human-like arm movements",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Advanced machine learning support."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy"
+        ],
+        "notes": [
+          "Requires a mobile base for extended use."
+        ]
+      },
+      "Reachy 2 Single Arm": {
+        "name": "Reachy 2 Single Arm",
+        "category": "Industrial automation equipment",
+        "stage": "alpha",
+        "markets": [
+          "Manufacturing",
+          "logistics",
+          "robotics"
+        ],
+        "tags": [
+          "robotics platform",
+          "industrial automation"
+        ],
+        "short_desc": "Compact, modular robot arm with single reach and precision.",
+        "product_url": "https://pollen-robotics.com/reachy",
+        "docs_url": null,
+        "specs": {
+          "released_at": null,
+          "compliance": null,
+          "capabilities": [
+            {
+              "name": "human-like arm movements",
+              "tags": [
+                "robotics platform"
+              ],
+              "definition": "Advanced machine learning support."
+            }
+          ]
+        },
+        "sources": [
+          "https://pollen-robotics.com/reachy"
+        ],
+        "notes": [
+          "Requires a mobile base for extended use."
+        ]
+      }
+    }
+  },
+  "prompt_length": 8034,
+  "response_size": 5411
+}

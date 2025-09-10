@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-10T09:10:16.149227",
+  "session_id": "9",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/about-us",
+  "llm_response": {
+    "products": {
+      "Humanoid Robot": {
+        "text": "WHAT: A commercially viable humanoid robot\nCATEGORY: Robotic systems\nFEATURES: Designed for real-world applications\nCAPABILITIES: Aggressive optimism, product-first mission focus\nSTAGE: Not explicitly stated\nLINKS: None provided\nNOTE: Details about specs, pricing, and stage are limited"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: Not explicitly provided\nLOCATION: Boston, MA\nPOSITIONING: Building a groundbreaking company focused on robotics\nINDUSTRIES: Robotics, AI, technology\nCUSTOMERS: None explicitly mentioned\nPARTNERS: None explicitly mentioned\nCOMPLIANCE: Not explicitly mentioned\nLINKS: None provided\nNOTE: No specific partners or compliance details mentioned"
+    },
+    "source": {
+      "url": "https://figure.ai/about-us"
+    }
+  },
+  "prompt_length": 3815,
+  "response_size": 781
+}

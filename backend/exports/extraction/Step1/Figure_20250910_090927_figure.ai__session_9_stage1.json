@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-10T09:09:27.648055",
+  "session_id": "9",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/",
+  "llm_response": {
+    "products": {
+      "Figure Humanoid Robot": {
+        "text": "WHAT: Figure humanoid robot bringing AI to life.\nCATEGORY: AI robotics.\nFEATURES: Height: 5'6\"; Payload: 20kg; Weight: 70kg; Runtime: 5hr; Speed: 1.2M/S; System: Electric.\nCAPABILITIES: General purpose humanoid; autonomous operations; end-to-end operations; household tasks; learning and performing tasks safely.\nSTAGE: Early stages of commercialization.\nNOTE: Figure is poised to solve labor shortages and is learning and performing end-to-end operations safely."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure AI Robotics Company.\nCONTACT: Not explicitly provided.\nLOCATION: Not explicitly provided.\nPOSITIONING: World leader in AI & Humanoid experience; bringing impossible ideas to life; solving labor shortages; applications in manufacturing, logistics, warehousing, and retail."
+    },
+    "source": {
+      "url": "https://figure.ai/"
+    }
+  },
+  "prompt_length": 3610,
+  "response_size": 875
+}

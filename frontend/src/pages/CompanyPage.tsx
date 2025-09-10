@@ -244,18 +244,18 @@ export default function CompanyPage() {
                 )}
 
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                  {summary?.founded_year && (
-                    <span>Founded {summary.founded_year}</span>
-                  )}
-                  {summary?.hq_city && companyData.hq_country && (
-                    <span>HQ: {summary.hq_city}, {companyData.hq_country}</span>
-                  )}
-                  {!summary?.hq_city && companyData.hq_country && (
-                    <span>HQ: {companyData.hq_country}</span>
-                  )}
-                  {summary?.employees && (
-                    <span>{summary.employees} employees</span>
-                  )}
+                  <span>
+                    Founded: {summary?.founded_year || 'Not specified'}
+                  </span>
+                  <span>
+                    HQ: {summary?.hq_city && companyData.hq_country 
+                      ? `${summary.hq_city}, ${companyData.hq_country}`
+                      : companyData.hq_country || 'Not specified'
+                    }
+                  </span>
+                  <span>
+                    Employees: {summary?.employees || 'Not specified'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -312,38 +312,52 @@ export default function CompanyPage() {
                   <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mr-2">
                     {product.category}
                   </span>
-                  {product.markets.slice(0, 2).map((market) => (
-                    <span
-                      key={market}
-                      className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full mr-2"
-                    >
-                      {market}
-                    </span>
-                  ))}
-                  {product.markets.length > 2 && (
-                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                      +{product.markets.length - 2}
+                  {product.markets.length > 0 ? (
+                    <>
+                      {product.markets.slice(0, 2).map((market) => (
+                        <span
+                          key={market}
+                          className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full mr-2"
+                        >
+                          {market}
+                        </span>
+                      ))}
+                      {product.markets.length > 2 && (
+                        <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          +{product.markets.length - 2}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full mr-2">
+                      Markets: Not specified
                     </span>
                   )}
                 </div>
 
-                {product.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {product.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-1.5 py-0.5 bg-gray-50 text-gray-500 text-xs rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {product.tags.length > 3 && (
-                      <span className="px-1.5 py-0.5 bg-gray-50 text-gray-500 text-xs rounded">
-                        +{product.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-1">
+                  {product.tags.length > 0 ? (
+                    <>
+                      {product.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-1.5 py-0.5 bg-gray-50 text-gray-500 text-xs rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {product.tags.length > 3 && (
+                        <span className="px-1.5 py-0.5 bg-gray-50 text-gray-500 text-xs rounded">
+                          +{product.tags.length - 3}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="px-1.5 py-0.5 bg-gray-50 text-gray-500 text-xs rounded">
+                      Tags: Not specified
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
           </div>

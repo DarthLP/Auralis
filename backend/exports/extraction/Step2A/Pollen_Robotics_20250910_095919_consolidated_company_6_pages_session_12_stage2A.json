@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-09-10T09:59:19.977839",
+  "session_id": "12",
+  "stage": "2A",
+  "competitor": "Pollen Robotics",
+  "url": "consolidated_company_6_pages",
+  "llm_response": {
+    "company": {
+      "short_desc": "Pollen Robotics is a leader in AI, robotics, and automation, providing human-like robotic solutions and industrial automation equipment.",
+      "name": "Pollen Robotics SAS",
+      "aliases": [
+        "Pollen Robotics",
+        "Pollen Robotics SAS"
+      ],
+      "status": "active",
+      "tags": [
+        "robotics",
+        "ai",
+        "automation"
+      ],
+      "website": "https://pollen-robotics.com",
+      "hq_country": "Switzerland",
+      "main_sources_used": [
+        "https://pollen-robotics.com/about",
+        "https://pollen-robotics.com/reachy-2s-online-documentation",
+        "https://pollen-robotics.com/reachy-mini",
+        "https://pollen-robotics.com"
+      ],
+      "notes": [
+        "Varying information about HQ location (Mountain View, California, or Zürich, Switzerland).",
+        "Inconsistent contact information across sources."
+      ]
+    }
+  },
+  "prompt_length": 7008,
+  "response_size": 744
+}

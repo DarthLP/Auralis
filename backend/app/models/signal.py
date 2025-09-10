@@ -60,27 +60,6 @@ class Signal(Base):
     capabilities = relationship("Capability", secondary=signal_capabilities, back_populates="signals")
 
 
-class Release(Base):
-    """Release model for storing product releases."""
-    
-    __tablename__ = "releases"
-    __table_args__ = {'schema': None}  # Use default schema
-    
-    id = Column(String, primary_key=True, index=True)
-    company_id = Column(String, ForeignKey("companies.id"), nullable=False, index=True)
-    product_id = Column(String, ForeignKey("products.id"), nullable=False, index=True)
-    version = Column(String, nullable=True)
-    notes = Column(Text, nullable=True)
-    released_at = Column(DateTime(timezone=True), nullable=False, index=True)
-    source_id = Column(String, nullable=True)
-    
-    # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Relationships
-    company = relationship("Company", back_populates="releases")
-    product = relationship("Product", back_populates="releases")
 
 
 class Source(Base):
