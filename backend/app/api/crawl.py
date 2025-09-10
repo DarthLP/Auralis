@@ -6,7 +6,7 @@ import logging
 import os
 import asyncio
 from datetime import datetime
-from typing import Dict, Set, List, Any, Optional
+from typing import Dict, Set, List, Any
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, validator
@@ -100,20 +100,12 @@ class CrawlRequest(BaseModel):
     """Request model for crawl discovery endpoint."""
     url: HttpUrl
     clear_old_data: bool = False  # Whether to clear old crawl data before starting
-    max_pages: Optional[int] = None  # Override max pages limit (defaults to settings.SCRAPER_MAX_PAGES)
     
     @validator('url')
     def validate_url_scheme(cls, v):
         """Ensure URL has http or https scheme."""
         if v.scheme not in ['http', 'https']:
             raise ValueError('URL must use http or https scheme')
-        return v
-    
-    @validator('max_pages')
-    def validate_max_pages(cls, v):
-        """Ensure max_pages is positive if provided."""
-        if v is not None and v <= 0:
-            raise ValueError('max_pages must be a positive integer')
         return v
 
 
@@ -229,9 +221,8 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         crawl_logger = setup_detailed_logging(log_file)
         
         # Prepare crawling limits from settings
-        max_pages = request.max_pages if request.max_pages is not None else settings.SCRAPER_MAX_PAGES
         limits = {
-            'max_pages': max_pages,
+            'max_pages': settings.SCRAPER_MAX_PAGES,
             'max_depth': settings.SCRAPER_MAX_DEPTH,
             'timeout': settings.SCRAPER_TIMEOUT,
             'rate_sleep': settings.SCRAPER_RATE_SLEEP,
