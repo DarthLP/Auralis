@@ -286,8 +286,13 @@ class ThetaClient:
         
         # Route selection: Theta OnDemand vs OpenAI-compatible
         if "ondemand.thetaedgecloud.com" in (self.base_url or ""):
-            # Note: model id path component corresponds to deployed model; default to Llama 3.1 70B
-            url = f"{self.base_url.rstrip('/')}/infer_request/llama_3_1_70b/completions"
+            # Check if the path is already included in the base URL
+            if "/infer_request/" in self.base_url:
+                # Path already included, use as-is
+                url = self.base_url.rstrip('/')
+            else:
+                # Note: model id path component corresponds to deployed model; default to Llama 3.1 70B
+                url = f"{self.base_url.rstrip('/')}/infer_request/llama_3_1_70b/completions"
         else:
             url = f"{self.base_url.rstrip('/')}/chat/completions"
         
@@ -365,6 +370,14 @@ class ThetaClient:
         """Extract content from Theta EdgeCloud response."""
         try:
             content = None
+            
+            # Handle Theta OnDemand API response format
+            if "body" in response and "infer_requests" in response["body"]:
+                infer_requests = response["body"]["infer_requests"]
+                if infer_requests and len(infer_requests) > 0:
+                    first_request = infer_requests[0]
+                    if "output" in first_request and "message" in first_request["output"]:
+                        content = first_request["output"]["message"]
             
             # Handle standard OpenAI-style response formats
             if not content and "choices" in response and len(response["choices"]) > 0:

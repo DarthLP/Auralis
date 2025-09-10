@@ -31,8 +31,8 @@ class Settings(BaseSettings):
     
     # Theta EdgeCloud Configuration
     ON_DEMAND_API_ACCESS_TOKEN: str = ""
-    THETA_REQUEST_TIMEOUT: int = 300
-    THETA_MAX_RETRIES: int = 2
+    THETA_REQUEST_TIMEOUT: int = 500
+    THETA_MAX_RETRIES: int = 3
     THETA_JSON_MODE: bool = True
     THETA_RATE_PER_MIN: int = 20
     THETA_RATE_BURST: int = 10
@@ -45,8 +45,8 @@ class Settings(BaseSettings):
     LLAMA_MODEL: str = ""
 
     # LLM generation controls
-    LLM_TEMPERATURE: float = 0.1
-    LLM_TOP_P: float = 0.5
+    LLM_TEMPERATURE: float = 0.3
+    LLM_TOP_P: float = 0.3
     
     # Extraction Configuration
     SCHEMA_VERSION: str = "v1"
