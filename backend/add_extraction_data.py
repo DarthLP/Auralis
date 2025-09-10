@@ -18,7 +18,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 from app.core.config import settings
 from app.models.company import Company
 from app.models.product import Product, ProductCapability, Capability
-from app.models.signal import Release
+from app.models.signal import Signal, Source
+# from app.models.signal import Release  # Removed - no longer exists
 
 def get_db_session():
     """Create a database session."""
