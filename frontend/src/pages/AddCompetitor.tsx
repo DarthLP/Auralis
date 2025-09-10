@@ -335,7 +335,7 @@ export default function AddCompetitor() {
       
       setProcessingState(prev => ({
         ...prev,
-        phase: 'scoring',
+        phase: 'discovery_complete',
         crawlSessionId: crawlResult.crawl_session_id,
         stepsCompleted: { ...prev.stepsCompleted, discovery: true },
         progress: {
@@ -749,7 +749,7 @@ export default function AddCompetitor() {
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     processingState.stepsCompleted.scoring 
                       ? 'bg-green-100 text-green-800' 
-                      : processingState.phase === 'scoring'
+                      : (processingState.phase === 'scoring' || processingState.phase === 'discovery_complete')
                       ? 'bg-blue-100 text-blue-800 animate-pulse'
                       : 'bg-gray-100 text-gray-600'
                   }`}>
@@ -875,7 +875,7 @@ export default function AddCompetitor() {
 
             {/* Action Buttons */}
             <div className="flex space-x-3">
-              {processingState.phase === 'scoring' && !processingState.stepsCompleted.scoring && (
+              {(processingState.phase === 'scoring' || processingState.phase === 'discovery_complete') && !processingState.stepsCompleted.scoring && (
                 <button
                   onClick={handleStartScoring}
                   disabled={isAnalyzing}
@@ -894,7 +894,7 @@ export default function AddCompetitor() {
                 </button>
               )}
 
-              {processingState.phase === 'scoring' && processingState.stepsCompleted.scoring && !processingState.stepsCompleted.fingerprinting && (
+              {(processingState.phase === 'scoring' || processingState.phase === 'discovery_complete') && processingState.stepsCompleted.scoring && !processingState.stepsCompleted.fingerprinting && (
                 <button
                   onClick={handleStartFingerprinting}
                   disabled={isAnalyzing}

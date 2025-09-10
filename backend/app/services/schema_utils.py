@@ -138,7 +138,7 @@ Return JSON ONLY.
         company_items_json = json.dumps(company_items, ensure_ascii=False, indent=2)
         
         prompt = f"""
-You are a strict normalizer. Consolidate company information from multiple Stage-1 page outputs.
+You are a strict normalizer. Consolidate company information from multiple Stage-1 page outputs. All the company information should be from the same company - if there are multiple companies, focus on the main one.
 
 Input format:
   - "company_id": string (already determined earlier; use as-is)

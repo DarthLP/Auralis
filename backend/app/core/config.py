@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     THETA_RATE_BURST: int = 10
     THETA_SESSION_RATE_PER_MIN: int = 5
     THETA_SESSION_RATE_BURST: int = 5
-    THETA_MAX_OUTPUT_TOKENS: int = 8000  # Conservative for Qwen 7B
+    THETA_MAX_OUTPUT_TOKENS: int = 12000  # Conservative for Qwen 7B
     
     # Extraction Configuration
     SCHEMA_VERSION: str = "v1"
@@ -50,11 +50,11 @@ class Settings(BaseSettings):
     
     # Scraper Configuration
     SCRAPER_MAX_PAGES: int = 100
-    SCRAPER_MAX_DEPTH: int = 4
+    SCRAPER_MAX_DEPTH: int = 2
     SCRAPER_TIMEOUT: int = 10
     SCRAPER_RATE_SLEEP: float = 0.3
     SCRAPER_USER_AGENT: str = "AuralisBot/0.1 (+contact)"
-    SCRAPER_MAX_RETRIES: int = 3
+    SCRAPER_MAX_RETRIES: int = 2
     SCRAPER_USE_REALISTIC_HEADERS: bool = True
     SCRAPER_ENABLE_JAVASCRIPT: bool = True
     SCRAPER_JS_WAIT_TIME: int = 3

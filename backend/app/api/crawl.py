@@ -295,7 +295,7 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
         active_crawl_sessions.add(temp_session_id)
         
         try:
-            # Perform discovery with AI scoring as primary method
+            # Perform discovery without AI scoring (AI scoring happens manually later)
             result = await discover_interesting_pages(
                 str(request.url), 
                 limits, 
@@ -303,7 +303,7 @@ async def discover_pages(request: CrawlRequest, db: Session = Depends(get_db)) -
                 competitor=competitor,
                 crawl_logger=crawl_logger,
                 stop_check=lambda: temp_session_id not in active_crawl_sessions,
-                skip_ai_scoring=False  # Enable AI scoring as primary method
+                skip_ai_scoring=True  # Skip AI scoring during discovery - done manually later
             )
         finally:
             # Always remove from active sessions when done
