@@ -588,6 +588,7 @@ class AIScoringService:
                             # Check if extraction actually found valid content
                             if extracted_json == message and not message.strip().startswith('{'):
                                 logger.warning(f"AI API message does not contain JSON: {message[:100]}...")
+                                logger.warning(f"Full message content: {message}")
                                 raise ThetaClientError("AI API message does not contain valid JSON")
                             
                             return extracted_json

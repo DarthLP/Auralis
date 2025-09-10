@@ -610,7 +610,7 @@ async def score_pages_with_ai(
                 page["ai_success"] = ai_result.success
                 page["ai_scoring_reason"] = "AI scoring completed"
                 
-                # Use AI score if successful, otherwise fall back to rules score
+                # Use AI score if successful, otherwise keep existing scoring method
                 if ai_result.success and ai_result.score > 0:
                     page["score"] = ai_result.score
                     page["primary_category"] = ai_result.primary_category
@@ -618,7 +618,8 @@ async def score_pages_with_ai(
                     page["signals"] = ai_result.signals
                     page["scoring_method"] = "ai"
                 else:
-                    page["scoring_method"] = "rules"
+                    # Keep existing scoring method (don't overwrite to "rules" if already "rules")
+                    # Only set ai_error for debugging
                     page["ai_error"] = ai_result.error
                 
             except Exception as e:
@@ -629,15 +630,46 @@ async def score_pages_with_ai(
                 page["ai_signals"] = []
                 page["ai_success"] = False
                 page["ai_error"] = str(e)
-                page["scoring_method"] = "rules"
+                # Keep existing scoring method (don't overwrite to "rules" if already "rules")
             
             scored_pages.append(page)
         
+        # Persist successful AI scores to database so downstream fingerprinting uses them
+        updated_count = 0
+        try:
+            for page in scored_pages:
+                # Only persist successful AI scores; otherwise keep rules-based values
+                if page.get("ai_success") and page.get("scoring_method") == "ai" and page.get("score", 0) > 0:
+                    canonical_url = _canonicalize_url(page.get("url", ""))
+                    if not canonical_url:
+                        continue
+                    # Update the most recent crawled page with this canonical URL
+                    db_page = (
+                        db.query(CrawledPage)
+                        .filter(CrawledPage.canonical_url == canonical_url)
+                        .order_by(CrawledPage.crawled_at.desc())
+                        .first()
+                    )
+                    if db_page is None:
+                        continue
+                    # Overwrite with AI results
+                    db_page.score = float(page.get("score", db_page.score or 0.0))
+                    db_page.primary_category = page.get("primary_category", db_page.primary_category)
+                    db_page.secondary_categories = page.get("secondary_categories", db_page.secondary_categories)
+                    db_page.signals = page.get("signals", db_page.signals)
+                    updated_count += 1
+            if updated_count:
+                db.commit()
+        except Exception as persist_error:
+            logger.error(f"Failed to persist AI scores: {persist_error}")
+            db.rollback()
+
         return {
             "success": True,
             "pages": scored_pages,
             "total_pages": len(scored_pages),
-            "ai_scored_pages": len([p for p in scored_pages if p.get("ai_success", False)])
+            "ai_scored_pages": len([p for p in scored_pages if p.get("ai_success", False)]),
+            "db_updated_pages": updated_count
         }
         
     except Exception as e:

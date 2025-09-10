@@ -474,6 +474,19 @@ Processes pages from a crawl session through the 3-step fingerprinting pipeline 
    - PDF → pdfminer text extraction → normalized hash (with low_text_pdf flag)
    - Images/Videos → direct byte hashing
 
+#### AI Scoring Persistence (Post-Discovery)
+
+- Endpoint: `POST /api/crawl/score-pages`
+- Purpose: Run AI scoring on discovered pages and persist successful AI results back into the database so downstream fingerprinting uses AI scores.
+- Behavior:
+  - For each page with successful AI scoring (`ai_success=true`), the service updates the corresponding `crawl_data.crawled_pages` row (matched by `canonical_url`) with:
+    - `score` ← AI score
+    - `primary_category`, `secondary_categories`, `signals` ← AI-derived values
+  - Pages where AI scoring fails retain their original rules-based values.
+- Response includes `db_updated_pages` showing how many pages were persisted.
+
+Note: Fingerprinting uses the `score` stored in the database. To prioritize AI, click "Start AI Scoring" in the UI (or call this endpoint) before fingerprinting.
+
 #### GET /api/crawl/sessions
 
 Lists recent crawl sessions with pagination support.
@@ -539,6 +552,12 @@ The crawler includes several measures to avoid bot detection and respect website
 - **Realistic Browser Headers**: Mimics real browser requests with proper Accept, Accept-Language, DNT, and Sec-Fetch headers
 - **User Agent Rotation**: Randomly selects from pool of real browser user agents (Chrome, Firefox, Safari)
 - **Session Management**: Uses persistent sessions for better connection handling
+
+**🌐 Language Filtering:**
+- **English-Only Focus**: Automatically skips non-English language paths (e.g., `/de/`, `/es/`, `/fr/`, `/zh/`)
+- **Query Parameter Filtering**: Skips URLs with language query parameters (`?lang=es`, `?language=de`)
+- **Comprehensive Coverage**: Supports 50+ languages including major European, Asian, and other world languages
+- **Duplicate Prevention**: Prevents crawling the same content in multiple languages
 
 **⏱️ Rate Limiting & Delays:**
 - **Smart Delays**: Random delays between 0.3x-1.5x base rate (default 0.8s)
