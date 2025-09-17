@@ -74,10 +74,7 @@ class MultiStageExtractor:
         truncated_text = TokenCounter.truncate_to_tokens(text, max_text_tokens)
         
         prompt = f"""
-You are an information extractor. Read the given webpage text and return JSON with EXACTLY three top-level keys:
-  - "products": map <Exact Product Name> → {{"text": "<newline-bulleted explanation>"}}
-  - "company": {{"text": "<newline-bulleted explanation>"}}
-  - "source": {{"url": "<page url>"}}
+You are an information extractor. Read the given webpage text and return JSON with EXACTLY three top-level keys: products, company and source.
 
 Context:
   - Competitor: {competitor}
@@ -141,15 +138,6 @@ Return JSON ONLY.
         prompt = f"""
 You are a strict normalizer. Consolidate company information from multiple Stage-1 page outputs and merge the information. All the company information should be from the SAME company.
 
-Input format:
-  - "company_id": string (already determined earlier; use as-is)
-  - "competitor": string (context only)
-  - "items": array of Stage-1 results, each:
-    {{
-      "company": "<newline-bulleted string from Stage-1>",
-      "source": {{"url": "<page url>"}}
-    }}
-
 CRITICAL RULES
   - Output JSON ONLY (no markdown, no commentary).
   - Use ONLY facts present in Stage-1 company blocks. Do not invent.
@@ -166,14 +154,14 @@ EXTRACTION
   - hq_country: from LOCATION/HQ if explicit; else null.
   - status: only if explicitly stated (active/dormant); else null.
   - tags: up to 3 short keywords from POSITIONING/INDUSTRIES.
-  - short_desc: REQUIRED - concise 1-2 sentence description of what the company does (from WHAT/POSITIONING bullets).
+  - short_desc: REQUIRED - concise 1-3 sentence description of what the company does (from WHAT/POSITIONING bullets).
   - main_sources_used: include 3–6 URLs actually relied on.
   - notes: optional short conflict/caveat notes.
 
 OUTPUT SCHEMA (including example text):
 {{
   "company": {{
-    "short_desc": "AI-powered cloud platform for enterprise automation and data analytics.",
+    "short_desc": "Example text",
     "name": "ExampleCorp",
     "aliases": ["Example", "Example Inc."],
     "status": "active",
@@ -184,7 +172,7 @@ OUTPUT SCHEMA (including example text):
       "https://example.com/about",
       "https://example.com/contact"
     ],
-    "notes": ["Some pages list HQ as UK, others as USA."]
+    "notes": ["Some pages list HQ as US, others as UK."]
   }}
 }}
 
@@ -207,108 +195,80 @@ Return JSON ONLY.
         
         products_items_json = json.dumps(products_items, ensure_ascii=False, indent=2)
         
+        # Define the output schema separately to avoid f-string parsing issues
+        output_schema = """{
+  "company_id": "<string>",
+  "products": {
+    "Exact Product Name A": {
+      "name": "Exact Product Name A",
+      "category": "string|null",
+      "stage": "alpha|beta|ga|discontinued|null",
+      "markets": ["string"],
+      "tags": ["string"],
+      "short_desc": "string|null",
+      "product_url": "https://...|null",
+      "docs_url": "https://...|null",
+      "specs": {
+        "integrations": [],
+        "pricing": [],
+        "specs": [],
+        "limitations": []
+      },
+      "released_at": "YYYY[-MM[-DD]]|null",
+      "compliance": ["string"],
+      "capabilities": [
+        { "name": "string", "tags": ["string"], "definition": "string|null" }
+      ],
+      "sources": ["https://...", "..."],
+      "notes": ["string"]
+    }
+  }
+}"""
+        
         prompt = f"""
 You are a strict normalizer. Consolidate product information from multiple Stage-1 outputs.
 
-Input format:
-  - "company_id": string (from Stage-2A; use as-is)
-  - "items": array of Stage-1 results, each:
-    {{
-      "products": {{"<name>": {{"text": "<bullets>"}}, ...}},
-      "source": {{"url": "<page url>"}}
-    }}
+HARD RULES
+- Output JSON ONLY (no markdown, no commentary).
+- Use ONLY facts from Stage-1 product text and the provided `source.url`. No invention.
+- Extract only company-owned products (ignore third-party unless clearly co-branded).
+- Max 20 products: if more, keep official/core ones (prefer product pages, then most frequent).
+- If none qualify, return `"products": {{}}`.
+- Always emit the full schema; use `null` for unknown scalars, `[]` for empty arrays, `{{}}` for empty objects.
 
-CRITICAL RULES
-  - Output JSON ONLY (no markdown, no commentary).
-  - Use ONLY facts present in Stage-1 product text (no invention).
-  - Extract ALL products that the company (do not mention products that are not from the company). Each distinct product becomes its own key: <Exact Product Name A>, <Exact Product Name B>, ... up to 20. If >20 exist, include the 20 most prominent (prioritize official/core over incidental mentions).
-  - If no products are supported by inputs, return "products": {{}}.
-  - Unknown/missing fields → null, [], or {{}} as appropriate.
+PRODUCT IDENTITY & DEDUP
+- Candidate products = the keys of `items[*].products`.
+- Do NOT promote categories/families (e.g., “Humanoid robots”) into products. Use the family as `category`.
+- If multiple models/versions exist (e.g., “Figure 1.0”, “Figure 2.0”), create separate entries.
+- Canonical name:
+  1) Prefer name from official product page on company domain.
+  2) Else most frequent exact name; tie-break by longest/specific variant.
+  3) Preserve brand casing/symbols in final output.
 
-EXTRACTION (bullet → field mapping)
-  - WHAT → short_desc (concise; keep useful brand phrasing)
-  - CATEGORY → category
-  - FEATURES → tags (split short phrases; lowercase; max 5 total)
-  - CAPABILITIES → capabilities (array of objects). Each capability:
-      {{
-        "name": "string",
-        "tags": ["string"],
-        "definition": "string" | null
-      }}
-    (Do NOT auto-add capability tags to product tags.)
-  - USERS, MARKETS → markets (union; keep original casing)
-  - INTEGRATIONS → specs["integrations"]
-  - PRICING → specs["pricing"]
-  - STAGE → stage ("alpha" | "beta" | "ga" | "discontinued")
-  - SPECS → specs["specs"]
-  - COMPLIANCE → compliance (verbatim array of strings if multiple)
-  - LINKS → notes
-  - ALIASES → notes
-  - RELEASEDATE → released_at (ISO granularity if explicit)
-  - LIMITATIONS → specs["limitations"]
-  - NOTE → notes
+FIELD MAPPING (bullet → field)
+- WHAT → short_desc (concise; keep brand phrasing)
+- CATEGORY → category
+- FEATURES → tags (split on commas, semicolons, bullets, line breaks; trim; lowercase; dedup; max 5)
+- CAPABILITIES → capabilities (array of {{name, tags[], definition|null}}); do NOT copy capability tags into `tags`
+- USERS, MARKETS → markets (union; preserve casing)
+- INTEGRATIONS → specs.integrations
+- PRICING → specs.pricing
+- STAGE → stage ("alpha" | "beta" | "ga" | "discontinued")
+- SPECS → specs.specs
+- COMPLIANCE → compliance (verbatim array; dedup)
+- RELEASEDATE → released_at ("YYYY-MM-DD" | "YYYY-MM" | "YYYY")
+- LIMITATIONS → specs.limitations
+- LINKS, ALIASES, NOTE → append to notes (strings)
 
-FORMATTING RULES
-  - Per product include:
-    - sources: ["https://...", "https://..."] (URLs actually used for that product)
+URL RULES
+- product_url: if any `source.url` is an official product page on company domain; else null.
+- docs_url: if any `source.url` is a docs/dev/API page; else null.
+- sources: all contributing URLs for that product (dedup, max 5, prefer official first).
 
-VOLUME & SELECTION RULES
-  - Unify duplicates/merge related info: 
-    - Merge related info across items: If information refers to the same product, combine them into one entry!
-    - If product names are near-duplicates (e.g., variations, abbreviations), consolidate them under the exact name used on the official page.
-      - Conflict resolution: 1. STAGE: choose most conservative (alpha < beta < ga). Any explicit "discontinued" wins. 2. CATEGORY: choose the most specific, concise phrasing.
-  - Prioritize sources: When multiple URLs are available, prefer the official product page over incidental mentions, blog posts, or third-party references.
+OUTPUT SCHEMA
+{output_schema}
 
-OUTPUT SCHEMA (including example text):
-{{
-  "products": {{
-    "Exact Product Name A": {{
-      "name": "Exact Product Name A",
-      "category": "string" | null,
-      "stage": "alpha" | "beta" | "ga" | "discontinued" | null,
-      "markets": ["string"],
-      "tags": ["string"],
-      "short_desc": "string" | null,
-      "product_url": "https://..." | null,
-      "docs_url": "https://..." | null,
-      "specs": {{}},
-      "released_at": "YYYY-MM-DD" | "YYYY-MM" | "YYYY" | null,
-      "compliance": ["string"],
-      "capabilities": [
-        {{
-          "name": "string",
-          "tags": ["string"],
-          "definition": "string" | null
-        }}
-      ],
-      "sources": ["https://...", "https://..."],
-      "notes": ["<optional product-level notes>"]
-    }},
-    "Exact Product Name B": {{
-      "name": "Exact Product Name B",
-      "category": null,
-      "stage": null,
-      "markets": [],
-      "tags": [],
-      "short_desc": null,
-      "product_url": null,
-      "docs_url": null,
-      "specs": {{}},
-      "released_at": null,
-      "compliance": [],
-      "capabilities": [],
-      "sources": [],
-      "notes": []
-    }}
-  }}
-}}
-
-Context company_id: {company_id}
-
-Items:
-{products_items_json}
-
-Return JSON ONLY.
+Return JSON only.
 """
         
         return prompt

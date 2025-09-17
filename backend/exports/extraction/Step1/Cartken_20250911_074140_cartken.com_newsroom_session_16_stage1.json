@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-09-11T07:41:40.555646",
+  "session_id": "16",
+  "stage": "1",
+  "competitor": "Cartken",
+  "url": "https://cartken.com/newsroom",
+  "llm_response": {
+    "products": {
+      "Cartken Hauler": {
+        "text": "WHAT: autonomous robot for material handling\nCATEGORY: industrial robots\nCAPABILITIES: material handling\nLINKS: \nNOTE: "
+      },
+      "Cartken Robots": {
+        "text": "WHAT: mobile robots for inter-facility workflows\nCATEGORY: industrial robots\nCAPABILITIES: suited for inter-facility workflows\nLINKS: \nNOTE: "
+      },
+      "Cartken Sidewalk Robots": {
+        "text": "WHAT: sidewalk robots for delivery\nCATEGORY: delivery robots\nCAPABILITIES: delivery\nLINKS: \nNOTE: "
+      },
+      "Cartken Autonomous Delivery Robots": {
+        "text": "WHAT: fully autonomous delivery robots\nCATEGORY: delivery robots\nCAPABILITIES: delivery\nLINKS: \nNOTE: "
+      }
+    },
+    "company": {
+      "text": "NAME: Cartken\nPOSITIONING: robotics startup\nLINKS: https://cartken.com/newsroom\nNOTE: "
+    },
+    "source": {
+      "url": "https://cartken.com/newsroom"
+    }
+  },
+  "prompt_length": 3887,
+  "response_size": 812
+}

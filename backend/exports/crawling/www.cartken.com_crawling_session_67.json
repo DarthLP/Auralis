@@ -1,0 +1,126 @@
+[
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/",
+    "canonical_url": "https://cartken.com/",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 1.0,
+    "signals": [
+      "product_title",
+      "product_h1"
+    ],
+    "depth": 0,
+    "size_bytes": 229894,
+    "mime_type": null,
+    "content_hash": "368c26aeed1829576a46ab3607c493110ee5489b2cbddd0c874b88cc133452e3",
+    "crawled_at": "2025-09-11T07:33:47.480688"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/de",
+    "canonical_url": "https://cartken.com/de",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.9,
+    "signals": [
+      "product_title",
+      "product_h1"
+    ],
+    "depth": 1,
+    "size_bytes": 232326,
+    "mime_type": null,
+    "content_hash": "034da4ccbf9a555459083b52639dd7ac4223b915f1c05ff60e7196ab3275e58b",
+    "crawled_at": "2025-09-11T07:33:47.480884"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/old-home",
+    "canonical_url": "https://cartken.com/old-home",
+    "status_code": 200,
+    "primary_category": "product",
+    "secondary_categories": [],
+    "score": 0.81,
+    "signals": [
+      "product_title",
+      "product_h1"
+    ],
+    "depth": 2,
+    "size_bytes": 63683,
+    "mime_type": null,
+    "content_hash": "1a8a124129d9da23a37de472893d5d9985e5973453381778178735e00b6306ed",
+    "crawled_at": "2025-09-11T07:33:47.480933"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/press-releases",
+    "canonical_url": "https://cartken.com/press-releases",
+    "status_code": 200,
+    "primary_category": "releases",
+    "secondary_categories": [],
+    "score": 0.648,
+    "signals": [
+      "releases_title",
+      "news_title"
+    ],
+    "depth": 2,
+    "size_bytes": 25474,
+    "mime_type": null,
+    "content_hash": "81c10f000722f780d7d2e26b2e0cb071d399f582e57f6bce83b566e66208b37b",
+    "crawled_at": "2025-09-11T07:33:47.480984"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/press",
+    "canonical_url": "https://cartken.com/press",
+    "status_code": 200,
+    "primary_category": "news",
+    "secondary_categories": [],
+    "score": 0.45,
+    "signals": [
+      "news_url",
+      "news_title"
+    ],
+    "depth": 1,
+    "size_bytes": 30906,
+    "mime_type": null,
+    "content_hash": "aa72680e939f92d2a15522ab789be6a1d00e4729ec251629cf1fb1a988f98958",
+    "crawled_at": "2025-09-11T07:33:47.481032"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/newsroom",
+    "canonical_url": "https://cartken.com/newsroom",
+    "status_code": 200,
+    "primary_category": "news",
+    "secondary_categories": [],
+    "score": 0.36450000000000005,
+    "signals": [
+      "news_title"
+    ],
+    "depth": 2,
+    "size_bytes": 36723,
+    "mime_type": null,
+    "content_hash": "d09ac9aee4a4437ce606e1f7caf3fd291bfe26119403990a8db48f5227db9755",
+    "crawled_at": "2025-09-11T07:33:47.481069"
+  },
+  {
+    "crawl_session_id": 67,
+    "url": "https://cartken.com/about-us",
+    "canonical_url": "https://cartken.com/about-us",
+    "status_code": 200,
+    "primary_category": "other",
+    "secondary_categories": [],
+    "score": 0.09000000000000001,
+    "signals": [
+      "no_classification"
+    ],
+    "depth": 1,
+    "size_bytes": 86581,
+    "mime_type": null,
+    "content_hash": "6da3e705a4d1baa9a248f0e766715e22e2a990909e7dba3a520a4968dd8d59e3",
+    "crawled_at": "2025-09-11T07:33:47.481116"
+  }
+]

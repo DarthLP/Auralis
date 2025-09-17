@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-09-11T07:40:54.646797",
+  "session_id": "16",
+  "stage": "1",
+  "competitor": "Cartken",
+  "url": "https://cartken.com/old-home",
+  "llm_response": {
+    "products": {
+      "Model A": {
+        "text": "WHAT: Autonomous delivery robot\nCATEGORY: Delivery robot\nFEATURES: Equipped with sensors and cameras to choose paths of least resistance\nCAPABILITIES: Deliver food, groceries, and packages within a 3-mile radius\nUSERS: Students, staff, and businesses\nMARKETS: Campuses, malls, corporate campuses, medical labs, and more\nINTEGRATIONS: Can be used in a variety of environments from outdoor deliveries to warehousing\nSPECS: Carry up to 80kg\nCUSTOMIZABLE: Compartments, shelves, and height\nNOTE: May be referred to as 'small cooler' size"
+      },
+      "Model B": {
+        "text": "WHAT: Autonomous delivery robot\nCATEGORY: Delivery robot\nFEATURES: Multi-sensor cameras\nCAPABILITIES: Deliver food, groceries, and packages within a 3-mile radius\nUSERS: Students, staff, and businesses\nMARKETS: Campuses, malls, corporate campuses, medical labs, and more\nINTEGRATIONS: Can be used in a variety of environments from outdoor deliveries to warehousing\nSPECS: Carry up to 176lb/80kg\nCUSTOMIZABLE: Compartments, shelves, and height\nNOTE: May be referred to as 'hardest working model'"
+      },
+      "Model C": {
+        "text": "WHAT: Autonomous delivery robot\nCATEGORY: Delivery robot\nFEATURES: Multi-sensor cameras\nCAPABILITIES: Deliver food, groceries, and packages within a 3-mile radius\nUSERS: Students, staff, and businesses\nMARKETS: Campuses, malls, corporate campuses, medical labs, and more\nINTEGRATIONS: Can be used in a variety of environments from outdoor deliveries to warehousing\nSPECS: Carry up to 80kg\nCUSTOMIZABLE: Compartments, shelves, and height\nNOTE: May be referred to as 'safest on the market today'"
+      }
+    },
+    "company": {
+      "text": "NAME: Cartken\nPOSITIONING: Autonomous delivery robots for businesses\nINDUSTRIES: Logistics, delivery\nCUSTOMERS: Miami merchants, consumers, and campus partners\nPARTNERS: DPD\nNOTE: Partnership with Cartken marks another important milestone for efforts in automated and autonomous technology"
+    },
+    "source": {
+      "url": "https://cartken.com/old-home"
+    }
+  },
+  "prompt_length": 6565,
+  "response_size": 2006
+}
