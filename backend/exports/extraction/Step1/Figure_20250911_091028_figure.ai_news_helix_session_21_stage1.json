@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:10:28.032742",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Vision-Language-Action model for high-rate, dexterous control of the entire humanoid upper body\nCATEGORY: Robotics\nFEATURES: Full-upper-body control, Multi-robot collaboration, Pick up virtually any small household object\nCAPABILITIES: Generate long-horizon, collaborative, dexterous manipulation on the fly without any task-specific demonstrations or extensive manual programming\nUSERS: Humanoid robots\nMARKETS: Home environments\nINTEGRATIONS: Natural language prompts\nPRICING: Not specified\nSTAGE: Commercial-ready\nSPECS: 35-DoF action space at 200Hz, controlling everything from individual finger movements to end-effector trajectories, head gaze, and torso posture\nCOMPLIANCE: Not specified\nLINKS: https://figure.ai/news/helix\nNOTE: First VLA to output high-rate continuous control of the entire humanoid upper body"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nALIASES: Not specified\nCONTACT: Not specified\nLOCATION: Not specified\nPOSITIONING: Embodied AI\nINDUSTRIES: Robotics\nCUSTOMERS: Not specified\nPARTNERS: Not specified\nCOMPLIANCE: Not specified\nLINKS: https://figure.ai/\nNOTE: Not specified"
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix"
+    }
+  },
+  "prompt_length": 16253,
+  "response_size": 1209
+}

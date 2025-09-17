@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:11:37.870411",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/f-03-battery-development",
+  "llm_response": {
+    "products": {
+      "F.03 Battery": {
+        "text": "WHAT: Battery system for humanoid robot \nCATEGORY: Battery technology \nFEATURES: Custom battery packs, high energy density, fast charge, battery management system, safety features \nCAPABILITIES: Powers humanoid robot, provides 5 hours of run time at peak performance \nSPECS: 2.3 kWh, 2 kW fast charge, active cooling \nCOMPLIANCE: Certified to UN38.3 and UL2271 battery safety standards \nLIMITATIONS: None \nNOTE: First humanoid robot battery certified to a UL safety standard"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure \nPOSITIONING: Leader in robot safety \nINDUSTRIES: Robotics, battery technology \nLINKS: https://figure.ai/news/f-03-battery-development \nNOTE: Developed proprietary technologies for battery safety"
+    },
+    "source": {
+      "url": "https://figure.ai/news/f-03-battery-development"
+    }
+  },
+  "prompt_length": 9850,
+  "response_size": 832
+}

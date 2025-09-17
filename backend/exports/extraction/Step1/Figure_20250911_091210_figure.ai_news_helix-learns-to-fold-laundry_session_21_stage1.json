@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:12:10.924801",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/helix-learns-to-fold-laundry",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Vision Language Action (VLA) model \nCATEGORY: Artificial Intelligence \nCAPABILITIES: Autonomous package reorientation, folding laundry, fine manipulation skills \nFEATURES: End-to-end neural network, multi-fingered hands, natural multimodal interaction \nSTAGE: Active \nNOTE: Same architecture used for logistic tasks and laundry folding"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure \nPOSITIONING: General-purpose humanoid intelligence \nLINKS: https://figure.ai/news/helix-learns-to-fold-laundry \nNOTE: Hiring for general-purpose humanoid intelligence development"
+    },
+    "source": {
+      "url": "https://figure.ai/news/helix-learns-to-fold-laundry"
+    }
+  },
+  "prompt_length": 4728,
+  "response_size": 677
+}

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-09-11T09:11:17.160455",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Humanoid robot\nCATEGORY: Logistics\nCAPABILITIES: Generalist humanoid control, folding laundry, loading the dishwasher\nFEATURES: Vision-language-action model, reinforcement learning\nSTAGE: \nLINKS: \nNOTE: "
+      },
+      "F.03 Battery": {
+        "text": "WHAT: Battery development\nCATEGORY: \nFEATURES: \nCAPABILITIES: \nUSERS: \nMARKETS: \nINTEGRATIONS: \nPRICING: \nSTAGE: \nSPECS: \nCOMPLIANCE: \nLINKS: \nLIMITATIONS: \nALIASES: \nRELEASEDATE: \nNOTE: "
+      },
+      "BotQ": {
+        "text": "WHAT: High-volume manufacturing facility for humanoid robots\nCATEGORY: Manufacturing\nFEATURES: \nCAPABILITIES: \nUSERS: \nMARKETS: \nINTEGRATIONS: \nPRICING: \nSTAGE: \nSPECS: \nCOMPLIANCE: \nLINKS: \nLIMITATIONS: \nALIASES: \nRELEASEDATE: \nNOTE: "
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: \nLOCATION: \nPOSITIONING: Humanoid logistics\nINDUSTRIES: Logistics, Manufacturing\nCUSTOMERS: \nPARTNERS: \nCOMPLIANCE: \nLINKS: \nNOTE: "
+    },
+    "source": {
+      "url": "https://figure.ai/news"
+    }
+  },
+  "prompt_length": 2622,
+  "response_size": 988
+}

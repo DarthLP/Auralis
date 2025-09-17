@@ -195,36 +195,6 @@ Return JSON ONLY.
         
         products_items_json = json.dumps(products_items, ensure_ascii=False, indent=2)
         
-        # Define the output schema separately to avoid f-string parsing issues
-        output_schema = """{
-  "company_id": "<string>",
-  "products": {
-    "Exact Product Name A": {
-      "name": "Exact Product Name A",
-      "category": "string|null",
-      "stage": "alpha|beta|ga|discontinued|null",
-      "markets": ["string"],
-      "tags": ["string"],
-      "short_desc": "string|null",
-      "product_url": "https://...|null",
-      "docs_url": "https://...|null",
-      "specs": {
-        "integrations": [],
-        "pricing": [],
-        "specs": [],
-        "limitations": []
-      },
-      "released_at": "YYYY[-MM[-DD]]|null",
-      "compliance": ["string"],
-      "capabilities": [
-        { "name": "string", "tags": ["string"], "definition": "string|null" }
-      ],
-      "sources": ["https://...", "..."],
-      "notes": ["string"]
-    }
-  }
-}"""
-        
         prompt = f"""
 You are a strict normalizer. Consolidate product information from multiple Stage-1 outputs.
 
@@ -237,28 +207,8 @@ HARD RULES
 - Always emit the full schema; use `null` for unknown scalars, `[]` for empty arrays, `{{}}` for empty objects.
 
 PRODUCT IDENTITY & DEDUP
-- Candidate products = the keys of `items[*].products`.
-- Do NOT promote categories/families (e.g., “Humanoid robots”) into products. Use the family as `category`.
-- If multiple models/versions exist (e.g., “Figure 1.0”, “Figure 2.0”), create separate entries.
-- Canonical name:
-  1) Prefer name from official product page on company domain.
-  2) Else most frequent exact name; tie-break by longest/specific variant.
-  3) Preserve brand casing/symbols in final output.
-
-FIELD MAPPING (bullet → field)
-- WHAT → short_desc (concise; keep brand phrasing)
-- CATEGORY → category
-- FEATURES → tags (split on commas, semicolons, bullets, line breaks; trim; lowercase; dedup; max 5)
-- CAPABILITIES → capabilities (array of {{name, tags[], definition|null}}); do NOT copy capability tags into `tags`
-- USERS, MARKETS → markets (union; preserve casing)
-- INTEGRATIONS → specs.integrations
-- PRICING → specs.pricing
-- STAGE → stage ("alpha" | "beta" | "ga" | "discontinued")
-- SPECS → specs.specs
-- COMPLIANCE → compliance (verbatim array; dedup)
-- RELEASEDATE → released_at ("YYYY-MM-DD" | "YYYY-MM" | "YYYY")
-- LIMITATIONS → specs.limitations
-- LINKS, ALIASES, NOTE → append to notes (strings)
+- Merge the same products into one product entry. Use the most frequent exact name.
+- If multiple models/versions of a product exist (e.g., “Figure 1.0”, “Figure 2.0”), create separate product entries.
 
 URL RULES
 - product_url: if any `source.url` is an official product page on company domain; else null.
@@ -266,7 +216,51 @@ URL RULES
 - sources: all contributing URLs for that product (dedup, max 5, prefer official first).
 
 OUTPUT SCHEMA
-{output_schema}
+{{
+  "products": {{
+    "Exact Product Name A": {{
+      "name": "Exact Product Name A",
+      "category": "string" | null,
+      "stage": "alpha" | "beta" | "ga" | "discontinued" | null,
+      "markets": ["string"],
+      "tags": ["string"],
+      "short_desc": "string" | null,
+      "product_url": "https://..." | null,
+      "docs_url": "https://..." | null,
+      "specs": {{}},
+      "released_at": "YYYY-MM-DD" | "YYYY-MM" | "YYYY" | null,
+      "compliance": ["string"],
+      "capabilities": [
+        {{
+          "name": "string",
+          "tags": ["string"],
+          "definition": "string" | null
+        }}
+      ],
+      "sources": ["https://...", "https://..."],
+      "notes": ["<optional product-level notes>"]
+    }},
+    "Exact Product Name B": {{
+      "name": "Exact Product Name B",
+      "category": null,
+      "stage": null,
+      "markets": [],
+      "tags": [],
+      "short_desc": null,
+      "product_url": null,
+      "docs_url": null,
+      "specs": {{}},
+      "released_at": null,
+      "compliance": [],
+      "capabilities": [],
+      "sources": [],
+      "notes": []
+    }}
+  }}
+}}
+
+Items:
+{products_items_json}
 
 Return JSON only.
 """

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-09-11T09:10:09.890771",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/botq",
+  "llm_response": {
+    "products": {
+      "Figure 02": {
+        "text": "WHAT: Prototype robot\nCATEGORY: Humanoid robot\nNOTE: Designed as a prototype and extensively used high complexity, tight tolerance, slow computer numerical control (CNC) machining processes."
+      },
+      "Figure 03": {
+        "text": "WHAT: Production robot\nCATEGORY: Humanoid robot\nFEATURES: Built for affordability and high-volume manufacturing\nSPECS: Parts manufactured in under 20 seconds with complex steel molds\nNOTE: Designed for production manufacturing rates, switched to tooled processes such as injection molding, diecasting, metal injection molding and stamping."
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nPOSITIONING: High-volume manufacturing facility for humanoid robots\nLOCATION: BotQ\nNOTE: Vertically integrated manufacturing, building software infrastructure, and robots building robots."
+    },
+    "source": {
+      "url": "https://figure.ai/news/botq"
+    }
+  },
+  "prompt_length": 10835,
+  "response_size": 881
+}

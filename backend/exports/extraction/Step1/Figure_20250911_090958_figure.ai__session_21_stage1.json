@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:09:58.107325",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/",
+  "llm_response": {
+    "products": {
+      "Figure": {
+        "text": "WHAT: General purpose humanoid robot\nCATEGORY: AI robotics\nFEATURES: Autonomous, end-to-end operations, dexterity of human form\nCAPABILITIES: Performing household tasks, lending support at home and across manufacturing, logistics, warehousing, and retail\nSPECS: Height - 5'6\", Payload - 20kg, Weight - 70kg, Runtime - 5hr, Speed - 1.2M/S, System - Electric\nSTAGE: Commercial\nLINKS: https://figure.ai/\nNOTE: "
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nPOSITIONING: AI robotics company, bringing a general purpose humanoid to life\nINDUSTRIES: Manufacturing, logistics, warehousing, retail\nNOTE: "
+    },
+    "source": {
+      "url": "https://figure.ai/"
+    }
+  },
+  "prompt_length": 3594,
+  "response_size": 677
+}

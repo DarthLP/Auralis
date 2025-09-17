@@ -1,0 +1,21 @@
+{
+  "extraction_session_id": 21,
+  "fingerprint_session_id": 25,
+  "competitor": "Figure",
+  "schema_version": "v1",
+  "started_at": "2025-09-11T09:09:24.469061",
+  "completed_at": "2025-09-11T09:13:24.246796",
+  "total_pages": 14,
+  "processed_pages": 14,
+  "skipped_pages": 0,
+  "failed_pages": 0,
+  "cache_hits": 0,
+  "companies_found": 1,
+  "products_found": 7,
+  "capabilities_found": 3,
+  "releases_found": 0,
+  "documents_found": 0,
+  "signals_found": 0,
+  "changes_detected": 7,
+  "error_summary": null
+}

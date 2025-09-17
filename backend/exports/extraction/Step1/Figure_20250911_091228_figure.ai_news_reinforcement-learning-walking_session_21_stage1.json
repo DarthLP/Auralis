@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:12:28.947944",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/reinforcement-learning-walking",
+  "llm_response": {
+    "products": {
+      "Figure 02": {
+        "text": "WHAT: Humanoid robot \nCATEGORY: Robotics \nCAPABILITIES: Human-like locomotion, walking \nFEATURES: End-to-end neural network, reinforcement learning, high-fidelity physics simulator, domain randomization, kHz-rate torque feedback control \nUSERS: Commercial operations \nMARKETS: Dexterous humanoid robotics \nINTEGRATIONS: None \nPRICING: Not specified \nSTAGE: Not specified \nSPECS: Human-like gait, heel-strikes, toe-offs, arm-swing synchronized with leg movement \nCOMPLIANCE: Not specified \nLINKS: None \nLIMITATIONS: Sim-to-real gap, requires additional fine-tuning \nALIASES: None \nRELEASEDATE: Not specified \nNOTE: Policy learned in simulation, may require additional engineering effort for broader commercial operations"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure \nCONTACT: Check out our open roles here \nLOCATION: Not specified \nPOSITIONING: Embodied AI, dexterous humanoid robotics \nINDUSTRIES: Robotics, AI \nCUSTOMERS: Not specified \nPARTNERS: Not specified \nCOMPLIANCE: Not specified \nLINKS: https://figure.ai/news/reinforcement-learning-walking \nNOTE: None"
+    },
+    "source": {
+      "url": "https://figure.ai/news/reinforcement-learning-walking"
+    }
+  },
+  "prompt_length": 7318,
+  "response_size": 1195
+}

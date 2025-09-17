@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-09-11T09:12:34.273088",
+  "session_id": "21",
+  "stage": "2A",
+  "competitor": "Figure",
+  "url": "consolidated_company_14_pages",
+  "llm_response": {
+    "company": {
+      "short_desc": "Figure is a robotics company that designs and develops humanoid robots for real-world applications, focusing on logistics, manufacturing, and industrial sectors.",
+      "name": "Figure",
+      "aliases": [
+        "Figure"
+      ],
+      "status": null,
+      "tags": [
+        "robotics",
+        "ai",
+        "logistics",
+        "manufacturing"
+      ],
+      "website": "https://figure.ai",
+      "hq_country": null,
+      "main_sources_used": [
+        "https://figure.ai/about-us",
+        "https://figure.ai/",
+        "https://figure.ai/news/botq",
+        "https://figure.ai/culture"
+      ],
+      "notes": [
+        "No specific information available on company status, HQ country, or customer/partner/compliance details."
+      ]
+    }
+  },
+  "prompt_length": 7119,
+  "response_size": 613
+}

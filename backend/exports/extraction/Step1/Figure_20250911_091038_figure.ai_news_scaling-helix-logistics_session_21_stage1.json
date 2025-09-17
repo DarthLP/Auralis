@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:10:38.375544",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/news/scaling-helix-logistics",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "text": "WHAT: Logistics robot\nCATEGORY: Robotics\nFEATURES: Handles a wider variety of packaging, approaches human-level dexterity and speed, barcode scanning success rate of ~95%\nCAPABILITIES: Autonomous package sorting, handles deformable poly bags and flat envelopes, adjusts grasp strategy on the fly\nUSERS: Logistics environments\nMARKETS: Real-world parcel sorting\nINTEGRATIONS: None mentioned\nPRICING: Not mentioned\nSTAGE: Active development\nSPECS: Average handling time per package of 4.05 seconds, barcode scanning success rate of ~95%\nCOMPLIANCE: Not mentioned\nLINKS: https://figure.ai/news/scaling-helix-logistics\nLIMITATIONS: None mentioned\nALIASES: None mentioned\nRELEASEDATE: Not mentioned\nNOTE: "
+      }
+    },
+    "company": {
+      "text": "NAME: Figure\nCONTACT: Not mentioned\nLOCATION: Not mentioned\nPOSITIONING: Developer of humanoid robotics, focusing on real-world tasks\nINDUSTRIES: Logistics, robotics\nCUSTOMERS: Not mentioned\nPARTNERS: Not mentioned\nCOMPLIANCE: Not mentioned\nLINKS: https://figure.ai/\nNOTE: "
+    },
+    "source": {
+      "url": "https://figure.ai/news/scaling-helix-logistics"
+    }
+  },
+  "prompt_length": 15425,
+  "response_size": 1128
+}

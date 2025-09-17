@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-11T09:10:57.748825",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/culture",
+  "llm_response": {
+    "products": {},
+    "company": {
+      "text": "NAME: Figure\nWHAT: Expand human capabilities through advanced AI\nMISSION: Expand human capabilities through advanced AI\nVISION: Deploy autonomous humanoid robots on a global scale to solve challenges within the labor economy\nVALUES: Overachieve, Stay Focused, Act in the best interest of humanity, Avoid Corporate Bloat, Embrace the Unknown, Remain Laser-Focused, Operate as a Winning Team\nPOSITIONING: Mission-focused company\nLINKS: https://figure.ai/culture"
+    },
+    "source": {
+      "url": "https://figure.ai/culture"
+    }
+  },
+  "prompt_length": 6867,
+  "response_size": 554
+}

@@ -1,0 +1,186 @@
+{
+  "timestamp": "2025-09-11T09:13:24.155111",
+  "session_id": "21",
+  "stage": "2B",
+  "competitor": "Figure",
+  "url": "consolidated_products_14_pages",
+  "llm_response": {
+    "products": {
+      "Figure": {
+        "name": "Figure",
+        "category": "AI robotics",
+        "stage": "Commercial",
+        "markets": [],
+        "tags": [],
+        "short_desc": "General purpose humanoid robot",
+        "product_url": "https://figure.ai/",
+        "docs_url": null,
+        "specs": {
+          "Height": "5'6\"",
+          "Payload": "20kg",
+          "Weight": "70kg",
+          "Runtime": "5hr",
+          "Speed": "1.2M/S",
+          "System": "Electric"
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [
+          {
+            "name": "Performing household tasks",
+            "tags": [],
+            "definition": null
+          },
+          {
+            "name": "Lending support at home and across manufacturing, logistics, warehousing, and retail",
+            "tags": [],
+            "definition": null
+          }
+        ],
+        "sources": [
+          "https://figure.ai/",
+          "https://figure.ai/about-us"
+        ],
+        "notes": []
+      },
+      "Figure 02": {
+        "name": "Figure 02",
+        "category": "Humanoid robot",
+        "stage": null,
+        "markets": [],
+        "tags": [],
+        "short_desc": "Prototype robot",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {},
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/news/botq"
+        ],
+        "notes": []
+      },
+      "Figure 03": {
+        "name": "Figure 03",
+        "category": "Humanoid robot",
+        "stage": null,
+        "markets": [],
+        "tags": [],
+        "short_desc": "Production robot",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {
+          "Parts manufactured in under 20 seconds with complex steel molds": null
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/news/botq"
+        ],
+        "notes": []
+      },
+      "Helix": {
+        "name": "Helix",
+        "category": "Robotics",
+        "stage": "Commercial-ready",
+        "markets": [
+          "Home environments"
+        ],
+        "tags": [],
+        "short_desc": "Vision-Language-Action model for high-rate, dexterous control of the entire humanoid upper body",
+        "product_url": "https://figure.ai/news/helix",
+        "docs_url": null,
+        "specs": {
+          "35-DoF action space at 200Hz": null
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [
+          {
+            "name": "Generate long-horizon, collaborative, dexterous manipulation on the fly without any task-specific demonstrations or extensive manual programming",
+            "tags": [],
+            "definition": null
+          }
+        ],
+        "sources": [
+          "https://figure.ai/news/helix"
+        ],
+        "notes": []
+      },
+      "F.03 Battery": {
+        "name": "F.03 Battery",
+        "category": "Battery technology",
+        "stage": null,
+        "markets": [],
+        "tags": [],
+        "short_desc": "Battery system for humanoid robot",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {
+          "2.3 kWh": null,
+          "2 kW fast charge": null,
+          "active cooling": null
+        },
+        "released_at": null,
+        "compliance": [
+          "UN38.3",
+          "UL2271"
+        ],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/news/f-03-battery-development"
+        ],
+        "notes": []
+      },
+      "Humanoids": {
+        "name": "Humanoids",
+        "category": "Robotics",
+        "stage": "In development",
+        "markets": [
+          "Manufacturing",
+          "shipping and logistics",
+          "warehousing",
+          "retail",
+          "consumer households",
+          "space exploration"
+        ],
+        "tags": [],
+        "short_desc": "General purpose humanoid robots",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {},
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/master-plan"
+        ],
+        "notes": []
+      },
+      "Figure Robots": {
+        "name": "Figure Robots",
+        "category": "robots",
+        "stage": "Active development",
+        "markets": [
+          "logistics and industrial sectors"
+        ],
+        "tags": [],
+        "short_desc": "Humanoid robots",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {},
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/news/helix-logistics"
+        ],
+        "notes": []
+      }
+    }
+  },
+  "prompt_length": 11405,
+  "response_size": 3289
+}

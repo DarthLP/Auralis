@@ -1,0 +1,208 @@
+{
+  "timestamp": "2025-09-11T10:57:20.657002",
+  "session_id": "manual_test",
+  "stage": "2B",
+  "competitor": "Figure",
+  "url": "consolidated_products_12_pages",
+  "llm_response": {
+    "products": {
+      "Helix": {
+        "name": "Helix",
+        "category": "Robotics",
+        "stage": "Active development",
+        "markets": [
+          "Logistics",
+          "Home environments"
+        ],
+        "tags": [
+          "Autonomous package sorting",
+          "Adaptive behaviors",
+          "Stateful perception",
+          "Force sensing"
+        ],
+        "short_desc": "Logistics robot",
+        "product_url": "https://figure.ai/news/scaling-helix-logistics",
+        "docs_url": null,
+        "specs": {
+          "average_handling_time_per_package": "4.05 seconds",
+          "barcode_scanning_success_rate": "~95%"
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [
+          {
+            "name": "Autonomous package sorting",
+            "tags": [
+              "Autonomous",
+              "Package sorting"
+            ],
+            "definition": null
+          },
+          {
+            "name": "Adaptive behaviors",
+            "tags": [
+              "Adaptive",
+              "Behaviors"
+            ],
+            "definition": null
+          },
+          {
+            "name": "Stateful perception",
+            "tags": [
+              "Stateful",
+              "Perception"
+            ],
+            "definition": null
+          },
+          {
+            "name": "Force sensing",
+            "tags": [
+              "Force",
+              "Sensing"
+            ],
+            "definition": null
+          }
+        ],
+        "sources": [
+          "https://figure.ai/news/scaling-helix-logistics",
+          "https://figure.ai/news/helix-loads-the-dishwasher",
+          "https://figure.ai/news/helix-logistics"
+        ],
+        "notes": [
+          "Can learn new capabilities with additional data"
+        ]
+      },
+      "Figure 02": {
+        "name": "Figure 02",
+        "category": "Robotics",
+        "stage": null,
+        "markets": [
+          "Dexterous humanoid robotics"
+        ],
+        "tags": [
+          "Human-like locomotion",
+          "Walking"
+        ],
+        "short_desc": "Humanoid robot",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {
+          "human_like_gait": true,
+          "heel_strikes": true,
+          "toe_offs": true,
+          "arm_swing_synchronized_with_leg_movement": true
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [
+          {
+            "name": "Human-like locomotion",
+            "tags": [
+              "Human-like",
+              "Locomotion"
+            ],
+            "definition": null
+          },
+          {
+            "name": "Walking",
+            "tags": [
+              "Walking"
+            ],
+            "definition": null
+          }
+        ],
+        "sources": [
+          "https://figure.ai/news/reinforcement-learning-walking"
+        ],
+        "notes": [
+          "Learned policy can scale to thousands of Figure robots"
+        ]
+      },
+      "F.03 Battery": {
+        "name": "F.03 Battery",
+        "category": "Battery technology",
+        "stage": null,
+        "markets": [],
+        "tags": [
+          "Custom battery packs",
+          "High energy density",
+          "Fast charge",
+          "Battery management system",
+          "Safety features"
+        ],
+        "short_desc": "Battery system for humanoid robot",
+        "product_url": null,
+        "docs_url": null,
+        "specs": {
+          "energy_density": "2.3 kWh",
+          "fast_charge": "2 kW",
+          "active_cooling": true
+        },
+        "released_at": null,
+        "compliance": [
+          "UN38.3",
+          "UL2271"
+        ],
+        "capabilities": [],
+        "sources": [
+          "https://figure.ai/news/f-03-battery-development"
+        ],
+        "notes": [
+          "First humanoid robot battery certified to a UL safety standard"
+        ]
+      },
+      "Figure": {
+        "name": "Figure",
+        "category": "AI robotics",
+        "stage": "Commercial",
+        "markets": [
+          "Manufacturing",
+          "Logistics",
+          "Warehousing",
+          "Retail"
+        ],
+        "tags": [
+          "Autonomous",
+          "End-to-end operations",
+          "Household tasks"
+        ],
+        "short_desc": "General purpose humanoid robot",
+        "product_url": "https://figure.ai/",
+        "docs_url": null,
+        "specs": {
+          "height": "5'6\"",
+          "payload": "20kg",
+          "weight": "70kg",
+          "runtime": "5hr",
+          "speed": "1.2M/S",
+          "system": "Electric"
+        },
+        "released_at": null,
+        "compliance": [],
+        "capabilities": [
+          {
+            "name": "Learning",
+            "tags": [
+              "Learning"
+            ],
+            "definition": null
+          },
+          {
+            "name": "Performing tasks safely",
+            "tags": [
+              "Performing tasks",
+              "Safely"
+            ],
+            "definition": null
+          }
+        ],
+        "sources": [
+          "https://figure.ai/"
+        ],
+        "notes": []
+      }
+    }
+  },
+  "prompt_length": 10924,
+  "response_size": 3145
+}

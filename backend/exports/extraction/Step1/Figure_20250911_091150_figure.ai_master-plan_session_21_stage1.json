@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-11T09:11:50.343644",
+  "session_id": "21",
+  "stage": "1",
+  "competitor": "Figure",
+  "url": "https://figure.ai/master-plan",
+  "llm_response": {
+    "products": {
+      "Humanoids": {
+        "text": "WHAT: General purpose humanoid robots \nCATEGORY: Robotics \nCAPABILITIES: Perform everyday tasks autonomously, interact with complex and unstructured real-world environments \nFEATURES: Electromechanical design, hands, screen for face \nUSERS: Humans in various industries, households, and space exploration \nMARKETS: Manufacturing, shipping and logistics, warehousing, retail, consumer households, space exploration \nINTEGRATIONS: Integration with human environment \nPRICING: Aiming to reduce individual humanoid unit costs through high-rate volume manufacturing \nSTAGE: In development, prototyping \nLIMITATIONS: Currently unable to perform tasks such as unloading the dishwasher \nNOTE: Designed to adhere to industry standards and corporate requirements for safety"
+      }
+    },
+    "company": {
+      "text": "NAME: Figure \nWHAT: Develop general purpose humanoids that make a positive impact on humanity \nPOSITIONING: Expand human capabilities through advanced AI \nINDUSTRIES: Robotics, Artificial Intelligence \nLINKS: https://figure.ai/master-plan \nNOTE: Founded by the Founder of Archer and Vettery"
+    },
+    "source": {
+      "url": "https://figure.ai/master-plan"
+    }
+  },
+  "prompt_length": 9782,
+  "response_size": 1186
+}

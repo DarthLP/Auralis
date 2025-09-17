@@ -635,7 +635,7 @@ class BatchMultiStageAIExtractor:
                 page_type="product_consolidation",
                 competitor=competitor,
                 session_id=session_id,
-                use_cache=True
+                use_cache=False
             )
             
             # DEBUG: Save Stage 2B LLM output (without prompt field)
@@ -951,7 +951,7 @@ class MultiStageAIExtractor:
                 page_type="consolidation",
                 competitor=competitor,
                 session_id=session_id,
-                use_cache=True
+                use_cache=False
             )
             
             # DEBUG: Save Stage 2B LLM output
